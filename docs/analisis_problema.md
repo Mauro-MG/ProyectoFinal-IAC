@@ -49,15 +49,35 @@ En México y gran parte de América Latina, el abastecimiento de alimentos y bie
 *   **Calidad de Datos**: Captura intencionalmente errónea de precios para despistar a la competencia.
 
 ### 9. Restricciones Legales, Éticas y de Privacidad
-*   **LFPDPPP (Ley Federal de Protección de Datos Personales en Posesión de los Particulares)**: Los datos personales de los comerciantes, especialmente de los informales, deben ser anonimizados y protegidos para evitar usos punitivos.
-*   **NOM-076-SCFI-2012**: Requerimientos de sistemas de información comercial.
-*   **Ética**: Evitar que el sistema se convierta en una herramienta de cacería fiscal para el comercio de subsistencia. Fomentar la inclusión.
+
+*   **Protección de datos en posesión de particulares:** Si AbastoRed es operada por una empresa o asociación privada, el tratamiento de datos deberá sujetarse a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares. Esto implica realizar un tratamiento legítimo, controlado e informado, proporcionar un aviso de privacidad y proteger el derecho de las personas sobre sus datos [1].
+*   **Protección de datos en instituciones públicas:** Si un municipio o dependencia pública opera la plataforma, deberá considerarse la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados [2].
+*   **Minimización de datos:** Solo se capturará la información necesaria para los procesos de la plataforma.
+*   **Control de acceso:** Cada perfil podrá consultar únicamente la información necesaria para sus responsabilidades.
+*   **Ubicación geográfica:** La ubicación individual de comerciantes no deberá mostrarse públicamente sin una finalidad justificada y autorización correspondiente.
+*   **Ética:** El sistema apoyará la generación de alertas y recomendaciones, pero las sanciones, validaciones de comerciantes y resolución de controversias permanecerán bajo responsabilidad humana.
+*   **No discriminación:** Los datos no deberán utilizarse para perseguir, excluir o discriminar a comerciantes informales.
 
 ### 10. Beneficios Esperados
-*   **Para Comerciantes**: Reducción de costos de abastecimiento en un 15-20% y mejora en competitividad.
-*   **Para Mayoristas**: Incremento del 25% en cobertura de clientes de canal tradicional y optimización de rutas.
-*   **Para el Consumidor Final**: Menor volatilidad de precios y mayor disponibilidad de productos en sus barrios.
+
+Los siguientes beneficios son resultados esperados que deberán medirse mediante indicadores durante las pruebas piloto; no representan porcentajes garantizados.
+
+*   **Para comerciantes:** Reducción del tiempo utilizado para comparar opciones de abasto, mayor visibilidad de precios y mejores decisiones de surtido.
+*   **Para mayoristas:** Mayor alcance hacia comercios formales e informales y mejor información para planear rutas de distribución.
+*   **Para consumidores:** Mayor disponibilidad de información sobre precios y productos en su zona.
+*   **Para instituciones públicas:** Información agregada para apoyar el monitoreo de precios, cobertura comercial y acceso alimentario.
+*   **Para el proyecto:** Centralización de información que actualmente se encuentra dispersa en registros manuales, hojas de cálculo y sistemas aislados.
+
+La FAO señala que los sistemas públicos de abastecimiento pueden contribuir a la estabilidad de la oferta, la difusión de información comercial y la reducción de fluctuaciones fuertes de precios [3].
 
 ### 11. Ejemplos del Mundo Real
 *   **Registro de un Vendedor de Tianguis**: "Doña Mary", que vende fruta en el tianguis de los martes, abre la app en modo "baja cobertura", marca su ubicación GPS (que se asocia al polígono del tianguis aprobado), selecciona "Frutas de temporada" y actualiza los precios del plátano y la manzana.
 *   **Comparación de Precios**: Un Analista de Mercado abre el dashboard y observa un mapa de calor que muestra que el kilogramo de huevo es un 12% más barato en el comercio informal de la Zona Norte comparado con los minisúpers formales de la misma área.
+
+### 12. Referencias
+
+[1] Cámara de Diputados del H. Congreso de la Unión. (2025). *Ley Federal de Protección de Datos Personales en Posesión de los Particulares*. https://www.diputados.gob.mx/LeyesBiblio/pdf/LFPDPPP.pdf
+
+[2] Cámara de Diputados del H. Congreso de la Unión. (2025). *Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados*. https://www.diputados.gob.mx/LeyesBiblio/pdf/LGPDPPSO.pdf
+
+[3] Organización de las Naciones Unidas para la Alimentación y la Agricultura. (s. f.). *Sistemas Públicos de Abastecimiento y Comercialización de Alimentos*. https://www.fao.org/in-action/redspaa/es
