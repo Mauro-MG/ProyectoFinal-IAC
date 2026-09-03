@@ -85,3 +85,45 @@
 - **Cuando** el sistema detecta que se encuentra fuera del umbral establecido,
 - **Entonces** el precio se guarda como `PENDIENTE_VALIDACION` y queda disponible para revisión humana.
 - **Y** en una etapa posterior, el MS de Alertas notificará a los administradores.
+
+### Épica 5: Administración y recomendaciones
+**HU-009: Administración del Catálogo Maestro**
+
+- **Como** Administrador General,
+- **Quiero** crear, consultar, editar y desactivar productos del catálogo maestro,
+- **Para** mantener una referencia uniforme para precios, pedidos y análisis.
+
+**Criterios de aceptación:**
+
+- **Dado** que el administrador tiene una sesión válida,
+- **Cuando** registra un producto con información válida,
+- **Entonces** el producto se almacena en PostgreSQL.
+- **Y** la creación queda registrada en la bitácora de auditoría.
+- **Cuando** modifica o desactiva un producto,
+- **Entonces** el cambio se guarda y también se registra en auditoría.
+
+**HU-010: Recomendación de Surtido por Zona**
+
+- **Como** Comerciante,
+- **Quiero** recibir recomendaciones de productos con demanda no satisfecha en mi zona,
+- **Para** decidir qué productos puedo incorporar a mi surtido.
+
+**Criterios de aceptación:**
+
+- **Dado** que el comercio reportó al menos cinco productos durante la última semana,
+- **Cuando** solicita una recomendación,
+- **Entonces** el futuro MS de Recomendaciones devuelve hasta cinco productos priorizados.
+- **Y** la respuesta indica que se trata de una sugerencia y no de una decisión obligatoria.
+
+**HU-011: Consulta de Auditoría**
+
+- **Como** Auditor,
+- **Quiero** consultar eventos por usuario, entidad y periodo,
+- **Para** reconstruir los cambios realizados en el sistema.
+
+**Criterios de aceptación:**
+
+- **Dado** que el auditor tiene una sesión válida,
+- **Cuando** accede al módulo de auditoría,
+- **Entonces** puede consultar los eventos registrados y sus detalles.
+- **Y** no dispone de operaciones para modificar o eliminar registros.
