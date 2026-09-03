@@ -9,7 +9,7 @@ Enfoque del MVP del Primer Parcial: El objetivo de esta entrega es entregar una 
 
 NOTE
 
-Nombre sugerido de la plataforma: "AbastoRed" (Plataforma Híbrida de Abasto y Monitoreo de Precios Formal-Informal). El directorio de trabajo se ubicará en C:\Users\mauro\.gemini\antigravity\scratch\abasto_red.
+Nombre sugerido de la plataforma: "AbastoRed" (Plataforma Híbrida de Abasto y Monitoreo de Precios Formal-Informal). 
 
 1. Alcance y Entregables del Primer Parcial
 El trabajo se organiza en 5 fases secuenciales de acuerdo con los criterios de evaluación:
