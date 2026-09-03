@@ -13,7 +13,10 @@ INSERT INTO usuarios (email, password_hash, nombre, apellido_paterno, rol_id) VA
 ('admin@abastored.mx', crypt('Admin123!', gen_salt('bf')), 'Admin', 'General', (SELECT id FROM roles WHERE nombre = 'Administrador General')),
 ('comerciante@test.mx', crypt('Password123!', gen_salt('bf')), 'Juan', 'Pérez', (SELECT id FROM roles WHERE nombre = 'Comerciante Informal')),
 ('minorista@test.mx', crypt('Password123!', gen_salt('bf')), 'María', 'García', (SELECT id FROM roles WHERE nombre = 'Minorista Formal')),
-('analista@test.mx', crypt('Password123!', gen_salt('bf')), 'Carlos', 'López', (SELECT id FROM roles WHERE nombre = 'Analista de Mercado'));
+('analista@test.mx', crypt('Password123!', gen_salt('bf')), 'Carlos', 'López', (SELECT id FROM roles WHERE nombre = 'Analista de Mercado')),
+('proveedor@test.mx', crypt('Password123!', gen_salt('bf')), 'Laura', 'Martínez', (SELECT id FROM roles WHERE nombre = 'Proveedor')),
+('coordinador@test.mx', crypt('Password123!', gen_salt('bf')), 'Miguel', 'Torres', (SELECT id FROM roles WHERE nombre = 'Coordinador Municipal')),
+('auditor@test.mx', crypt('Password123!', gen_salt('bf')), 'Ana', 'Sánchez', (SELECT id FROM roles WHERE nombre = 'Auditor'));
 
 -- Insert Categorias
 INSERT INTO categorias (nombre, descripcion) VALUES
