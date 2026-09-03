@@ -22,20 +22,20 @@ Estados mínimos del tablero:
 
 | ID | Tarea | Estado | Prioridad | Responsable |
 | :--- | :--- | :--- | :--- | :--- |
-| TAR-001 | Analizar el problema y los usuarios | Hecho | Alta | Equipo |
-| TAR-002 | Documentar requerimientos y reglas de negocio | Hecho | Alta | Equipo de análisis |
-| TAR-003 | Diseñar la arquitectura completa | Hecho | Alta | Equipo de arquitectura |
-| TAR-004 | Diseñar PostgreSQL, MongoDB y Redis | Hecho | Alta | Equipo de datos |
-| TAR-005 | Implementar autenticación y roles | Hecho | Alta | Equipo web |
-| TAR-006 | Implementar catálogos de productos y comercios | Hecho | Alta | Equipo web |
-| TAR-007 | Implementar registro y comparación de precios | Hecho | Alta | Equipo web |
-| TAR-008 | Implementar auditoría básica | Hecho | Alta | Equipo web/datos |
-| TAR-009 | Agregar pruebas automatizadas | Pendiente | Media | Equipo de pruebas |
-| TAR-010 | Separar microservicios | Pendiente | Media | Equipo backend |
-| TAR-011 | Desarrollar aplicación móvil y sincronización offline | Pendiente | Media | Equipo móvil |
-| TAR-012 | Preparar despliegue en Compute Engine | Pendiente | Media | Equipo de infraestructura |
-| TAR-013 | Implementar cifrado de campos sensibles | Pendiente | Alta | Equipo de seguridad |
-| TAR-014 | Integrar monitoreo centralizado | Pendiente | Media | Equipo de infraestructura |
+| TAR-001 | Analizar el problema y los usuarios | Hecho | Alta |
+| TAR-002 | Documentar requerimientos y reglas de negocio | Hecho | Alta |
+| TAR-003 | Diseñar la arquitectura completa | Hecho | Alta |
+| TAR-004 | Diseñar PostgreSQL, MongoDB y Redis | Hecho | Alta |
+| TAR-005 | Implementar autenticación y roles | Hecho | Alta |
+| TAR-006 | Implementar catálogos de productos y comercios | Hecho | Alta |
+| TAR-007 | Implementar registro y comparación de precios | Hecho | Alta |
+| TAR-008 | Implementar auditoría básica | Hecho | Alta |
+| TAR-009 | Agregar pruebas automatizadas | Pendiente | Media |
+| TAR-010 | Separar microservicios | Pendiente | Media |
+| TAR-011 | Desarrollar aplicación móvil y sincronización offline | Pendiente | Media |
+| TAR-012 | Preparar despliegue en Compute Engine | Pendiente | Media |
+| TAR-013 | Implementar cifrado de campos sensibles | Pendiente | Alta |
+| TAR-014 | Integrar monitoreo centralizado | Pendiente | Media |
 
 Backlog inicial:
 *   Completar módulo de pedidos a mayoristas.
