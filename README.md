@@ -81,10 +81,13 @@ curl http://localhost:5000/health
 
 La base de datos se inicializa con los siguientes usuarios de prueba (la contraseña para todos es `Password123!`, excepto para el admin que es `Admin123!`):
 
-- **Administrador:** admin@abastored.mx
-- **Comerciante:** comerciante@test.mx
-- **Minorista:** minorista@test.mx
-- **Analista:** analista@test.mx
+- **Administrador General:** `admin@abastored.mx` — contraseña: `Admin123!`
+- **Comerciante Informal:** `comerciante@test.mx` — contraseña: `Password123!`
+- **Minorista Formal:** `minorista@test.mx` — contraseña: `Password123!`
+- **Analista de Mercado:** `analista@test.mx` — contraseña: `Password123!`
+- **Proveedor:** `proveedor@test.mx` — contraseña: `Password123!`
+- **Coordinador Municipal:** `coordinador@test.mx` — contraseña: `Password123!`
+- **Auditor:** `auditor@test.mx` — contraseña: `Password123!`
 
 ## Project Structure
 
