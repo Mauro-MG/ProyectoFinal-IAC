@@ -22,7 +22,7 @@ class Usuario(UserMixin, db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     rol = db.relationship('Rol', back_populates='usuarios')
-    comercios = db.relationship('Comercio', back_populates='usuario')
+    comercios = db.relationship('Comercio',foreign_keys='Comercio.usuario_id',back_populates='usuario')
     proveedores = db.relationship('Proveedor', back_populates='usuario')
 
     def set_password(self, password):
