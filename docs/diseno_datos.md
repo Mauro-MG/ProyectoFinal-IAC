@@ -98,19 +98,17 @@ erDiagram
         string entidad_id
     }
 ```
-```markdown
 El modelo conceptual se encuentra alineado con el modelo físico inicial de PostgreSQL. Los identificadores de usuarios, comercios, proveedores y pedidos utilizan UUID, mientras que los catálogos utilizan identificadores enteros.
 
 En el PMF, PostgreSQL conserva las referencias maestras utilizadas por los procesos transaccionales. MongoDB complementará posteriormente el modelo con atributos variables, snapshots, telemetría y registros generados por microservicios, pero no sustituye las llaves foráneas del flujo actual.
-```
 
 ### 2. Diseño de PostgreSQL (Modelo Lógico Espacial y Transaccional)
 
 El motor principal será PostgreSQL utilizando la extensión **PostGIS**.
-*   `comercios` (id [PK], usuario_id [FK], nombre, tipo_comercio, latitud, longitud, geom [Geometry(Point, 4326)], creado_en). El campo `geom` se indexará usando GIST para búsquedas rápidas por radio.
-*   `zonas_tianguis` (id [PK], nombre, municipio, poligono [Geometry(Polygon, 4326)], dias_operacion).
-*   `pedidos` (id [PK], comercio_comprador_id, mayorista_vendedor_id, estado, total, fecha_creacion, fecha_entrega).
-*   `pedidos_detalle` (id [PK], pedido_id [FK], producto_mongo_id [String], cantidad, precio_unitario).
+*   `comercios` (id [PK], usuario_id [FK], nombre, tipo_comercio, latitud, longitud, geom [Geometry(Point, 4326)], created_at). El campo `geom` se indexará usando GIST para búsquedas rápidas por radio.
+*   `zonas_municipales` (id [PK], nombre, municipio, poligono [Geometry(Polygon, 4326)], dias_operacion).
+*   `pedidos_abasto` (id [PK], comercio_comprador_id, mayorista_vendedor_id, estado, total, fecha_creacion, fecha_entrega).
+*   `detalle_pedidos` (id [PK], pedido_id [FK], producto_id [FK], cantidad, precio_unitario).
 
 ### 3. Diseño en MongoDB (Documentos y Catálogos Flexibles)
 
@@ -175,7 +173,7 @@ Se utiliza Redis para mejorar el rendimiento, evitar recalcular promedios en cad
     *   `TTL`: 4 horas. (Se invalida cuando un MS detecta un cambio drástico o expira para recalcularse mediante un Job en background).
 2.  **Tokens Revocados o Sesiones JWT (Set)**:
     *   `Key`: `jwt:blacklist:{token_hash}`
-    *   `TTL`: Mismo tiempo restante de vida del token (ej. 7 días). Evita accesos con tokens válidos temporalmente pero robados.
+    *   TTL: Mismo tiempo restante de vida del JWT. En el PMF, el token tiene una vigencia máxima de 8 horas; la futura aplicación móvil podrá utilizar una vigencia configurable. 
 3.  **Límite de Tasa (Rate Limiting)**:
     *   `Key`: `rate_limit:ip:{ip_address}:ruta:{endpoint}`
     *   `Value`: Contador entero (INCR). TTL: 60 segundos.
