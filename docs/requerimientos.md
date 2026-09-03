@@ -14,7 +14,7 @@
 #### Microservicios (Backend)
 | ID | Descripción | Prioridad | Criterios de Aceptación |
 | :--- | :--- | :--- | :--- |
-| **RF-004** | El MS de Precios debe calcular la variación porcentual de precios e invocar al MS de Alertas si excede el umbral configurado. | Alta | Si precio N - Precio N-1 > 15%, se genera evento de alerta en el bus de mensajes. |
+| **RF-004** | El sistema deberá validar los precios registrados comparándolos con el promedio regional de los últimos 7 días. Posteriormente, el MS de Alertas procesará los registros atípicos. | Alta | Si el precio supera el 150% o es menor al 10% del promedio regional, deberá guardarse con el estado. |
 | **RF-005** | El MS de Recomendaciones debe sugerir a los comerciantes un surtido basado en faltantes (brechas) de su zona. | Media | Retorna lista de hasta 5 productos con mayor demanda no satisfecha en un radio de 2km. |
 | **RF-006** | El MS de Acceso Alimentario debe calcular un índice basado en densidad poblacional vs densidad de comercios de productos frescos. | Baja | Retorna un valor numérico de 0 a 100 clasificado por color en el mapa. |
 
