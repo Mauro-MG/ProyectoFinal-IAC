@@ -45,3 +45,11 @@
 | **RNF-004** | **Autenticación**: Todo acceso a los MS (excepto endpoints públicos) debe requerir un token JWT válido. | Alta | Endpoints retornan HTTP 401 si el token expira o es inválido. |
 | **RNF-005** | **Latencia Geográfica**: Las consultas de análisis espacial no deben tardar más de 3 segundos en responder. | Alta | Uso de índices espaciales (PostGIS o GeoJSON en MongoDB) optimizados. |
 | **RNF-006** | **Privacidad**: Los datos personales de comerciantes informales deben estar cifrados en reposo en la BD (AES-256). | Alta | Nombres y RFCs no son legibles directamente desde el motor de BD sin la llave. |
+
+#### Monitoreo
+
+| ID | Descripción | Prioridad | Criterios de Aceptación |
+| :--- | :--- | :--- | :--- |
+| **RNF-007** | **Monitoreo de disponibilidad:** la aplicación web y los futuros microservicios deberán exponer un endpoint de salud. | Alta | Cada componente responde mediante `/health` e informa su nombre y estado actual. |
+| **RNF-008** | **Registro centralizado:** los errores y eventos técnicos deberán registrarse indicando fecha, nivel, servicio y un identificador de correlación. | Media | Los eventos de una misma solicitud pueden localizarse utilizando el campo `correlation_id`. |
+| **RNF-009** | **Métricas operativas:** el sistema deberá medir latencia, cantidad de solicitudes y tasa de errores por componente. | Media | El futuro tablero de monitoreo muestra latencia, solicitudes por minuto y errores HTTP 5xx. |
