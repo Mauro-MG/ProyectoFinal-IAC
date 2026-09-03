@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+    <h2>Registrar Precio</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.comercio_id.label }}
+            {{ form.comercio_id(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.producto_id.label }}
+            {{ form.producto_id(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.precio.label }}
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                {{ form.precio(class="form-control", step="0.01") }}
+            </div>
+        </div>
+        <div class="form-actions mt-3">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('precios.comparacion') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

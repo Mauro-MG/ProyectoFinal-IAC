@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card detail-card">
+    <div class="card-body">
+        <h2>Detalle Evento #{{ evento.id }}</h2>
+        <p><strong>Fecha:</strong> {{ evento.created_at }}</p>
+        <p><strong>Usuario ID:</strong> {{ evento.usuario_id }}</p>
+        <p><strong>Tipo:</strong> {{ evento.tipo_evento }}</p>
+        <p><strong>Entidad:</strong> {{ evento.entidad }} (ID: {{ evento.entidad_id }})</p>
+        <p><strong>Descripción:</strong> {{ evento.descripcion }}</p>
+        
+        {% if evento.datos_anteriores %}
+        <h4 class="mt-4">Datos Anteriores</h4>
+        <pre class="bg-light p-3 border border-radius"><code class="json">{{ evento.datos_anteriores | tojson(indent=2) }}</code></pre>
+        {% endif %}
+        
+        {% if evento.datos_nuevos %}
+        <h4 class="mt-4">Datos Nuevos</h4>
+        <pre class="bg-light p-3 border border-radius"><code class="json">{{ evento.datos_nuevos | tojson(indent=2) }}</code></pre>
+        {% endif %}
+        
+        <div class="mt-4">
+            <a href="{{ url_for('auditoria.lista') }}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

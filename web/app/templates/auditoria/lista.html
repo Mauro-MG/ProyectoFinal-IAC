@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+    <h1>Registro de Auditoría</h1>
+</div>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Evento</th>
+                <th>Entidad</th>
+                <th>Descripción</th>
+                <th>IP</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for evento in eventos.items %}
+            <tr>
+                <td>{{ evento.id }}</td>
+                <td>{{ evento.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                <td><span class="badge badge-info">{{ evento.tipo_evento }}</span></td>
+                <td>{{ evento.entidad }}</td>
+                <td>{{ evento.descripcion }}</td>
+                <td>{{ evento.ip_address }}</td>
+                <td>
+                    <a href="{{ url_for('auditoria.detalle', id=evento.id) }}" class="btn btn-sm btn-secondary">Detalle</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

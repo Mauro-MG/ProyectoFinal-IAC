@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header d-flex justify-between align-center">
+    <h1>Comercios</h1>
+    <a href="{{ url_for('comercios.nuevo') }}" class="btn btn-primary">Nuevo Comercio</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Municipio</th>
+                <th>Estado Registro</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for comercio in comercios.items %}
+            <tr>
+                <td>{{ comercio.nombre_comercio }}</td>
+                <td>
+                    <span class="badge badge-{{ 'primary' if comercio.tipo_comercio.startswith('FORMAL') else 'warning' }}">
+                        {{ comercio.tipo_comercio }}
+                    </span>
+                </td>
+                <td>{{ comercio.municipio }}</td>
+                <td>
+                    <span class="badge badge-{{ 'success' if comercio.estado_registro == 'VERIFICADO' else 'secondary' }}">
+                        {{ comercio.estado_registro }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{{ url_for('comercios.detalle', id=comercio.id) }}" class="btn btn-sm btn-info">Ver</a>
+                    <a href="{{ url_for('comercios.editar', id=comercio.id) }}" class="btn btn-sm btn-secondary">Editar</a>
+                    <form method="POST" action="{{ url_for('comercios.eliminar', id=comercio.id) }}" class="inline-form">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center">No se encontraron comercios.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if comercios.pages > 1 %}
+<div class="pagination">
+    {% if comercios.has_prev %}
+        <a href="{{ url_for('comercios.lista', page=comercios.prev_num) }}">&laquo; Anterior</a>
+    {% endif %}
+    <span>Página {{ comercios.page }} de {{ comercios.pages }}</span>
+    {% if comercios.has_next %}
+        <a href="{{ url_for('comercios.lista', page=comercios.next_num) }}">Siguiente &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

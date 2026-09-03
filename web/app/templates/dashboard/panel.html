@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Control - AbastoRed{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Bienvenido, {{ current_user.nombre }}</h1>
+    <p>Rol: <span class="badge badge-info">{{ current_user.rol.nombre }}</span></p>
+</div>
+
+<div class="stats-grid">
+    {% if 'usuarios' in stats %}
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.usuarios }}</div>
+        <div class="stat-label">Usuarios Totales</div>
+    </div>
+    {% endif %}
+    {% if 'comercios' in stats %}
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.comercios }}</div>
+        <div class="stat-label">Comercios Registrados</div>
+    </div>
+    {% endif %}
+    {% if 'productos' in stats %}
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.productos }}</div>
+        <div class="stat-label">Productos Maestros</div>
+    </div>
+    {% endif %}
+    {% if 'precios' in stats %}
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.precios }}</div>
+        <div class="stat-label">Precios Registrados</div>
+    </div>
+    {% endif %}
+    {% if 'mis_comercios' in stats %}
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.mis_comercios }}</div>
+        <div class="stat-label">Mis Comercios</div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="quick-actions mt-4">
+    <h3>Acciones Rápidas</h3>
+    <div class="actions-grid">
+        {% if current_user.rol.nombre in ['Administrador General', 'Coordinador Municipal', 'Comerciante Informal', 'Minorista Formal', 'Proveedor'] %}
+        <a href="{{ url_for('comercios.nuevo') }}" class="btn btn-outline-primary">Registrar Comercio</a>
+        {% endif %}
+        {% if current_user.rol.nombre in ['Administrador General', 'Comerciante Informal', 'Minorista Formal'] %}
+        <a href="{{ url_for('precios.registrar') }}" class="btn btn-outline-secondary">Registrar Precio</a>
+        {% endif %}
+        {% if current_user.rol.nombre == 'Analista de Mercado' %}
+        <a href="{{ url_for('precios.comparacion') }}" class="btn btn-outline-primary">Ver Comparación</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

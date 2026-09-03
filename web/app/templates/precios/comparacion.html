@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header d-flex justify-between align-center">
+    <h1>Comparación de Precios</h1>
+    {% if current_user.rol.nombre in ['Administrador General', 'Comerciante Informal', 'Minorista Formal'] %}
+    <a href="{{ url_for('precios.registrar') }}" class="btn btn-primary">Registrar Precio</a>
+    {% endif %}
+</div>
+
+<form method="GET" class="filters-bar">
+    <div class="form-group">
+        <label for="producto_id">Producto</label>
+        <select id="producto_id" name="producto_id" class="form-control">
+            <option value="">Todos los productos</option>
+            {% for producto in productos %}
+            <option value="{{ producto.id }}" {% if producto_id == producto.id %}selected{% endif %}>
+                {{ producto.nombre }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="{{ url_for('precios.comparacion') }}" class="btn btn-secondary">Limpiar</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Zona</th>
+                <th>Sector</th>
+                <th>Promedio</th>
+                <th>Mínimo</th>
+                <th>Máximo</th>
+                <th>Muestras</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fila in resumen %}
+            <tr>
+                <td>{{ fila.producto }}</td>
+                <td>{{ fila.zona or 'Sin zona' }}</td>
+                <td>
+                    <span class="badge badge-{{ 'primary' if fila.sector == 'Formal' else 'warning' if fila.sector == 'Informal' else 'info' }}">
+                        {{ fila.sector }}
+                    </span>
+                </td>
+                <td>${{ '%.2f'|format(fila.promedio) }}</td>
+                <td>${{ '%.2f'|format(fila.minimo) }}</td>
+                <td>${{ '%.2f'|format(fila.maximo) }}</td>
+                <td>{{ fila.muestras }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center">No hay precios registrados para los filtros seleccionados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h3>Proceso de negocio demostrado</h3>
+        <p>Los precios capturados se consultan desde PostgreSQL, se agrupan por zona y sector, y cada registro queda en la bitácora de auditoría.</p>
+    </div>
+</div>
+{% endblock %}

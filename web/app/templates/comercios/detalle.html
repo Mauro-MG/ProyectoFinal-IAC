@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card detail-card">
+    <div class="card-body">
+        <h2>{{ comercio.nombre_comercio }}</h2>
+        <span class="badge badge-{{ 'primary' if comercio.tipo_comercio.startswith('FORMAL') else 'warning' }}">
+            {{ comercio.tipo_comercio }}
+        </span>
+        <hr>
+        <p><strong>Dirección:</strong> {{ comercio.direccion }}, {{ comercio.municipio }}, {{ comercio.estado }}</p>
+        <p><strong>Estado del Registro:</strong> {{ comercio.estado_registro }}</p>
+        <p><strong>Propietario:</strong> {{ comercio.usuario.nombre }} {{ comercio.usuario.apellido_paterno }}</p>
+        <p><strong>Fecha de Creación:</strong> {{ comercio.created_at.strftime('%d/%m/%Y') }}</p>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('comercios.editar', id=comercio.id) }}" class="btn btn-primary">Editar</a>
+            <a href="{{ url_for('comercios.lista') }}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card detail-card">
+    <div class="card-body">
+        <h2>{{ producto.nombre }}</h2>
+        {% if producto.es_canasta_basica %}
+        <span class="badge badge-success mb-2 d-inline-block">Canasta Básica</span>
+        {% endif %}
+        <p><strong>Descripción:</strong> {{ producto.descripcion or 'Sin descripción' }}</p>
+        <p><strong>Unidad de Medida:</strong> {{ producto.unidad_medida }}</p>
+        
+        <div class="mt-4">
+            {% if current_user.rol.nombre == 'Administrador General' %}
+            <a href="{{ url_for('productos.editar', id=producto.id) }}" class="btn btn-primary">Editar</a>
+            {% endif %}
+            <a href="{{ url_for('productos.lista') }}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

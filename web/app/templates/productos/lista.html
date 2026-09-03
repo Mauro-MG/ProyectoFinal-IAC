@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header d-flex justify-between align-center">
+    <h1>Productos Maestros</h1>
+    {% if current_user.rol.nombre == 'Administrador General' %}
+    <a href="{{ url_for('productos.nuevo') }}" class="btn btn-primary">Nuevo Producto</a>
+    {% endif %}
+</div>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Unidad</th>
+                <th>Canasta Básica</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos.items %}
+            <tr>
+                <td>{{ producto.id }}</td>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.unidad_medida }}</td>
+                <td>
+                    {% if producto.es_canasta_basica %}
+                    <span class="badge badge-success">Sí</span>
+                    {% else %}
+                    <span class="badge badge-secondary">No</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('productos.detalle', id=producto.id) }}" class="btn btn-sm btn-info">Ver</a>
+                    {% if current_user.rol.nombre == 'Administrador General' %}
+                    <a href="{{ url_for('productos.editar', id=producto.id) }}" class="btn btn-sm btn-secondary">Editar</a>
+                    <form method="POST" action="{{ url_for('productos.eliminar', id=producto.id) }}" class="inline-form">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center">No se encontraron productos.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if productos.pages > 1 %}
+<div class="pagination">
+    {% if productos.has_prev %}
+        <a href="{{ url_for('productos.lista', page=productos.prev_num) }}">&laquo; Anterior</a>
+    {% endif %}
+    <span>Página {{ productos.page }} de {{ productos.pages }}</span>
+    {% if productos.has_next %}
+        <a href="{{ url_for('productos.lista', page=productos.next_num) }}">Siguiente &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Comercios Registrados - AbastoRed{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Comercios Verificados</h1>
+    <p>Encuentra comercios formales e informales en tu zona.</p>
+</div>
+
+<div class="cards-grid">
+    {% for comercio in comercios %}
+    <div class="card comercio-card">
+        <div class="card-body">
+            <h3 class="card-title">{{ comercio.nombre_comercio }}</h3>
+            <span class="badge badge-{{ 'primary' if comercio.tipo_comercio.startswith('FORMAL') else 'warning' }}">
+                {{ comercio.tipo_comercio }}
+            </span>
+            <p class="card-text">{{ comercio.direccion }}, {{ comercio.municipio }}</p>
+        </div>
+    </div>
+    {% else %}
+    <p>No hay comercios verificados por el momento.</p>
+    {% endfor %}
+</div>
+{% endblock %}

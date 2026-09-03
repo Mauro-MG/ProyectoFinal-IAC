@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+    <h2>{{ title }}</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.nombre_comercio.label }}
+            {{ form.nombre_comercio(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.tipo_comercio.label }}
+            {{ form.tipo_comercio(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.direccion.label }}
+            {{ form.direccion(class="form-control") }}
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                {{ form.municipio.label }}
+                {{ form.municipio(class="form-control") }}
+            </div>
+            <div class="form-group col-md-6">
+                {{ form.estado.label }}
+                {{ form.estado(class="form-control") }}
+            </div>
+        </div>
+        <div class="form-actions mt-3">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('comercios.lista') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

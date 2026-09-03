@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center mt-5">
+    <h1>500</h1>
+    <h2>Error del Servidor</h2>
+    <p>Ha ocurrido un error inesperado. Por favor, intenta más tarde.</p>
+    <a href="{{ url_for('public.index') }}" class="btn btn-primary mt-3">Volver al inicio</a>
+</div>
+{% endblock %}

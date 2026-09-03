@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>AbastoRed</h1>
+        <h2>Conectando el comercio local</h2>
+        <p>Plataforma híbrida para el comercio formal e informal. Compara precios, gestiona pedidos y optimiza tus ventas.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('auth.registro') }}" class="btn btn-primary btn-lg">Regístrate ahora</a>
+            <a href="{{ url_for('public.comercios_publico') }}" class="btn btn-secondary btn-lg">Ver comercios</a>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="feature-card">
+        <h3>Registro Simple</h3>
+        <p>Da de alta tu comercio de manera rápida y segura.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Comparación de Precios</h3>
+        <p>Conoce los precios del mercado en tiempo real.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Pedidos de Abasto</h3>
+        <p>Conecta directamente con proveedores para surtir tu negocio.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Análisis de Cobertura</h3>
+        <p>Descubre nuevas oportunidades de mercado en tu zona.</p>
+    </div>
+</section>
+
+<section class="how-it-works">
+    <h2>¿Cómo funciona?</h2>
+    <div class="steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <h4>Crea tu cuenta</h4>
+            <p>Regístrate en menos de 2 minutos.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <h4>Registra tus productos</h4>
+            <p>Añade tu catálogo y actualiza tus precios.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <h4>Vende y compra</h4>
+            <p>Comienza a operar en la red.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
