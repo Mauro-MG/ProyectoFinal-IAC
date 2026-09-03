@@ -2,6 +2,14 @@
 
 ## Proyecto 14: Plataforma Híbrida para Comercio Formal e Informal
 
+### Enfoque de adopción de nube
+
+Durante el primer parcial, AbastoRed se clasifica como una solución **cloud-enabled**. El producto mínimo funcional está construido como una aplicación web Flask modular que puede ejecutarse localmente mediante Docker y desplegarse posteriormente en Google Compute Engine.
+
+La solución utiliza variables de entorno, persistencia separada y configuración reproducible. Sin embargo, todavía conserva una arquitectura centralizada y no depende de orquestación, escalamiento automático ni microservicios independientes.
+
+La arquitectura objetivo evolucionará hacia un enfoque **cloud-native** mediante la separación de microservicios, el uso de servicios administrados como Cloud SQL, Memorystore y Cloud Storage, monitoreo centralizado y, cuando el volumen lo justifique, orquestación mediante GKE.
+
 ### 1. Diagramas C4
 
 #### Nivel 1: Diagrama de Contexto
@@ -28,6 +36,8 @@ C4Context
 ```
 
 #### Nivel 2: Diagrama de Contenedores
+**Alcance:** Este diagrama representa la arquitectura objetivo. Durante el primer parcial solamente se encuentra implementada la aplicación web modular. La aplicación móvil, la aplicación de escritorio, el API Gateway y los microservicios corresponden a etapas posteriores.
+
 ```mermaid
 C4Container
     title Diagrama de Contenedores
@@ -90,6 +100,56 @@ sequenceDiagram
     MS_Precios-->>API: 200 OK (Aceptados y Rechazados)
     API-->>App: Confirma Sincronización
     App->>LocalDB: Marca registros como "Sincronizados"
+```
+#### Flujo Actual: Registro y Validación de un Precio
+
+```mermaid
+sequenceDiagram
+    participant C as Comerciante
+    participant Web as Aplicación Web
+    participant PG as PostgreSQL
+    participant Redis as Redis
+    participant Audit as Auditoría
+
+    C->>Web: Selecciona comercio, producto y precio
+    Web->>PG: Consulta promedio regional de los últimos 7 días
+    PG-->>Web: Devuelve promedio y último precio
+    Web->>Web: Evalúa la regla RN-001
+
+    alt Precio dentro del umbral
+        Web->>PG: Guarda precio como VALIDADO
+    else Precio fuera del umbral
+        Web->>PG: Guarda precio como PENDIENTE_VALIDACION
+    end
+
+    Web->>Redis: Actualiza la caché regional
+    Web->>Audit: Registra el evento de creación
+    Web-->>C: Muestra confirmación y estado
+```
+
+#### Flujo Futuro: Creación de Pedido a Mayorista
+
+```mermaid
+sequenceDiagram
+    participant M as Minorista
+    participant App as Aplicación Móvil
+    participant Gateway as API Gateway
+    participant Pedidos as MS de Pedidos
+    participant PG as PostgreSQL
+    participant Notificaciones as MS de Notificaciones
+
+    M->>App: Confirma productos del carrito
+    App->>Gateway: Envía pedido con JWT
+    Gateway->>Pedidos: Valida y enruta la solicitud
+    Pedidos->>PG: Consulta monto mínimo del proveedor
+
+    alt El subtotal cumple el monto mínimo
+        Pedidos->>PG: Crea pedido y detalle
+        Pedidos->>Notificaciones: Publica evento de pedido creado
+        Pedidos-->>App: Confirma creación del pedido
+    else El subtotal es insuficiente
+        Pedidos-->>App: Informa que no se alcanzó el monto mínimo
+    end
 ```
 
 ### 3. Justificación Tecnológica
@@ -251,5 +311,8 @@ flowchart TB
 *   **MongoDB:** lotes de sincronización, snapshots analíticos, telemetría geográfica, errores y notificaciones flexibles.
 *   **Redis:** blacklist de JWT, caché de promedios, contadores de rate limit, bloqueos temporales y datos efímeros.
 *   **Buckets:** imágenes de productos/comercios, comprobantes y exportaciones.
+*   **Contenedores:** web, PostgreSQL/PostGIS, MongoDB, Redis y futuros microservicios.
+*   **Compute Engine:** ejecución inicial de contenedores web/API; el clúster queda reservado para analítica geoespacial o sincronizaciones masivas cuando el volumen lo justifique.
+*   **Monitoreo futuro:** la aplicación web y los futuros microservicios expondrán endpoints `/health`. Los logs incluirán un `correlation_id` y se centralizarán mediante Google Cloud Logging o una herramienta equivalente. Google Cloud Monitoring recopilará métricas de disponibilidad, latencia, solicitudes y errores.
 *   **Contenedores:** web, PostgreSQL/PostGIS, MongoDB, Redis y futuros microservicios.
 *   **Compute Engine:** ejecución inicial de contenedores web/API; el clúster queda reservado para analítica geoespacial o sincronizaciones masivas cuando el volumen lo justifique.
