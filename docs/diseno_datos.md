@@ -6,47 +6,102 @@
 
 ```mermaid
 erDiagram
+    ROL ||--o{ USUARIO : asigna
     USUARIO ||--o{ COMERCIO : administra
-    COMERCIO ||--o{ PRECIO : reporta
-    COMERCIO ||--o{ PEDIDO : realiza
-    MAYORISTA ||--o{ PEDIDO : recibe
-    MAYORISTA {
+    USUARIO ||--o| PROVEEDOR : representa
+    ZONA_MUNICIPAL ||--o{ COMERCIO : contiene
+    CATEGORIA ||--o{ PRODUCTO_MAESTRO : clasifica
+    COMERCIO ||--o{ PRECIO_COMERCIO : reporta
+    PRODUCTO_MAESTRO ||--o{ PRECIO_COMERCIO : identifica
+    COMERCIO ||--o{ PEDIDO_ABASTO : realiza
+    PROVEEDOR ||--o{ PEDIDO_ABASTO : recibe
+    PEDIDO_ABASTO ||--|{ DETALLE_PEDIDO : contiene
+    PRODUCTO_MAESTRO ||--o{ DETALLE_PEDIDO : incluye
+    USUARIO ||--o{ AUDITORIA_EVENTO : genera
+
+    ROL {
         int id PK
-        string razon_social
+        string nombre UK
+        json permisos
     }
+
     USUARIO {
+        uuid id PK
+        string email UK
+        string nombre
+        int rol_id FK
+    }
+
+    ZONA_MUNICIPAL {
         int id PK
         string nombre
-        string email
-        string rol_id FK
+        string municipio
+        geometry poligono
     }
+
     COMERCIO {
-        int id PK
-        string nombre
-        string tipo "Formal/Informal"
-        geometry ubicacion "Punto GPS"
+        uuid id PK
+        uuid usuario_id FK
         int zona_id FK
+        string nombre_comercio
+        string tipo_comercio
+        geometry geom
     }
-    ZONA {
+
+    CATEGORIA {
         int id PK
+        string nombre UK
+    }
+
+    PRODUCTO_MAESTRO {
+        int id PK
+        int categoria_id FK
         string nombre
-        geometry poligono "GeoJSON/PostGIS"
+        string unidad_medida
     }
-    PRECIO {
-        int id PK
-        int comercio_id FK
-        string producto_ref "Ref a MongoDB"
-        float valor
-        datetime fecha_reporte
+
+    PRECIO_COMERCIO {
+        bigint id PK
+        uuid comercio_id FK
+        int producto_id FK
+        decimal precio
+        datetime fecha_registro
     }
-    PEDIDO {
-        int id PK
-        int comercio_id FK
-        int mayorista_id FK
-        float total
+
+    PROVEEDOR {
+        uuid id PK
+        uuid usuario_id FK
+        string nombre_empresa
+    }
+
+    PEDIDO_ABASTO {
+        uuid id PK
+        uuid comercio_id FK
+        uuid proveedor_id FK
+        decimal total
         string estado
     }
-    ZONA ||--o{ COMERCIO : contiene
+
+    DETALLE_PEDIDO {
+        bigint id PK
+        uuid pedido_id FK
+        int producto_id FK
+        decimal cantidad
+        decimal precio_unitario
+    }
+
+    AUDITORIA_EVENTO {
+        bigint id PK
+        uuid usuario_id FK
+        string tipo_evento
+        string entidad
+        string entidad_id
+    }
+```
+```markdown
+El modelo conceptual se encuentra alineado con el modelo físico inicial de PostgreSQL. Los identificadores de usuarios, comercios, proveedores y pedidos utilizan UUID, mientras que los catálogos utilizan identificadores enteros.
+
+En el PMF, PostgreSQL conserva las referencias maestras utilizadas por los procesos transaccionales. MongoDB complementará posteriormente el modelo con atributos variables, snapshots, telemetría y registros generados por microservicios, pero no sustituye las llaves foráneas del flujo actual.
 ```
 
 ### 2. Diseño de PostgreSQL (Modelo Lógico Espacial y Transaccional)
@@ -94,6 +149,21 @@ Se usa un enfoque mixto: embeber atributos específicos, referenciar categorías
   "flag_anomalia": true
 }
 ```
+#### Estructuras propuestas para las demás colecciones
+
+| Colección | Campos principales | Documentos embebidos y referencias |
+| :--- | :--- | :--- |
+| `sync_batches` | `schema_version`, `batch_id`, `user_id`, `status`, `created_at`, `processed_at` | Embebe un resumen de registros aceptados y rechazados. `user_id` referencia al UUID de PostgreSQL. |
+| `price_snapshots` | `schema_version`, `product_id`, `zone_id`, `average_price`, `min_price`, `max_price`, `sample_size`, `timestamp` | Documento agregado e inmutable. `product_id` y `zone_id` referencian catálogos de PostgreSQL. |
+| `geo_telemetry` | `schema_version`, `device_id`, `user_id`, `location`, `timestamp` | `location` se almacena como documento GeoJSON embebido. |
+| `error_logs` | `schema_version`, `service`, `level`, `message`, `correlation_id`, `timestamp` | Embebe contexto técnico sanitizado; no almacena contraseñas ni tokens. |
+| `notifications` | `schema_version`, `user_id`, `type`, `payload`, `read`, `created_at` | `payload` es un documento embebido y `user_id` referencia al usuario de PostgreSQL. |
+
+#### Estrategia de integración con PostgreSQL
+
+MongoDB no reemplazará las transacciones de PostgreSQL. Los campos como `user_id`, `product_id` y `zone_id` serán referencias lógicas hacia PostgreSQL. La aplicación validará la existencia de esas entidades antes de crear documentos relacionados.
+
+Los documentos incluirán `schema_version` para permitir cambios futuros de estructura. Los snapshots, logs y lotes de sincronización se manejarán principalmente como documentos append-only.
 
 ### 4. Diseño de Caché en Redis
 
@@ -168,6 +238,19 @@ Claves planeadas:
 *   `rate_limit:ip:{ip}:ruta:{endpoint}` para limitar abuso.
 *   `lock:sync_batch:{batch_id}` para evitar doble sincronización.
 *   `contador:alertas:zona:{id_zona}` para métricas rápidas.
+
+#### Estructuras y tiempos de expiración
+
+| Clave | Tipo | Propósito | TTL |
+| :--- | :--- | :--- | :--- |
+| `precio_promedio:zona:{id_zona}:producto:{id_producto}` | String | Caché del precio promedio regional. | 4 horas |
+| `jwt:blacklist:{token_hash}` | String | Lista de tokens revocados. | Tiempo restante de vigencia del JWT |
+| `session:web:{session_id}` | Hash | Información temporal de una sesión web. | 8 horas de inactividad |
+| `rate_limit:ip:{ip}:ruta:{endpoint}` | String/contador | Limitar solicitudes repetidas. | 60 segundos |
+| `contador:alertas:zona:{id_zona}` | String/contador | Contabilizar alertas por zona. | Según periodo de medición |
+| `lock:sync_batch:{batch_id}` | String | Evitar que un lote sea procesado dos veces. | 5 minutos |
+| `carrito:{usuario_id}` | Hash | Productos y cantidades de un pedido aún no confirmado. | 24 horas desde la última modificación |
+Durante el primer parcial se utilizan Redis para la caché de precios y la revocación básica de JWT. Las sesiones distribuidas, contadores, bloqueos y carritos temporales corresponden a la integración futura con microservicios y aplicaciones móviles.
 
 ### 8. Auditoría y Privacidad
 
