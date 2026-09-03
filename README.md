@@ -105,8 +105,9 @@ abasto_red/
 └── web/                   # Aplicación Flask
     ├── Dockerfile         # Dockerfile de la aplicación
     ├── requirements.txt   # Dependencias de Python
-    └── ...                # Código fuente 
+    └── ...                # Código fuente (wsgi.py, modelos, rutas y plantillas)
 ```
+El archivo `.env` contiene la configuración local y no debe publicarse. Únicamente se conserva `.env.example` como referencia.
 
 ## Documentación
 
