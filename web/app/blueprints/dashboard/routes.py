@@ -17,7 +17,7 @@ def panel():
         stats['usuarios'] = Usuario.query.count()
         stats['comercios'] = Comercio.query.count()
         stats['productos'] = ProductoMaestro.query.count()
-    elif rol in ['Comerciante Informal', 'Minorista Formal']:
+    elif rol in ['Comerciante Informal', 'Minorista Formal', 'Proveedor']:
         stats['mis_comercios'] = Comercio.query.filter_by(usuario_id=current_user.id).count()
     elif rol == 'Analista de Mercado':
         stats['comercios'] = Comercio.query.count()
