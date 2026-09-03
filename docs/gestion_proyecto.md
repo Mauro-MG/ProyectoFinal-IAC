@@ -8,7 +8,6 @@ La estrategia propuesta está documentada en el `README.md`:
 *   `feature/*`: funcionalidades.
 *   `hotfix/*`: correcciones urgentes.
 
-La inicialización y publicación del repositorio Git queda pendiente de ejecución por el equipo.
 
 ## Tablero de tareas
 
