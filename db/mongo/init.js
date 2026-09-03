@@ -68,6 +68,7 @@ db.catalogo_productos.insertMany([
 
 db.price_snapshots.insertMany([
   {
+    schema_version: 1,
     product_id: 1, // Tortilla de maíz
     zone_id: 1,
     average_price: 21.00,
@@ -77,6 +78,7 @@ db.price_snapshots.insertMany([
     timestamp: new Date()
   },
   {
+    schema_version: 1,
     product_id: 10, // Tomate saladette
     zone_id: 2,
     average_price: 24.25,
@@ -88,6 +90,7 @@ db.price_snapshots.insertMany([
 ]);
 
 db.error_logs.insertOne({
+  schema_version: 1,
   level: "INFO",
   message: "System initialized",
   service: "database-init",
