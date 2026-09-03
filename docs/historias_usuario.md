@@ -73,11 +73,15 @@
 
 ### Épica 4: Auditoría y Alertas
 
-**HU-008: Alerta de Incremento Abrupto de Precio**
-*   **Como** Administrador General,
-*   **Quiero** recibir una alerta si un producto básico sube más de un 20% en menos de una semana en una zona,
-*   **Para** investigar posibles casos de especulación.
-*   **Criterios de Aceptación:**
-    *   *Dado* que un usuario reporta un precio,
-    *   *Cuando* el MS de Precios detecta que supera el umbral estadístico,
-    *   *Entonces* se genera un evento de Alerta y se envía un correo a los Administradores.
+**HU-008: Detección de Precio Atípico**
+
+- **Como** Administrador General,
+- **Quiero** identificar los precios que superen el 150% o sean menores al 10% del promedio regional de los últimos 7 días,
+- **Para** revisar posibles errores de captura o variaciones anormales.
+
+**Criterios de aceptación:**
+
+- **Dado** que un usuario registra un precio,
+- **Cuando** el sistema detecta que se encuentra fuera del umbral establecido,
+- **Entonces** el precio se guarda como `PENDIENTE_VALIDACION` y queda disponible para revisión humana.
+- **Y** en una etapa posterior, el MS de Alertas notificará a los administradores.
