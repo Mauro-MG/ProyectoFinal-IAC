@@ -2,6 +2,26 @@
 
 Plataforma integral para la gestión y conexión entre comerciantes formales, informales y proveedores, facilitando el abasto, monitoreo de precios y logística.
 
+## Alcance del Primer Parcial
+
+Durante el primer parcial, AbastoRed se presenta como un producto mínimo funcional **cloud-enabled**. La versión actual incluye:
+
+*   Aplicación web modular desarrollada con Flask.
+*   Página pública, registro, inicio y cierre de sesión.
+*   Autenticación mediante sesión web y JWT básico.
+*   Roles y menús por perfil.
+*   Catálogos funcionales de productos y comercios.
+*   Registro y comparación de precios.
+*   Persistencia real en PostgreSQL.
+*   Auditoría básica.
+*   Caché de precios y revocación de JWT mediante Redis.
+*   Configuración inicial de MongoDB.
+*   Ejecución local mediante Docker Compose.
+
+Los microservicios, la aplicación móvil, la aplicación de escritorio, el monitoreo centralizado y la integración funcional completa con MongoDB se encuentran analizados y diseñados para etapas posteriores.
+
+La versión actual se considera **cloud-enabled** porque puede desplegarse en infraestructura de nube mediante contenedores. La arquitectura objetivo evolucionará hacia un enfoque **cloud-native** utilizando microservicios, servicios administrados, monitoreo centralizado y posible orquestación mediante GKE.
+
 ## Tech Stack
 
 - **Backend:** Python 3.11, Flask, Gunicorn
@@ -82,8 +102,26 @@ abasto_red/
 └── web/                   # Aplicación Flask
     ├── Dockerfile         # Dockerfile de la aplicación
     ├── requirements.txt   # Dependencias de Python
-    └── ...                # Código fuente (app.py, modelos, rutas, etc.)
+    └── ...                # Código fuente 
 ```
+
+## Documentación
+
+La carpeta `docs/` contiene:
+
+*   `analisis_problema.md`: contexto, usuarios, procesos, riesgos y beneficios.
+*   `matriz_perfiles_permisos.md`: actores, responsabilidades y autorizaciones.
+*   `requerimientos.md`: requerimientos funcionales y no funcionales.
+*   `historias_usuario.md`: historias y criterios de aceptación.
+*   `reglas_negocio.md`: reglas aplicables a los procesos.
+*   `casos_uso.md`: casos de uso principales.
+*   `matriz_trazabilidad.md`: relación entre requerimientos, historias, reglas y pruebas.
+*   `arquitectura.md`: diagramas y distribución de responsabilidades.
+*   `diseno_datos.md`: diseño de PostgreSQL, MongoDB y Redis.
+*   `casos_prueba.md`: validaciones actuales y pruebas futuras.
+*   `gestion_proyecto.md`: ramas, tablero, incidencias y convenciones.
+*   `plan_trabajo_semestre.md`: distribución del trabajo por parcial.
+*   `prototipos_interfaces.md`: descripción de las interfaces.
 
 ## Development Guidelines
 
@@ -97,3 +135,20 @@ abasto_red/
 - `develop`: Rama de integración principal para desarrollo.
 - `feature/*`: Para nuevas funcionalidades (ej. `feature/modulo-pagos`).
 - `hotfix/*`: Para correcciones críticas en producción.
+
+## Estado de Implementación
+
+| Componente | Estado en el primer parcial |
+| :--- | :--- |
+| Aplicación web Flask | Implementado |
+| PostgreSQL/PostGIS | Implementado |
+| Redis | Implementación inicial |
+| MongoDB | Inicialización y diseño; integración funcional futura |
+| Docker Compose | Configuración inicial disponible |
+| Microservicios | Diseñados para etapas posteriores |
+| Aplicación móvil | Diseñada para etapas posteriores |
+| Aplicación de escritorio | Diseñada para etapas posteriores |
+| Compute Engine | Despliegue futuro |
+| GKE | Uso futuro si el volumen lo justifica |
+| Monitoreo centralizado | Diseñado para etapas posteriores |
+| Pruebas automatizadas | Planeadas para etapas posteriores |
