@@ -314,5 +314,3 @@ flowchart TB
 *   **Contenedores:** web, PostgreSQL/PostGIS, MongoDB, Redis y futuros microservicios.
 *   **Compute Engine:** ejecución inicial de contenedores web/API; el clúster queda reservado para analítica geoespacial o sincronizaciones masivas cuando el volumen lo justifique.
 *   **Monitoreo futuro:** la aplicación web y los futuros microservicios expondrán endpoints `/health`. Los logs incluirán un `correlation_id` y se centralizarán mediante Google Cloud Logging o una herramienta equivalente. Google Cloud Monitoring recopilará métricas de disponibilidad, latencia, solicitudes y errores.
-*   **Contenedores:** web, PostgreSQL/PostGIS, MongoDB, Redis y futuros microservicios.
-*   **Compute Engine:** ejecución inicial de contenedores web/API; el clúster queda reservado para analítica geoespacial o sincronizaciones masivas cuando el volumen lo justifique.
