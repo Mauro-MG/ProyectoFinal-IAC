@@ -20,8 +20,8 @@ Estados mínimos del tablero:
 
 ### Tablero inicial
 
-| ID | Tarea | Estado | Prioridad | Responsable |
-| :--- | :--- | :--- | :--- | :--- |
+| ID | Tarea | Estado | Prioridad |
+| :--- | :--- | :--- | :--- |
 | TAR-001 | Analizar el problema y los usuarios | Hecho | Alta |
 | TAR-002 | Documentar requerimientos y reglas de negocio | Hecho | Alta |
 | TAR-003 | Diseñar la arquitectura completa | Hecho | Alta |
