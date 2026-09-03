@@ -14,7 +14,7 @@
 #### Microservicios (Backend)
 | ID | Descripción | Prioridad | Criterios de Aceptación |
 | :--- | :--- | :--- | :--- |
-| **RF-004** | El sistema deberá validar los precios registrados comparándolos con el promedio regional de los últimos 7 días. Posteriormente, el MS de Alertas procesará los registros atípicos. | Alta | Si el precio supera el 150% o es menor al 10% del promedio regional, deberá guardarse con el estado. |
+| **RF-004** | El sistema deberá validar los precios registrados comparándolos con el promedio regional de los últimos 7 días. Posteriormente, el MS de Alertas procesará los registros atípicos. | Alta | Si el precio supera el 150% o es menor al 10% del promedio regional, deberá guardarse con el estado `PENDIENTE_VALIDACION`. |
 | **RF-005** | El MS de Recomendaciones debe sugerir a los comerciantes un surtido basado en faltantes (brechas) de su zona. | Media | Retorna lista de hasta 5 productos con mayor demanda no satisfecha en un radio de 2km. |
 | **RF-006** | El MS de Acceso Alimentario debe calcular un índice basado en densidad poblacional vs densidad de comercios de productos frescos. | Baja | Retorna un valor numérico de 0 a 100 clasificado por color en el mapa. |
 
