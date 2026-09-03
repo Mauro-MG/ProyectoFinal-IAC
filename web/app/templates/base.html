@@ -24,6 +24,10 @@
                     <a href="{{ url_for('comercios.lista') }}">Mis Comercios</a>
                     <a href="{{ url_for('precios.comparacion') }}">Precios</a>
                 {% endif %}
+                {% if current_user.rol.nombre == 'Proveedor' %}
+                    <a href="{{ url_for('comercios.lista') }}">Mi Comercio</a>
+                    <a href="{{ url_for('productos.lista') }}">Catálogo</a>
+                {% endif %}
 
                 {% if current_user.rol.nombre == 'Analista de Mercado' %}
                     <a href="{{ url_for('precios.comparacion') }}">Comparación de Precios</a>
