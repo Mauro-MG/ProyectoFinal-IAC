@@ -79,3 +79,43 @@
 **Pasos:** ejecutar `docker compose up --build`.
 
 **Resultado esperado:** servicios web, PostgreSQL/PostGIS, MongoDB y Redis sanos; `/health` responde `status: ok`.
+
+## Pruebas Planeadas para Etapas Posteriores
+
+Las siguientes pruebas forman parte de la trazabilidad y del diseño de la solución, pero no requieren implementación durante el primer parcial. Se ejecutarán cuando se desarrollen los microservicios, aplicaciones adicionales y servicios de nube correspondientes.
+
+| ID | Componente futuro | Propósito de la prueba |
+| :--- | :--- | :--- |
+| **CP-DASH-02** | Dashboard analítico | Verificar los filtros por producto, zona y periodo. |
+| **CP-GEO-01** | MS Geográfico/PostGIS | Verificar la creación y validación de polígonos geográficos. |
+| **CP-ALT-01** | MS de Alertas | Comprobar que un evento de precio atípico produzca una alerta. |
+| **CP-REC-01** | MS de Recomendaciones | Verificar la generación de recomendaciones de surtido por zona. |
+| **CP-IDX-01** | MS de Acceso Alimentario | Validar el cálculo del Índice de Acceso Alimentario. |
+| **CP-MOB-01** | Aplicación móvil | Comprobar la captura de precios sin conexión. |
+| **CP-MOB-02** | Aplicación móvil/MS de Precios | Comprobar la sincronización cuando se recupera la conexión. |
+| **CP-MOB-03** | Aplicación móvil | Medir el consumo de datos del modo reducido. |
+| **CP-PED-01** | MS de Pedidos | Crear correctamente un pedido que cumpla el monto mínimo. |
+| **CP-PED-02** | MS de Pedidos | Rechazar un pedido inferior al monto mínimo del proveedor. |
+| **CP-AUD-02** | Aplicación de escritorio | Consultar el historial de auditoría por usuario, entidad y periodo. |
+| **CP-INF-02** | Infraestructura en nube | Verificar la disponibilidad del sistema en más de una zona. |
+| **CP-SEC-01** | API Gateway | Comprobar el acceso con un JWT válido. |
+| **CP-SEC-02** | API Gateway | Rechazar un JWT expirado o revocado. |
+| **CP-SEC-03** | Seguridad de datos | Verificar el cifrado de campos personales en reposo. |
+| **CP-PERF-01** | Analítica/PostGIS | Medir que las consultas espaciales respondan en un máximo de 3 segundos. |
+| **CP-MON-01** | Monitoreo | Detectar tres verificaciones de salud fallidas consecutivas. |
+| **CP-MON-02** | Registro centralizado | Localizar todos los eventos de una solicitud mediante `correlation_id`. |
+| **CP-MON-03** | Métricas | Consultar latencia, errores y solicitudes en el tablero de monitoreo. |
+
+## Alcance de las Pruebas del Primer Parcial
+
+Durante el primer parcial, los casos de prueba representan procedimientos de validación manual para el producto mínimo funcional. La automatización mediante `pytest`, pruebas de integración, pruebas de carga y validaciones de servicios distribuidos se realizará en etapas posteriores.
+
+Los casos actuales permiten comprobar:
+
+*   Inicio de sesión correcto e incorrecto.
+*   Generación y validación básica de JWT.
+*   Operaciones sobre productos y comercios.
+*   Registro y validación de precios.
+*   Comparación de precios.
+*   Consulta de auditoría.
+*   Arranque de la infraestructura inicial.
