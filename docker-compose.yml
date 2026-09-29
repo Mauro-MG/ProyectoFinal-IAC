@@ -4,7 +4,7 @@
 services:
   abastored-web:
     build:
-      context: ./web
+      context: ./apps/web
       dockerfile: Dockerfile
     container_name: abastored-web
     ports:
@@ -17,7 +17,7 @@ services:
       abastored-redis:
         condition: service_healthy
     volumes:
-      - ./web:/app
+      - ./apps/web:/app
     networks:
       - abastored-network
     healthcheck:

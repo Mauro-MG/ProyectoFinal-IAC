@@ -7,7 +7,7 @@ Requiere una base PostgreSQL con 01_schema.sql y 03_seeds.sql cargados.
 Crea un usuario y un comercio nuevos en cada ejecución, así que se puede
 correr varias veces sobre la misma base.
 
-    cd web
+    cd apps/web
     pytest -v tests/test_escenario_abasto.py
 """
 import re

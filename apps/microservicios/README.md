@@ -10,21 +10,21 @@ sólo lee las bases de datos autorizadas y valida el JWT contra la lista de revo
 
 | Servicio | Carpeta | Responsabilidad | Base de la lógica actual |
 | :--- | :--- | :--- | :--- |
-| Comercios | `comercios/` | Alta, consulta y validación de comercios | `web/app/rutas/comercios.py` |
-| Productos | `productos/` | Catálogo maestro y catálogo por comercio | `web/app/rutas/catalogo.py` |
-| Precios | `precios/` | Registro y validación de precios (RN-001) | `web/app/servicios/inventario.py` |
-| Inventario | `inventario/` | Existencias y movimientos (RN-009) | `web/app/servicios/inventario.py` |
-| Pedidos | `pedidos/` | Flujo de pedidos de abasto (RN-004, RN-010 a RN-014) | `web/app/servicios/pedidos.py` |
-| Geográfico | `geografico/` | Zonas, asignación de zona por ubicación, buffers | `web/app/servicios/geo.py`, `db/postgres/02_geo.sql` |
-| Cobertura | `cobertura/` | Cobertura e índice de acceso por zona | `web/app/servicios/analisis.py` |
-| Comparación | `comparacion/` | Consumidor formal/informal vs. mayoreo | `web/app/servicios/precios.py` |
-| Recomendaciones | `recomendaciones/` | Recomendación de surtido por reglas | `web/app/servicios/analisis.py` |
-| Acceso alimentario | `acceso_alimentario/` | Índice de acceso y ranking de zonas | `web/app/servicios/analisis.py` |
+| Comercios | `comercios/` | Alta, consulta y validación de comercios | `apps/web/app/rutas/comercios.py` |
+| Productos | `productos/` | Catálogo maestro y catálogo por comercio | `apps/web/app/rutas/catalogo.py` |
+| Precios | `precios/` | Registro y validación de precios (RN-001) | `apps/web/app/servicios/inventario.py` |
+| Inventario | `inventario/` | Existencias y movimientos (RN-009) | `apps/web/app/servicios/inventario.py` |
+| Pedidos | `pedidos/` | Flujo de pedidos de abasto (RN-004, RN-010 a RN-014) | `apps/web/app/servicios/pedidos.py` |
+| Geográfico | `geografico/` | Zonas, asignación de zona por ubicación, buffers | `apps/web/app/servicios/geo.py`, `db/postgres/02_geo.sql` |
+| Cobertura | `cobertura/` | Cobertura e índice de acceso por zona | `apps/web/app/servicios/analisis.py` |
+| Comparación | `comparacion/` | Consumidor formal/informal vs. mayoreo | `apps/web/app/servicios/precios.py` |
+| Recomendaciones | `recomendaciones/` | Recomendación de surtido por reglas | `apps/web/app/servicios/analisis.py` |
+| Acceso alimentario | `acceso_alimentario/` | Índice de acceso y ranking de zonas | `apps/web/app/servicios/analisis.py` |
 | Alertas | `alertas/` | Precios atípicos, stock bajo, pedidos sin respuesta | nuevo |
-| Reportes | `reportes/` | Exportaciones JSON/XML para la app de escritorio | `web/app/rutas/reportes.py` |
+| Reportes | `reportes/` | Exportaciones JSON/XML para la app de escritorio | `apps/web/app/rutas/reportes.py` |
 | Monitoreo | `monitoreo/` | Consulta periódica de `/health/*` e historial de disponibilidad | nuevo |
 
-La lógica de negocio del monolito ya está separada en `web/app/servicios/` (sin dependencias de
+La lógica de negocio del monolito ya está separada en `apps/web/app/servicios/` (sin dependencias de
 Flask ni de las vistas) precisamente para moverla a estos servicios sin reescribirla.
 
 ## Estructura que tendrá cada servicio

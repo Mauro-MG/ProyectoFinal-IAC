@@ -22,25 +22,20 @@ está en **`docs/AbastoRed_Equipo01_Documento_Tecnico.docx`**.
 
 ```
 .
-├── web/              Sistema web empresarial (monolito Flask)              ← implementado
-│   ├── app/
-│   │   ├── __init__.py       crea la app y registra las rutas
-│   │   ├── models/           modelos SQLAlchemy (un archivo por entidad)
-│   │   ├── rutas/            vistas por proceso: inventario, pedidos, análisis...
-│   │   ├── servicios/        reglas de negocio sin dependencia de Flask
-│   │   ├── templates/        Jinja2
-│   │   └── static/           CSS y JS propios (sin frameworks)
-│   ├── tests/                prueba de integración del escenario completo
-│   └── Dockerfile
-├── microservicios/   12 servicios + monitoreo                             ← 2.º parcial
-├── movil/            App Android (Kotlin), sólo JSON                        ← 3.er parcial
-├── escritorio/       App PySide6, sólo XML                                  ← 3.er parcial
 ├── db/
 │   ├── postgres/     01_schema.sql, 02_geo.sql (PostGIS), 03_seeds.sql
 │   ├── mongo/        init.js (colecciones e índices)
 │   └── redis/        redis.conf
-├── infra/            despliegue en Google Cloud                            ← 4.º parcial
 ├── docs/             documento técnico (Word) y fuentes
+├── apps/
+│   ├── escritorio/   App PySide6, sólo XML                                  ← 3.er parcial
+│   ├── infra/        despliegue en Google Cloud                            ← 4.º parcial
+│   ├── microservicios/ 12 servicios + monitoreo                            ← 2.º parcial
+│   ├── movil/        App Android (Kotlin), sólo JSON                        ← 3.er parcial
+│   └── web/          Sistema web empresarial (monolito Flask)              ← implementado
+│       ├── app/      aplicación, modelos, rutas, servicios, plantillas y estáticos
+│       ├── tests/    prueba de integración del escenario completo
+│       └── Dockerfile
 └── docker-compose.yml
 ```
 
@@ -65,7 +60,7 @@ Con un PostgreSQL local (PostGIS es opcional; sin él se omite `02_geo.sql`):
 ```bash
 psql -U abastored_admin -d abastored -f db/postgres/01_schema.sql
 psql -U abastored_admin -d abastored -f db/postgres/03_seeds.sql
-cd web
+cd apps/web
 pip install -r requirements-dev.txt
 POSTGRES_HOST=localhost python run.py
 ```
@@ -76,7 +71,7 @@ notificaciones se desactivan y el sistema sigue funcionando (la API JWT sí exig
 ### Pruebas
 
 ```bash
-cd web
+cd apps/web
 pytest -v
 ```
 
@@ -122,7 +117,7 @@ Contraseña `Password123!` (administrador: `Admin123!`).
 
 - Python PEP 8; `snake_case` en funciones, variables, tablas y columnas; `PascalCase` en clases.
 - Identificadores y textos en español, igual que el dominio del negocio.
-- Rutas agrupadas por proceso en `web/app/rutas/`; nombre del endpoint = nombre de la función.
+- Rutas agrupadas por proceso en `apps/web/app/rutas/`; nombre del endpoint = nombre de la función.
 - Toda operación que cambia datos registra un evento de auditoría en la misma transacción.
 - Bajas lógicas (`activo = false`); los registros de auditoría son inmutables.
 - Claves de Redis con prefijo de dominio y TTL explícito (`jwt:blacklist:*`, `analisis:*`,
