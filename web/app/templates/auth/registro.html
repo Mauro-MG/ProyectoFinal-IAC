@@ -1,37 +1,27 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="auth-container">
-    <div class="auth-card">
-        <h2>Registro de Comerciante</h2>
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                {{ form.nombre.label }}
-                {{ form.nombre(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.apellido_paterno.label }}
-                {{ form.apellido_paterno(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.email.label }}
-                {{ form.email(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.password.label }}
-                {{ form.password(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.confirm_password.label }}
-                {{ form.confirm_password(class="form-control") }}
-            </div>
-            <div class="form-actions">
-                {{ form.submit(class="btn btn-primary btn-block") }}
-            </div>
-        </form>
-        <div class="auth-links">
-            <a href="{{ url_for('auth.login') }}">¿Ya tienes cuenta? Inicia sesión</a>
+{% from "_macros.html" import campo %}
+{% block titulo %}Crear cuenta{% endblock %}
+{% block contenido %}
+<div class="acceso-cuenta tarjeta" style="max-width: 520px">
+    <h1>Crear cuenta</h1>
+    <p class="tenue">Después de crear tu cuenta te pediremos los datos de tu comercio o de tu empresa.</p>
+    <form method="post" style="margin-top: 1rem">
+        {{ form.hidden_tag() }}
+        {{ campo(form.perfil) }}
+        <div class="fila-campos">
+            {{ campo(form.nombre, autocomplete='given-name') }}
+            {{ campo(form.apellido_paterno, autocomplete='family-name') }}
         </div>
-    </div>
+        {{ campo(form.email, autocomplete='email') }}
+        {{ campo(form.telefono, autocomplete='tel') }}
+        <div class="fila-campos">
+            {{ campo(form.password, autocomplete='new-password') }}
+            {{ campo(form.confirmar, autocomplete='new-password') }}
+        </div>
+        <p class="tenue" style="font-size: .8rem">Usamos tus datos sólo para operar la plataforma. Tu ubicación
+            exacta no se publica; el público ve el nombre del comercio y su zona.</p>
+        <button class="btn btn-primario" style="width: 100%; justify-content: center; margin-top: .75rem">Crear cuenta</button>
+    </form>
+    <p style="margin-top: 1rem; font-size: .9rem">¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión</a></p>
 </div>
 {% endblock %}

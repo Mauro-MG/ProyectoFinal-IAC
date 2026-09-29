@@ -1,0 +1,50 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import opciones %}
+{% block titulo %}Catálogo maestro{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Catálogo maestro de productos</h1>
+        <p>Productos genéricos de la plataforma. Cada comercio elige de aquí los que vende; cada proveedor, los que surte.</p>
+    </div>
+    {% if current_user.tiene_permiso('catalogos.gestionar') %}
+    <a class="btn btn-primario" href="{{ url_for('producto_nuevo') }}">Nuevo producto</a>
+    {% endif %}
+</div>
+
+<form class="filtros" method="get">
+    <div class="campo"><label for="q">Buscar</label><input type="search" id="q" name="q" value="{{ texto }}"></div>
+    <div class="campo"><label for="categoria_id">Categoría</label>
+        <select id="categoria_id" name="categoria_id" data-autoenviar>{{ opciones(categorias, categoria_id) }}</select></div>
+    <button class="btn">Filtrar</button>
+</form>
+
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Producto</th><th>Categoría</th><th>Unidad</th><th>Canasta básica</th><th>Código de barras</th><th></th></tr></thead>
+        <tbody>
+        {% for p in productos %}
+        <tr>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.categoria.nombre }}</td>
+            <td>{{ p.unidad_medida }}</td>
+            <td>{{ 'Sí' if p.es_canasta_basica else '—' }}</td>
+            <td>{{ p.codigo_barras or '—' }}</td>
+            <td class="nowrap">
+                {% if current_user.tiene_permiso('catalogos.gestionar') %}
+                <a class="btn btn-chico" href="{{ url_for('producto_editar', id=p.id) }}">Editar</a>
+                <form class="en-linea" method="post" action="{{ url_for('producto_desactivar', id=p.id) }}"
+                      data-confirmar="¿Quitar {{ p.nombre }} del catálogo maestro? Los comercios dejarán de verlo al agregar productos.">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-chico btn-peligro">Desactivar</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="vacio">Sin productos.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

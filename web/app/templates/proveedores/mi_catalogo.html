@@ -1,0 +1,59 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import campo %}
+{% block titulo %}Catálogo mayorista{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Catálogo mayorista</h1>
+        <p>{{ proveedor.nombre_empresa }} · pedido mínimo {{ proveedor.pedido_minimo|moneda }} ·
+           entrega en {{ proveedor.zonas|length }} zona(s). Cada cambio de precio queda en el historial de mayoreo.</p>
+    </div>
+    <a class="btn" href="{{ url_for('proveedor_detalle', id=proveedor.id) }}">Ver como comerciante</a>
+</div>
+
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Producto</th><th>Precio de mayoreo</th><th>Venta mínima</th><th>Disponible</th><th>Actualizado</th><th></th></tr></thead>
+        <tbody>
+        {% for o in ofertas %}
+        <tr>
+            <td>{{ o.producto.nombre }}<br><small>por {{ o.producto.unidad_medida }}</small></td>
+            <td colspan="3">
+                <form class="acciones" method="post" action="{{ url_for('mi_catalogo_editar', id=o.id) }}" id="oferta{{ o.id }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input class="input-chico" type="number" name="precio_mayoreo" min="0.01" step="0.01" value="{{ o.precio_mayoreo }}" aria-label="Precio">
+                    <input class="input-chico" type="number" name="cantidad_minima" min="0.01" step="any" value="{{ o.cantidad_minima|cantidad }}" aria-label="Venta mínima">
+                    <input class="input-chico" type="number" name="existencia_disponible" min="0" step="any" value="{{ o.existencia_disponible|cantidad }}" aria-label="Disponible">
+                    <button class="btn btn-chico">Guardar</button>
+                </form>
+            </td>
+            <td class="nowrap"><small>{{ o.updated_at|fecha }}</small></td>
+            <td>
+                <form class="en-linea" method="post" action="{{ url_for('mi_catalogo_editar', id=o.id) }}"
+                      data-confirmar="¿Retirar {{ o.producto.nombre }} de tu catálogo?">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-chico btn-peligro" name="accion" value="retirar">Retirar</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="vacio">Aún no publicas productos.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if form.producto_id.choices %}
+<form method="post" class="tarjeta formulario" style="margin-top: 1rem">
+    <h2>Agregar producto</h2>
+    {{ form.hidden_tag() }}
+    {{ campo(form.producto_id) }}
+    <div class="fila-campos">
+        {{ campo(form.precio_mayoreo, step='0.01') }}
+        {{ campo(form.cantidad_minima, step='any') }}
+        {{ campo(form.existencia_disponible, step='any') }}
+    </div>
+    <button class="btn btn-primario">Agregar</button>
+</form>
+{% endif %}
+{% endblock %}

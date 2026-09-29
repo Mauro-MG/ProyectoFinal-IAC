@@ -1,0 +1,41 @@
+{% macro estado(valor, texto=None) -%}
+<span class="etiqueta-estado {{ COLOR_ESTADO.get(valor, 'neutro') }}">{{ texto or valor|replace('_', ' ')|capitalize }}</span>
+{%- endmacro %}
+
+{% macro estado_pedido(pedido) -%}
+<span class="etiqueta-estado {{ COLOR_ESTADO.get(pedido.estado, 'neutro') }}">{{ pedido.estado_legible }}</span>
+{%- endmacro %}
+
+{% macro campo(field, ayuda=None) -%}
+<div class="campo">
+    {{ field.label }}
+    {{ field(**kwargs) }}
+    {% if ayuda %}<div class="ayuda">{{ ayuda }}</div>{% endif %}
+    {% for error in field.errors %}<div class="error">{{ error }}</div>{% endfor %}
+</div>
+{%- endmacro %}
+
+{% macro casilla(field) -%}
+<div class="campo casilla">{{ field() }} {{ field.label }}</div>
+{%- endmacro %}
+
+{% macro paginacion(pagina) -%}
+{% if pagina.pages > 1 %}
+<div class="paginacion">
+    {% if pagina.has_prev %}<a href="{{ url_pagina(pagina.prev_num) }}">← Anterior</a>{% endif %}
+    <span class="tenue">Página {{ pagina.page }} de {{ pagina.pages }} · {{ pagina.total }} registros</span>
+    {% if pagina.has_next %}<a href="{{ url_pagina(pagina.next_num) }}">Siguiente →</a>{% endif %}
+</div>
+{% endif %}
+{%- endmacro %}
+
+{% macro opciones(lista, seleccionado, valor='id', texto='nombre', vacio='Todas') -%}
+<option value="">{{ vacio }}</option>
+{% for item in lista %}
+<option value="{{ item[valor] }}" {{ 'selected' if item[valor]|string == seleccionado|string }}>{{ item[texto] }}</option>
+{% endfor %}
+{%- endmacro %}
+
+{% macro barra_cobertura(valor) -%}
+<div class="barra-progreso {{ 'alerta' if valor < 50 }}"><span style="width: {{ [valor, 100]|min }}%"></span></div>
+{%- endmacro %}

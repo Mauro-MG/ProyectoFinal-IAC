@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block titulo %}Sin permiso{% endblock %}
+{% block contenido %}
+<div class="acceso-cuenta tarjeta">
+    <h1>No tienes permiso para ver esta página</h1>
+    <p class="tenue">Tu rol no incluye esta función. Si crees que es un error, pide al administrador que revise tus permisos.</p>
+    <p><a href="{{ url_for('panel') if current_user.is_authenticated else url_for('index') }}">Volver</a></p>
+</div>
+{% endblock %}

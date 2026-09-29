@@ -1,36 +1,44 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="page-header">
-    <h1>Registro de Auditoría</h1>
+{% extends "portal.html" %}
+{% from "_macros.html" import paginacion %}
+{% block titulo %}Auditoría{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Bitácora de auditoría</h1>
+        <p>Registro inmutable: la base de datos rechaza cualquier modificación o borrado de eventos.</p>
+    </div>
 </div>
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Fecha</th>
-                <th>Evento</th>
-                <th>Entidad</th>
-                <th>Descripción</th>
-                <th>IP</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
+<form class="filtros" method="get">
+    <div class="campo"><label for="entidad">Entidad</label>
+        <select id="entidad" name="entidad"><option value="">Todas</option>
+            {% for e in entidades %}<option {{ 'selected' if filtros.entidad == e }}>{{ e }}</option>{% endfor %}</select></div>
+    <div class="campo corto"><label for="tipo">Evento</label>
+        <select id="tipo" name="tipo"><option value="">Todos</option>
+            {% for t in tipos %}<option {{ 'selected' if filtros.tipo == t }}>{{ t }}</option>{% endfor %}</select></div>
+    <div class="campo"><label for="usuario">Usuario</label><input type="search" id="usuario" name="usuario" value="{{ filtros.usuario }}" placeholder="correo"></div>
+    <div class="campo corto"><label for="desde">Desde</label><input type="date" id="desde" name="desde" value="{{ filtros.desde or '' }}"></div>
+    <div class="campo corto"><label for="hasta">Hasta</label><input type="date" id="hasta" name="hasta" value="{{ filtros.hasta or '' }}"></div>
+    <button class="btn btn-primario">Filtrar</button>
+    <a class="btn" href="{{ url_for('auditoria_lista') }}">Limpiar</a>
+</form>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Fecha</th><th>Usuario</th><th>Evento</th><th>Entidad</th><th>Descripción</th><th>IP</th></tr></thead>
         <tbody>
-            {% for evento in eventos.items %}
-            <tr>
-                <td>{{ evento.id }}</td>
-                <td>{{ evento.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-                <td><span class="badge badge-info">{{ evento.tipo_evento }}</span></td>
-                <td>{{ evento.entidad }}</td>
-                <td>{{ evento.descripcion }}</td>
-                <td>{{ evento.ip_address }}</td>
-                <td>
-                    <a href="{{ url_for('auditoria.detalle', id=evento.id) }}" class="btn btn-sm btn-secondary">Detalle</a>
-                </td>
-            </tr>
-            {% endfor %}
+        {% for e in pagina.items %}
+        <tr>
+            <td class="nowrap"><a href="{{ url_for('auditoria_detalle', id=e.id) }}">{{ e.created_at|fecha }}</a></td>
+            <td>{{ e.usuario.email if e.usuario else 'sistema' }}</td>
+            <td><span class="etiqueta-estado {{ 'info' if e.tipo_evento == 'CAMBIO_ESTADO' else 'neutro' }}">{{ e.tipo_evento }}</span></td>
+            <td>{{ e.entidad }}</td>
+            <td>{{ e.descripcion }}</td>
+            <td><small>{{ e.ip_address or '' }}</small></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="vacio">Sin eventos para los filtros seleccionados.</td></tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>
+{{ paginacion(pagina) }}
 {% endblock %}

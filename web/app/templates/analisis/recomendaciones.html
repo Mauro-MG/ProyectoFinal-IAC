@@ -1,0 +1,77 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import estado %}
+{% block titulo %}Recomendaciones{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Productos recomendados para {{ comercio.nombre_comercio }}</h1>
+        <p>Productos que no vendes, que tienen menos de {{ umbral }} % de cobertura en {{ comercio.zona.nombre if comercio.zona else 'tu zona' }},
+           con demanda en la zona y al menos un proveedor que te los puede entregar.</p>
+    </div>
+    {% if comercios|length > 1 %}
+    <form method="get"><select name="comercio_id" data-autoenviar aria-label="Comercio">
+        {% for c in comercios %}<option value="{{ c.id }}" {{ 'selected' if c.id == comercio.id }}>{{ c.nombre_comercio }}</option>{% endfor %}
+    </select></form>
+    {% endif %}
+</div>
+
+{% if not comercio.zona %}
+<div class="mensaje alerta">Tu comercio no tiene zona asignada. Captura su ubicación para poder compararlo con su zona.</div>
+{% endif %}
+
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Producto</th><th>Motivo</th><th class="num">Cobertura zona</th><th class="num">Comercios con existencia</th>
+            <th class="num">Ventas en la zona (30 d)</th><th class="num">Proveedores</th><th class="num">Mayoreo desde</th>
+            <th class="num">Precio en la zona</th><th class="num">Margen estimado</th><th></th></tr></thead>
+        <tbody>
+        {% for r in recomendaciones %}
+        <tr>
+            <td style="min-width: 150px">{{ r.producto }}{% if r.canasta_basica %}<br><small>canasta básica</small>{% endif %}</td>
+            <td><span class="etiqueta-estado {{ 'critico' if r.motivo in ('Nadie lo vende en tu zona', 'Agotado en toda la zona', 'Frecuente agotamiento') else 'alerta' }}">{{ r.motivo }}</span></td>
+            <td class="num">{{ r.cobertura }} %</td>
+            <td class="num">{{ r.con_disponibilidad }} de {{ r.comercios_analizados }}</td>
+            <td class="num">{{ r.ventas|round|int }}</td>
+            <td class="num">{{ r.proveedores }}</td>
+            <td class="num">{{ r.precio_mayoreo_min|moneda }}</td>
+            <td class="num">{{ r.precio_promedio|moneda }}</td>
+            <td class="num">{{ r.margen_estimado|porcentaje if r.margen_estimado is not none else '—' }}</td>
+            <td class="nowrap">
+                <a class="btn btn-chico btn-primario" href="{{ url_for('proveedores_por_producto', producto_id=r.producto_id, comercio_id=comercio.id) }}">Ver proveedores</a>
+                <a class="btn btn-chico" href="{{ url_for('inventario_agregar', comercio_id=comercio.id, producto_id=r.producto_id) }}">Agregar a mi catálogo</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10" class="vacio">No hay productos con baja oferta en tu zona que puedas surtir. Revisa de nuevo cuando cambie el inventario de la zona.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="nota">
+    <strong>Cómo se decide:</strong> un producto se recomienda si (1) no está en tu catálogo, (2) su cobertura en la zona
+    es menor a {{ umbral }} %, (3) es de canasta básica o registra ventas en la zona y (4) algún proveedor con existencia entrega en tu zona.
+    El motivo indica la condición más fuerte: nadie lo vende, está agotado en toda la zona, se agota en la mitad o más de los comercios que lo venden,
+    está entre los más vendidos de la zona, o simplemente hay poca oferta. Se ordena por un puntaje que da más peso a la baja cobertura.
+</div>
+
+{% if faltantes %}
+<h2 style="margin-top: 1.5rem">Además, debes surtir</h2>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Producto</th><th class="num">Existencia</th><th>Estado</th><th class="num">Sugerido</th><th></th></tr></thead>
+        <tbody>
+        {% for f in faltantes %}
+        <tr>
+            <td>{{ f.inventario.producto.nombre }}</td>
+            <td class="num">{{ f.inventario.existencia|cantidad }} {{ f.inventario.producto.unidad_medida }}</td>
+            <td>{{ estado(f.inventario.estado) }}</td>
+            <td class="num">{{ f.inventario.cantidad_sugerida|cantidad }}</td>
+            <td><a class="btn btn-chico" href="{{ url_for('proveedores_por_producto', producto_id=f.inventario.producto_id, comercio_id=comercio.id) }}">Comparar proveedores</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

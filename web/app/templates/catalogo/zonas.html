@@ -1,0 +1,33 @@
+{% extends "portal.html" %}
+{% block titulo %}Zonas{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Zonas</h1>
+        <p>Cada zona es un círculo de radio fijo alrededor de un centro. Los comercios se asignan a la zona cuyo
+           radio contiene su ubicación; la población se usa para estimar la demanda.</p>
+    </div>
+    {% if current_user.tiene_permiso('catalogos.gestionar') %}
+    <a class="btn btn-primario" href="{{ url_for('zona_form') }}">Nueva zona</a>
+    {% endif %}
+</div>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Zona</th><th>Municipio</th><th class="num">Centro</th><th class="num">Radio</th><th class="num">Población</th><th class="num">Comercios</th><th>Estado</th><th></th></tr></thead>
+        <tbody>
+        {% for z in zonas %}
+        <tr>
+            <td>{{ z.nombre }}</td>
+            <td>{{ z.municipio }}</td>
+            <td class="num">{{ '%.4f'|format(z.latitud_centro) }}, {{ '%.4f'|format(z.longitud_centro) }}</td>
+            <td class="num">{{ z.radio_km|cantidad }} km</td>
+            <td class="num">{{ '{:,}'.format(z.poblacion) }}</td>
+            <td class="num">{{ z.comercios|selectattr('activo')|list|length }}</td>
+            <td>{{ 'Activa' if z.activa else 'Inactiva' }}</td>
+            <td>{% if current_user.tiene_permiso('catalogos.gestionar') %}<a class="btn btn-chico" href="{{ url_for('zona_form', id=z.id) }}">Editar</a>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import campo %}
+{% block titulo %}Categorías{% endblock %}
+{% block contenido %}
+<div class="encabezado"><div><h1>Categorías</h1></div></div>
+
+<div class="rejilla rejilla-2">
+    <div class="tabla-contenedor">
+        <table>
+            <thead><tr><th>Categoría</th><th class="num">Productos</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+            {% for c in categorias %}
+            <tr>
+                <td>{{ c.nombre }}<br><small>{{ c.descripcion or '' }}</small></td>
+                <td class="num">{{ conteo.get(c.id, 0) }}</td>
+                <td>{{ 'Activa' if c.activa else 'Inactiva' }}</td>
+                <td>
+                    <form class="en-linea" method="post" action="{{ url_for('categoria_estado', id=c.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-chico">{{ 'Desactivar' if c.activa else 'Activar' }}</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <form method="post" class="tarjeta" style="align-self: start">
+        <h2>Nueva categoría</h2>
+        {{ form.hidden_tag() }}
+        {{ campo(form.nombre) }}
+        {{ campo(form.descripcion) }}
+        <button class="btn btn-primario">Agregar</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,71 +1,152 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="page-header d-flex justify-between align-center">
-    <h1>Comparación de Precios</h1>
-    {% if current_user.rol.nombre in ['Administrador General', 'Comerciante Informal', 'Minorista Formal'] %}
-    <a href="{{ url_for('precios.registrar') }}" class="btn btn-primary">Registrar Precio</a>
-    {% endif %}
+{% extends "portal.html" %}
+{% from "_macros.html" import opciones %}
+{% block titulo %}Comparación de precios{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Comparación de precios</h1>
+        <p>Precio al consumidor en comercios formales e informales contra el precio de mayoreo de los proveedores,
+           del {{ filtros.desde.strftime('%d/%m/%Y') }} al {{ filtros.hasta.strftime('%d/%m/%Y') }}. Sólo se usan precios validados.</p>
+    </div>
 </div>
 
-<form method="GET" class="filters-bar">
-    <div class="form-group">
-        <label for="producto_id">Producto</label>
-        <select id="producto_id" name="producto_id" class="form-control">
-            <option value="">Todos los productos</option>
-            {% for producto in productos %}
-            <option value="{{ producto.id }}" {% if producto_id == producto.id %}selected{% endif %}>
-                {{ producto.nombre }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Filtrar</button>
-        <a href="{{ url_for('precios.comparacion') }}" class="btn btn-secondary">Limpiar</a>
-    </div>
+<form class="filtros" method="get">
+    <div class="campo"><label for="producto_id">Producto</label>
+        <select id="producto_id" name="producto_id">{{ opciones(productos, filtros.producto_id, vacio='Todos') }}</select></div>
+    <div class="campo"><label for="categoria_id">Categoría</label>
+        <select id="categoria_id" name="categoria_id">{{ opciones(categorias, filtros.categoria_id) }}</select></div>
+    <div class="campo"><label for="zona_id">Zona</label>
+        <select id="zona_id" name="zona_id">{{ opciones(zonas, filtros.zona_id) }}</select></div>
+    <div class="campo corto"><label for="municipio">Municipio</label>
+        <select id="municipio" name="municipio"><option value="">Todos</option>
+            {% for m in municipios %}<option {{ 'selected' if filtros.municipio == m }}>{{ m }}</option>{% endfor %}</select></div>
+    <div class="campo corto"><label for="sector">Sector</label>
+        <select id="sector" name="sector"><option value="">Formal e informal</option>
+            {% for s in ['Formal', 'Informal'] %}<option {{ 'selected' if filtros.sector == s }}>{{ s }}</option>{% endfor %}</select></div>
+    <div class="campo"><label for="proveedor_id">Proveedor</label>
+        <select id="proveedor_id" name="proveedor_id">{{ opciones(proveedores, filtros.proveedor_id, texto='nombre_empresa', vacio='Todos') }}</select></div>
+    <div class="campo corto"><label for="tipo">Tipo de precio</label>
+        <select id="tipo" name="tipo">
+            {% for v, t in [('ambos', 'Consumidor y mayoreo'), ('consumidor', 'Consumidor'), ('mayoreo', 'Mayoreo')] %}
+            <option value="{{ v }}" {{ 'selected' if filtros.tipo == v }}>{{ t }}</option>{% endfor %}
+        </select></div>
+    <div class="campo corto"><label for="desde">Desde</label><input type="date" id="desde" name="desde" value="{{ filtros.desde }}"></div>
+    <div class="campo corto"><label for="hasta">Hasta</label><input type="date" id="hasta" name="hasta" value="{{ filtros.hasta }}"></div>
+    <button class="btn btn-primario">Comparar</button>
+    <a class="btn" href="{{ url_for('comparacion') }}">Limpiar</a>
 </form>
 
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Zona</th>
-                <th>Sector</th>
-                <th>Promedio</th>
-                <th>Mínimo</th>
-                <th>Máximo</th>
-                <th>Muestras</th>
-            </tr>
-        </thead>
+{% if resumen %}
+<div class="tarjeta">
+    <div class="tarjeta-titulo"><h2>Resumen por producto</h2><small>Promedios ponderados por número de muestras</small></div>
+    <div id="grafica-resumen" class="grafica"></div>
+    <table class="subtabla" style="margin-top: .75rem">
+        <thead><tr><th>Producto</th><th class="num">Formal</th><th class="num">Informal</th><th class="num">Informal vs. formal</th>
+            <th class="num">Mejor mayoreo</th><th class="num">Margen bruto estimado</th></tr></thead>
         <tbody>
-            {% for fila in resumen %}
-            <tr>
-                <td>{{ fila.producto }}</td>
-                <td>{{ fila.zona or 'Sin zona' }}</td>
-                <td>
-                    <span class="badge badge-{{ 'primary' if fila.sector == 'Formal' else 'warning' if fila.sector == 'Informal' else 'info' }}">
-                        {{ fila.sector }}
-                    </span>
-                </td>
-                <td>${{ '%.2f'|format(fila.promedio) }}</td>
-                <td>${{ '%.2f'|format(fila.minimo) }}</td>
-                <td>${{ '%.2f'|format(fila.maximo) }}</td>
-                <td>{{ fila.muestras }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7" class="text-center">No hay precios registrados para los filtros seleccionados.</td>
-            </tr>
-            {% endfor %}
+        {% for r in resumen %}
+        <tr>
+            <td><a href="{{ url_for('comparacion', producto_id=r.producto_id) }}">{{ r.producto }}</a></td>
+            <td class="num">{{ r.formal|moneda }}</td>
+            <td class="num">{{ r.informal|moneda }}</td>
+            <td class="num">{% if r.diferencia_pct is not none %}{{ '%+.1f'|format(r.diferencia_pct) }} %{% else %}—{% endif %}</td>
+            <td class="num">{{ r.mayoreo_min|moneda }}</td>
+            <td class="num">{{ r.margen_pct|porcentaje if r.margen_pct is not none else '—' }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p class="nota">El margen bruto estimado compara el precio promedio al consumidor con el mejor precio de mayoreo
+        disponible. Ayuda al comerciante a decidir con quién surtirse; no incluye transporte ni merma.</p>
+</div>
+{% endif %}
+
+{% if tendencia and tendencia.series %}
+<div class="tarjeta">
+    <h2>Tendencia semanal</h2>
+    <div id="grafica-tendencia" class="grafica"></div>
+</div>
+{% endif %}
+
+{% if consumidor %}
+<h2 style="margin-top: 1.25rem">Precio al consumidor</h2>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Producto</th><th>Zona</th><th>Sector</th><th class="num">Mínimo</th><th class="num">Promedio</th><th class="num">Máximo</th><th class="num">Muestras</th><th class="num">Comercios</th></tr></thead>
+        <tbody>
+        {% for f in consumidor %}
+        <tr>
+            <td>{{ f.producto }}<br><small>{{ f.categoria }}</small></td>
+            <td>{{ f.zona }}<br><small>{{ f.municipio }}</small></td>
+            <td><span class="etiqueta-estado {{ 'info' if f.sector == 'Formal' else 'alerta' }}">{{ f.sector }}</span></td>
+            <td class="num">{{ f.minimo|moneda }}</td>
+            <td class="num">{{ f.promedio|moneda }}</td>
+            <td class="num">{{ f.maximo|moneda }}</td>
+            <td class="num">{{ f.muestras }}</td>
+            <td class="num">{{ f.comercios }}</td>
+        </tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>
+{% endif %}
 
-<div class="card">
-    <div class="card-body">
-        <h3>Proceso de negocio demostrado</h3>
-        <p>Los precios capturados se consultan desde PostgreSQL, se agrupan por zona y sector, y cada registro queda en la bitácora de auditoría.</p>
-    </div>
+{% if mayoreo %}
+<h2 style="margin-top: 1.25rem">Precio de mayoreo</h2>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Producto</th><th>Proveedor</th><th class="num">Mínimo</th><th class="num">Promedio</th><th class="num">Máximo</th><th class="num">Muestras</th></tr></thead>
+        <tbody>
+        {% for f in mayoreo %}
+        <tr>
+            <td>{{ f.producto }}</td>
+            <td><a href="{{ url_for('proveedor_detalle', id=f.proveedor_id) }}">{{ f.proveedor }}</a></td>
+            <td class="num">{{ f.minimo|moneda }}</td>
+            <td class="num">{{ f.promedio|moneda }}</td>
+            <td class="num">{{ f.maximo|moneda }}</td>
+            <td class="num">{{ f.muestras }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
+{% endif %}
+
+{% if not consumidor and not mayoreo %}
+<div class="tarjeta"><p class="tenue">No hay precios para los filtros seleccionados.</p></div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script>
+Highcharts.setOptions({ lang: { decimalPoint: '.', thousandsSep: ',' }, credits: { enabled: false },
+    colors: ['#25609e', '#c27c0e', '#1f6f4a'] });
+
+{% if resumen %}
+const resumen = {{ resumen[:15]|tojson }};
+Highcharts.chart('grafica-resumen', {
+    chart: { type: 'bar', height: Math.max(260, resumen.length * 48) },
+    title: { text: null },
+    xAxis: { categories: resumen.map(r => r.producto) },
+    yAxis: { title: { text: 'Precio (MXN)' } },
+    tooltip: { shared: true, valuePrefix: '$', valueDecimals: 2 },
+    series: [
+        { name: 'Consumidor formal', data: resumen.map(r => r.formal) },
+        { name: 'Consumidor informal', data: resumen.map(r => r.informal) },
+        { name: 'Mejor mayoreo', data: resumen.map(r => r.mayoreo_min) },
+    ],
+});
+{% endif %}
+
+{% if tendencia and tendencia.series %}
+Highcharts.chart('grafica-tendencia', {
+    title: { text: null },
+    xAxis: { categories: {{ tendencia.categorias|tojson }}, title: { text: 'Semana' } },
+    yAxis: { title: { text: 'Precio promedio (MXN)' } },
+    tooltip: { shared: true, valuePrefix: '$', valueDecimals: 2 },
+    series: {{ tendencia.series|tojson }},
+});
+{% endif %}
+</script>
 {% endblock %}

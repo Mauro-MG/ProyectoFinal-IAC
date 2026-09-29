@@ -1,158 +1,138 @@
-# AbastoRed (Plataforma Híbrida para Comercio Formal e Informal)
+# AbastoRed — Plataforma híbrida para comercio formal e informal
 
-Plataforma integral para la gestión y conexión entre comerciantes formales, informales y proveedores, facilitando el abasto, monitoreo de precios y logística.
+**Proyecto 14 · Equipo 01 · Integración de Aplicaciones · Universidad de Monterrey**
 
-## Alcance del Primer Parcial
+| Integrante | Matrícula |
+| :--- | :--- |
+| José Humberto Moreno | 596055 |
+| David López | 600390 |
+| Mauro Montelongo | 595821 |
+| Humberto Vargas | 604775 |
 
-Durante el primer parcial, AbastoRed se presenta como un producto mínimo funcional **cloud-enabled**. La versión actual incluye:
+AbastoRed integra tianguis, puestos de mercado, tiendas de barrio y proveedores mayoristas del área
+metropolitana de Monterrey. El comerciante lleva su inventario, ve qué se le está acabando, compara
+precios de mayoreo y hace su pedido de abasto; el proveedor recibe y atiende pedidos; el municipio
+y los analistas ven la cobertura por zona, las brechas de surtido y el índice de acceso a la
+canasta básica.
 
-*   Aplicación web modular desarrollada con Flask.
-*   Página pública, registro, inicio y cierre de sesión.
-*   Autenticación mediante sesión web y JWT básico.
-*   Roles y menús por perfil.
-*   Catálogos funcionales de productos y comercios.
-*   Registro y comparación de precios.
-*   Persistencia real en PostgreSQL.
-*   Auditoría básica.
-*   Caché de precios y revocación de JWT mediante Redis.
-*   Configuración inicial de MongoDB.
-*   Ejecución local mediante Docker Compose.
+La documentación completa (análisis, requerimientos, arquitectura, datos, modelo de negocio y plan)
+está en **`docs/AbastoRed_Equipo01_Documento_Tecnico.docx`**.
 
-Los microservicios, la aplicación móvil, la aplicación de escritorio, el monitoreo centralizado y la integración funcional completa con MongoDB se encuentran analizados y diseñados para etapas posteriores.
+## Estructura del repositorio (monorepo)
 
-La versión actual se considera **cloud-enabled** porque puede desplegarse en infraestructura de nube mediante contenedores. La arquitectura objetivo evolucionará hacia un enfoque **cloud-native** utilizando microservicios, servicios administrados, monitoreo centralizado y posible orquestación mediante GKE.
+```
+.
+├── web/              Sistema web empresarial (monolito Flask)              ← implementado
+│   ├── app/
+│   │   ├── __init__.py       crea la app y registra las rutas
+│   │   ├── models/           modelos SQLAlchemy (un archivo por entidad)
+│   │   ├── rutas/            vistas por proceso: inventario, pedidos, análisis...
+│   │   ├── servicios/        reglas de negocio sin dependencia de Flask
+│   │   ├── templates/        Jinja2
+│   │   └── static/           CSS y JS propios (sin frameworks)
+│   ├── tests/                prueba de integración del escenario completo
+│   └── Dockerfile
+├── microservicios/   12 servicios + monitoreo                             ← 2.º parcial
+├── movil/            App Android (Kotlin), sólo JSON                        ← 3.er parcial
+├── escritorio/       App PySide6, sólo XML                                  ← 3.er parcial
+├── db/
+│   ├── postgres/     01_schema.sql, 02_geo.sql (PostGIS), 03_seeds.sql
+│   ├── mongo/        init.js (colecciones e índices)
+│   └── redis/        redis.conf
+├── infra/            despliegue en Google Cloud                            ← 4.º parcial
+├── docs/             documento técnico (Word) y fuentes
+└── docker-compose.yml
+```
 
-## Tech Stack
+## Cómo levantarlo
 
-- **Backend:** Python 3.11, Flask, Gunicorn
-- **Bases de Datos:** 
-  - PostgreSQL 16 + PostGIS (Datos relacionales, usuarios, comercios, catálogo, pedidos y geometrías)
-  - MongoDB 7.0 (Datos no estructurados, telemetría, snapshots de precios)
-  - Redis 7.2 (Caché, manejo de sesiones, colas)
-- **Infraestructura:** Docker, Docker Compose
-
-## Prerequisites
-
-- Docker
-- Docker Compose
-
-## Quick Start
-
-1. Clonar el repositorio.
-2. Crear archivo `.env` a partir de `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
-3. Construir y levantar los contenedores:
-   ```bash
-   docker compose up --build
-   ```
-
-El sistema estará disponible en `http://localhost:5000`.
-
-Verificación básica:
+Requisitos: Docker y Docker Compose.
 
 ```bash
-curl http://localhost:5000/health
+cp .env.example .env
+docker compose up --build
 ```
 
-## Demo técnica sugerida
+El sistema queda en `http://localhost:5000` y la verificación rápida es `curl http://localhost:5000/health`.
 
-1. Iniciar sesión como `admin@abastored.mx`.
-2. Revisar el panel principal y el menú por perfil.
-3. Crear, editar y desactivar un producto desde `Productos`.
-4. Crear, editar y desactivar un comercio desde `Comercios`.
-5. Registrar un precio desde `Precios > Registrar Precio`.
-6. Consultar la comparación de precios por producto, zona y sector.
-7. Revisar el registro en `Auditoría`.
-8. Solicitar un JWT para API:
-   ```bash
-   curl -X POST http://localhost:5000/api/auth/token \
-     -H "Content-Type: application/json" \
-     -d "{\"email\":\"admin@abastored.mx\",\"password\":\"Admin123!\"}"
-   ```
-9. Consultar un endpoint protegido con `Authorization: Bearer <token>`:
-   ```bash
-   curl http://localhost:5000/api/precios/resumen \
-     -H "Authorization: Bearer <token>"
-   ```
+> Si ya habían levantado la versión del primer avance, borren el volumen de PostgreSQL para que se
+> vuelvan a ejecutar los scripts de `db/postgres`: `docker compose down -v`.
 
-## Default Credentials
+### Sin Docker (desarrollo)
 
-La base de datos se inicializa con los siguientes usuarios de prueba (la contraseña para todos es `Password123!`, excepto para el admin que es `Admin123!`):
+Con un PostgreSQL local (PostGIS es opcional; sin él se omite `02_geo.sql`):
 
-- **Administrador General:** `admin@abastored.mx` — contraseña: `Admin123!`
-- **Comerciante Informal:** `comerciante@test.mx` — contraseña: `Password123!`
-- **Minorista Formal:** `minorista@test.mx` — contraseña: `Password123!`
-- **Analista de Mercado:** `analista@test.mx` — contraseña: `Password123!`
-- **Proveedor:** `proveedor@test.mx` — contraseña: `Password123!`
-- **Coordinador Municipal:** `coordinador@test.mx` — contraseña: `Password123!`
-- **Auditor:** `auditor@test.mx` — contraseña: `Password123!`
-
-## Project Structure
-
+```bash
+psql -U abastored_admin -d abastored -f db/postgres/01_schema.sql
+psql -U abastored_admin -d abastored -f db/postgres/03_seeds.sql
+cd web
+pip install -r requirements-dev.txt
+POSTGRES_HOST=localhost python run.py
 ```
-abasto_red/
-├── docker-compose.yml     # Orquestación de servicios
-├── .env.example           # Variables de entorno
-├── .gitignore
-├── .dockerignore
-├── README.md              # Documentación
-├── db/
-│   ├── postgres/          # Scripts SQL (Esquema y Datos Semilla)
-│   ├── mongo/             # Scripts de inicialización MongoDB
-│   └── redis/             # Configuración de Redis
-└── web/                   # Aplicación Flask
-    ├── Dockerfile         # Dockerfile de la aplicación
-    ├── requirements.txt   # Dependencias de Python
-    └── ...                # Código fuente (wsgi.py, modelos, rutas y plantillas)
+
+Redis y MongoDB son opcionales en desarrollo: si no responden, la caché de análisis y las
+notificaciones se desactivan y el sistema sigue funcionando (la API JWT sí exige Redis).
+
+### Pruebas
+
+```bash
+cd web
+pytest -v
 ```
-El archivo `.env` contiene la configuración local y no debe publicarse. Únicamente se conserva `.env.example` como referencia.
 
-## Documentación
+`tests/test_escenario_abasto.py` recorre el escenario completo de la sección siguiente contra la
+base de datos configurada, además de reglas de pedido mínimo, existencia negativa y permisos.
 
-La carpeta `docs/` contiene:
+## Usuarios de prueba
 
-*   `analisis_problema.md`: contexto, usuarios, procesos, riesgos y beneficios.
-*   `matriz_perfiles_permisos.md`: actores, responsabilidades y autorizaciones.
-*   `requerimientos.md`: requerimientos funcionales y no funcionales.
-*   `historias_usuario.md`: historias y criterios de aceptación.
-*   `reglas_negocio.md`: reglas aplicables a los procesos.
-*   `casos_uso.md`: casos de uso principales.
-*   `matriz_trazabilidad.md`: relación entre requerimientos, historias, reglas y pruebas.
-*   `arquitectura.md`: diagramas y distribución de responsabilidades.
-*   `diseno_datos.md`: diseño de PostgreSQL, MongoDB y Redis.
-*   `casos_prueba.md`: validaciones actuales y pruebas futuras.
-*   `gestion_proyecto.md`: ramas, tablero, incidencias y convenciones.
-*   `plan_trabajo_semestre.md`: distribución del trabajo por parcial.
-*   `prototipos_interfaces.md`: descripción de las interfaces.
+Contraseña `Password123!` (administrador: `Admin123!`).
 
-## Development Guidelines
+| Perfil | Correo | Qué revisar |
+| :--- | :--- | :--- |
+| Administrador General | `admin@abastored.mx` | Usuarios, roles y permisos, parámetros, catálogos, comisiones |
+| Comerciante Informal | `comerciante@test.mx` | Inventario del puesto 7 del tianguis Los Nogales (García Norte) |
+| Minorista Formal | `minorista@test.mx` | Tres tiendas, pedidos entregados |
+| Proveedor | `proveedor@test.mx` | Distribuidora Regia (plan Destacado), pedido por aceptar |
+| Proveedor | `proveedor3@test.mx` | Bodega 14 del Mercado de Abastos (frutas y verduras) |
+| Analista de Mercado | `analista@test.mx` | Comparación de precios, cobertura, brechas, reportes |
+| Coordinador Municipal | `coordinador@test.mx` | Validación de comercios, cobertura por zona |
+| Auditor | `auditor@test.mx` | Bitácora e historial de pedidos |
 
-- **Nomenclatura:** Utilizar `snake_case` para variables y funciones en Python, `PascalCase` para Clases. En base de datos usar `snake_case` para tablas y columnas.
-- **Idioma:** Comentarios, documentación y textos de cara al usuario deben estar en **Español**. Los identificadores en el código (nombres de variables, funciones, clases) pueden estar en **Inglés** por convención.
-- **Formato:** Seguir las convenciones de PEP 8 para código Python.
+## Escenario de demostración
 
-## Branch Strategy
+1. **Registro.** En `/registro` crear una cuenta de *Comerciante informal*.
+2. **Comercio.** Registrar el comercio con ubicación dentro de García Norte
+   (por ejemplo `25.8210, -100.5890`); la zona se asigna sola y queda *pendiente*.
+3. **Catálogo del comercio.** Elegir del catálogo maestro los productos que vende.
+4. **Existencias** y 5. **precios** en la misma pantalla (con mínimo y máximo).
+6. **Disponibilidad pública.** Entrar como `coordinador@test.mx`, validar el comercio y consultar
+   `/disponibilidad` sin sesión.
+7. **Bajo inventario.** Con el comerciante, *Inventario → Por surtir*.
+8. **Precios de proveedores.** *Comparar proveedores* muestra precio de mayoreo, venta mínima,
+   existencia, pedido mínimo y tiempo de entrega.
+9. **Brechas** (`analista@test.mx` → *Brechas de surtido*, zona García Norte) y
+   10. **recomendaciones** (comerciante → *Recomendaciones*).
+11. **Pedido.** Agregar productos y *Confirmar y enviar* (valida el pedido mínimo).
+12. **El proveedor recibe** (`proveedor3@test.mx` → *Pedidos recibidos*) y 13. **acepta o rechaza**.
+14. **Actualiza el estado:** en preparación → enviado.
+15. **Recepción** por el comerciante y 16. **entrada automática al inventario**.
+17. **Auditoría** (`auditor@test.mx`): cada cambio de estado con usuario, fecha e IP.
 
-- `main`: Código estable de producción.
-- `develop`: Rama de integración principal para desarrollo.
-- `feature/*`: Para nuevas funcionalidades (ej. `feature/modulo-pagos`).
-- `hotfix/*`: Para correcciones críticas en producción.
+## Convenciones
 
-## Estado de Implementación
+- Python PEP 8; `snake_case` en funciones, variables, tablas y columnas; `PascalCase` en clases.
+- Identificadores y textos en español, igual que el dominio del negocio.
+- Rutas agrupadas por proceso en `web/app/rutas/`; nombre del endpoint = nombre de la función.
+- Toda operación que cambia datos registra un evento de auditoría en la misma transacción.
+- Bajas lógicas (`activo = false`); los registros de auditoría son inmutables.
+- Claves de Redis con prefijo de dominio y TTL explícito (`jwt:blacklist:*`, `analisis:*`,
+  `precio_promedio:*`, `recuperacion:*`).
 
-| Componente | Estado en el primer parcial |
-| :--- | :--- |
-| Aplicación web Flask | Implementado |
-| PostgreSQL/PostGIS | Implementado |
-| Redis | Implementación inicial |
-| MongoDB | Inicialización y diseño; integración funcional futura |
-| Docker Compose | Configuración inicial disponible |
-| Microservicios | Diseñados para etapas posteriores |
-| Aplicación móvil | Diseñada para etapas posteriores |
-| Aplicación de escritorio | Diseñada para etapas posteriores |
-| Compute Engine | Despliegue futuro |
-| GKE | Uso futuro si el volumen lo justifica |
-| Monitoreo centralizado | Diseñado para etapas posteriores |
-| Pruebas automatizadas | Planeadas para etapas posteriores |
+## Ramas
+
+- `main`: lo que se entrega.
+- `develop`: integración.
+- `feature/<componente>-<descripcion>`: por ejemplo `feature/web-pedidos`, `feature/ms-precios`.
+- `hotfix/<descripcion>`: correcciones sobre `main`.
+
+Cada *pull request* hacia `develop` requiere que `pytest` pase y la revisión de otro integrante.

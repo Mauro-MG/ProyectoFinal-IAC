@@ -1,4 +1,5 @@
-version: '3.8'
+# AbastoRed - Equipo 01. Entorno de desarrollo local.
+# Uso: cp .env.example .env && docker compose up --build
 
 services:
   abastored-web:
@@ -8,24 +9,6 @@ services:
     container_name: abastored-web
     ports:
       - "5000:5000"
-    environment:
-      - FLASK_APP=${FLASK_APP:-app.py}
-      - FLASK_ENV=${FLASK_ENV:-development}
-      - SECRET_KEY=${SECRET_KEY}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - MONGO_USER=${MONGO_USER}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_DB=${MONGO_DB}
-      - MONGO_HOST=${MONGO_HOST}
-      - MONGO_PORT=${MONGO_PORT}
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
     depends_on:
       abastored-postgres:
         condition: service_healthy

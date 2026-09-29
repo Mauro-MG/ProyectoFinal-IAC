@@ -1,0 +1,83 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import campo, estado %}
+{% block titulo %}{{ renglon.producto.nombre }}{% endblock %}
+{% block contenido %}
+{% set unidad = renglon.producto.unidad_medida %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('inventario', comercio_id=renglon.comercio_id) }}">Inventario de {{ renglon.comercio.nombre_comercio }}</a></div>
+        <h1>{{ renglon.producto.nombre }} {{ estado(renglon.estado) }}</h1>
+        <p>{{ renglon.existencia|cantidad }} {{ unidad }} en existencia · precio {{ renglon.precio_venta|moneda }}</p>
+    </div>
+    <div class="acciones">
+        <a class="btn" href="{{ url_for('proveedores_por_producto', producto_id=renglon.producto_id, comercio_id=renglon.comercio_id) }}">¿Quién me lo vende?</a>
+        <form class="en-linea" method="post" action="{{ url_for('inventario_quitar', id=renglon.id) }}"
+              data-confirmar="¿Dejar de vender {{ renglon.producto.nombre }}? El historial se conserva.">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-peligro">Ya no lo vendo</button>
+        </form>
+    </div>
+</div>
+
+<div class="rejilla rejilla-2">
+    <form method="post" action="{{ url_for('inventario_movimiento', id=renglon.id) }}" class="tarjeta">
+        <h2>Registrar movimiento</h2>
+        {{ form_movimiento.hidden_tag() }}
+        {{ campo(form_movimiento.tipo) }}
+        {{ campo(form_movimiento.cantidad, step='any', min='0',
+                 ayuda='En un ajuste, captura la cantidad que contaste físicamente (' ~ unidad ~ ').') }}
+        {{ campo(form_movimiento.motivo, placeholder='Compra en central, venta, merma…') }}
+        <button class="btn btn-primario">Registrar</button>
+    </form>
+
+    <form method="post" action="{{ url_for('inventario_editar', id=renglon.id) }}" class="tarjeta">
+        <h2>Precio y límites</h2>
+        {{ form_edicion.hidden_tag() }}
+        {{ campo(form_edicion.precio_venta, step='0.01', ayuda='Cada cambio queda en el historial de precios.') }}
+        <div class="fila-campos">
+            {{ campo(form_edicion.stock_minimo, step='any', ayuda='Por debajo de esto te avisamos.') }}
+            {{ campo(form_edicion.stock_maximo, step='any', ayuda='Lo que te cabe; sirve para sugerir cuánto pedir.') }}
+        </div>
+        <button class="btn btn-primario">Guardar</button>
+    </form>
+</div>
+
+<div class="rejilla rejilla-2" style="margin-top: 1rem">
+    <div class="tabla-contenedor">
+        <table>
+            <thead><tr><th colspan="5">Movimientos recientes</th></tr>
+            <tr><th>Fecha</th><th>Tipo</th><th class="num">Cantidad</th><th class="num">Existencia</th><th>Motivo</th></tr></thead>
+            <tbody>
+            {% for m in movimientos %}
+            <tr>
+                <td class="nowrap"><small>{{ m.created_at|fecha }}</small></td>
+                <td>{{ m.tipo|capitalize }}</td>
+                <td class="num">{{ '-' if m.tipo == 'SALIDA' or (m.tipo == 'AJUSTE' and m.existencia_nueva < m.existencia_anterior) else '+' }}{{ m.cantidad|cantidad }}</td>
+                <td class="num">{{ m.existencia_anterior|cantidad }} → {{ m.existencia_nueva|cantidad }}</td>
+                <td><small>{{ m.motivo or '' }}{% if m.pedido_id %} <a href="{{ url_for('pedido_detalle', id=m.pedido_id) }}">ver pedido</a>{% endif %}</small></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="vacio">Sin movimientos.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="tabla-contenedor">
+        <table>
+            <thead><tr><th colspan="3">Historial de precio</th></tr>
+            <tr><th>Fecha</th><th class="num">Precio</th><th>Validación</th></tr></thead>
+            <tbody>
+            {% for pr in precios %}
+            <tr>
+                <td class="nowrap"><small>{{ pr.fecha_registro|fecha }}</small></td>
+                <td class="num">{{ pr.precio|moneda }}</td>
+                <td>{{ estado(pr.estado_validacion) }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="vacio">Sin precios registrados.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

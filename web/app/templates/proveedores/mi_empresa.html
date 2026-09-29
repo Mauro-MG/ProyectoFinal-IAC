@@ -1,0 +1,51 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import campo %}
+{% block titulo %}Mi empresa{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>{{ proveedor.nombre_empresa if proveedor else 'Datos de tu empresa' }}
+            {% if proveedor and proveedor.plan == 'DESTACADO' %}<span class="etiqueta-estado destacado">Plan Destacado</span>{% endif %}</h1>
+        <p>Los comerciantes ven estas condiciones al comparar proveedores. Sólo podrán pedirte desde las zonas que marques.</p>
+    </div>
+</div>
+<form method="post" class="formulario tarjeta">
+    {{ form.hidden_tag() }}
+    <div class="fila-campos">
+        {{ campo(form.nombre_empresa) }}
+        {{ campo(form.rfc) }}
+    </div>
+    {{ campo(form.descripcion, rows=2) }}
+    <div class="fila-campos">
+        {{ campo(form.telefono_contacto) }}
+        {{ campo(form.email_contacto) }}
+    </div>
+    <div class="fila-campos">
+        {{ campo(form.direccion) }}
+        {{ campo(form.municipio) }}
+    </div>
+    <div class="fila-campos">
+        {{ campo(form.latitud, id='latitud') }}
+        {{ campo(form.longitud, id='longitud') }}
+    </div>
+
+    <h3 style="margin-top: .5rem">Condiciones comerciales</h3>
+    <div class="fila-campos">
+        {{ campo(form.pedido_minimo, step='0.01', ayuda='No se podrán enviar pedidos por debajo de este monto.') }}
+        {{ campo(form.tiempo_entrega_dias, ayuda='0 = entrega el mismo día.') }}
+    </div>
+    {{ campo(form.condiciones_venta, rows=2, placeholder='Forma de pago, cambios, crédito…') }}
+
+    <div class="campo">
+        <span class="etiqueta-campo">{{ form.zonas.label.text }}</span>
+        {{ form.zonas(class='casillas') }}
+    </div>
+
+    <div class="formulario-acciones"><button class="btn btn-primario">Guardar</button></div>
+</form>
+
+{% if proveedor and proveedor.plan != 'DESTACADO' %}
+<div class="nota">Con el plan Destacado tu empresa aparece con distintivo y puedes descargar el reporte de
+    oportunidades de abasto: productos con brecha en tus zonas de entrega. Solicítalo al administrador de la plataforma.</div>
+{% endif %}
+{% endblock %}

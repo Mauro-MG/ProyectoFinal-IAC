@@ -1,0 +1,71 @@
+{% extends "portal.html" %}
+{% block titulo %}{{ proveedor.nombre_empresa }}{% endblock %}
+{% block contenido %}
+{% set cubre = comercio and proveedor.cubre_zona(comercio.zona_id) %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('proveedores_lista') }}">Proveedores</a></div>
+        <h1>{{ proveedor.nombre_empresa }}
+            {% if proveedor.plan == 'DESTACADO' %}<span class="etiqueta-estado destacado">Destacado</span>{% endif %}</h1>
+        <p>{{ proveedor.descripcion or '' }}</p>
+    </div>
+    {% if comercios|length > 1 %}
+    <form method="get"><select name="comercio_id" data-autoenviar aria-label="Comercio">
+        {% for c in comercios %}<option value="{{ c.id }}" {{ 'selected' if c.id == comercio.id }}>Pedir para {{ c.nombre_comercio }}</option>{% endfor %}
+    </select></form>
+    {% endif %}
+</div>
+
+<div class="rejilla rejilla-2">
+    <div class="tarjeta">
+        <h2>Condiciones de venta</h2>
+        <dl class="datos">
+            <dt>Pedido mínimo</dt><dd>{{ proveedor.pedido_minimo|moneda }}</dd>
+            <dt>Tiempo de entrega</dt><dd>{{ 'Mismo día' if proveedor.tiempo_entrega_dias == 0 else proveedor.tiempo_entrega_dias ~ ' día(s)' }}</dd>
+            <dt>Condiciones</dt><dd>{{ proveedor.condiciones_venta or '—' }}</dd>
+            <dt>Contacto</dt><dd>{{ proveedor.telefono_contacto or '' }} {{ proveedor.email_contacto or '' }}</dd>
+            <dt>Bodega</dt><dd>{{ proveedor.direccion or '—' }}{% if proveedor.municipio %}, {{ proveedor.municipio }}{% endif %}</dd>
+        </dl>
+    </div>
+    <div class="tarjeta">
+        <h2>Zonas de entrega</h2>
+        <p>{% for z in proveedor.zonas %}{{ z.nombre }}{{ ', ' if not loop.last }}{% else %}Sin zonas registradas.{% endfor %}</p>
+        {% if comercio %}
+        <p class="nota">{% if cubre %}Entrega en la zona de {{ comercio.nombre_comercio }}.
+            {% else %}No entrega en la zona de {{ comercio.nombre_comercio }}; no puedes hacerle pedidos desde ese comercio.{% endif %}</p>
+        {% endif %}
+    </div>
+</div>
+
+<h2 style="margin-top: 1.25rem">Catálogo mayorista</h2>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Producto</th><th class="num">Precio mayoreo</th><th class="num">Venta mínima</th><th class="num">Disponible</th><th>Actualizado</th>{% if cubre %}<th>Agregar al pedido</th>{% endif %}</tr></thead>
+        <tbody>
+        {% for o in ofertas %}
+        <tr>
+            <td>{{ o.producto.nombre }}</td>
+            <td class="num">{{ o.precio_mayoreo|moneda }} <small>/ {{ o.producto.unidad_medida }}</small></td>
+            <td class="num">{{ o.cantidad_minima|cantidad }}</td>
+            <td class="num">{% if o.existencia_disponible > 0 %}{{ o.existencia_disponible|cantidad }}{% else %}<span class="etiqueta-estado critico">Sin existencia</span>{% endif %}</td>
+            <td class="nowrap"><small>{{ o.updated_at|fecha(false) }}</small></td>
+            {% if cubre %}
+            <td>{% if o.existencia_disponible > 0 %}
+                <form class="acciones" method="post" action="{{ url_for('pedido_nuevo') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="comercio_id" value="{{ comercio.id }}">
+                    <input type="hidden" name="proveedor_id" value="{{ proveedor.id }}">
+                    <input type="hidden" name="producto_id" value="{{ o.producto_id }}">
+                    <input class="input-chico" type="number" name="cantidad" min="{{ o.cantidad_minima }}" step="any" value="{{ o.cantidad_minima|cantidad }}" aria-label="Cantidad">
+                    <button class="btn btn-chico">Agregar</button>
+                </form>
+            {% endif %}</td>
+            {% endif %}
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="vacio">Este proveedor aún no publica productos.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

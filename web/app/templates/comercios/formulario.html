@@ -1,35 +1,48 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="form-container">
-    <h2>{{ title }}</h2>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <div class="form-group">
-            {{ form.nombre_comercio.label }}
-            {{ form.nombre_comercio(class="form-control") }}
-        </div>
-        <div class="form-group">
-            {{ form.tipo_comercio.label }}
-            {{ form.tipo_comercio(class="form-control") }}
-        </div>
-        <div class="form-group">
-            {{ form.direccion.label }}
-            {{ form.direccion(class="form-control") }}
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                {{ form.municipio.label }}
-                {{ form.municipio(class="form-control") }}
-            </div>
-            <div class="form-group col-md-6">
-                {{ form.estado.label }}
-                {{ form.estado(class="form-control") }}
-            </div>
-        </div>
-        <div class="form-actions mt-3">
-            {{ form.submit(class="btn btn-primary") }}
-            <a href="{{ url_for('comercios.lista') }}" class="btn btn-secondary">Cancelar</a>
-        </div>
-    </form>
+{% extends "portal.html" %}
+{% from "_macros.html" import campo %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('comercios_lista') }}">Comercios</a></div>
+        <h1>{{ titulo }}</h1>
+        <p>Con la ubicación asignamos tu zona automáticamente. Sólo la usamos para los indicadores de cobertura;
+           en el sitio público se muestra la zona, no las coordenadas.</p>
+    </div>
 </div>
+
+<form method="post" class="formulario tarjeta">
+    {{ form.hidden_tag() }}
+    <div class="fila-campos">
+        {{ campo(form.nombre_comercio) }}
+        {{ campo(form.tipo_comercio) }}
+    </div>
+    {{ campo(form.direccion, ayuda='Para puestos de tianguis: nombre del tianguis y pasillo.') }}
+    <div class="fila-campos">
+        {{ campo(form.colonia) }}
+        {{ campo(form.municipio) }}
+        {{ campo(form.estado) }}
+    </div>
+
+    <h3 style="margin-top: .5rem">Ubicación</h3>
+    <div class="fila-campos">
+        {{ campo(form.latitud, id='latitud', placeholder='25.6714') }}
+        {{ campo(form.longitud, id='longitud', placeholder='-100.3095') }}
+        {{ campo(form.zona_id) }}
+    </div>
+    <p><button type="button" class="btn btn-chico" id="usar-ubicacion">Usar mi ubicación actual</button></p>
+
+    <h3 style="margin-top: 1rem">Contacto y horario</h3>
+    <div class="fila-campos">
+        {{ campo(form.telefono_comercio) }}
+        {{ campo(form.horario_apertura) }}
+        {{ campo(form.horario_cierre) }}
+    </div>
+    {{ campo(form.descripcion, rows=2) }}
+
+    <div class="formulario-acciones">
+        <button class="btn btn-primario">Guardar</button>
+        <a class="btn" href="{{ url_for('comercios_lista') }}">Cancelar</a>
+    </div>
+</form>
 {% endblock %}

@@ -43,22 +43,22 @@ def _build_redis_url():
     auth = f':{quote_plus(password)}@' if password else ''
     return f'redis://{auth}{host}:{port}/0'
 
+
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-key-change-in-prod')
     SQLALCHEMY_DATABASE_URI = _build_postgres_uri()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     REDIS_URL = _build_redis_url()
     MONGO_URI = _build_mongo_uri()
+    MONGO_DB = os.environ.get('MONGO_DB', 'abastored')
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'jwt-key-change-in-prod')
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=int(os.environ.get('JWT_ACCESS_TOKEN_EXPIRES_HOURS', '8')))
     PRECIO_PROMEDIO_TTL_SEGUNDOS = int(os.environ.get('PRECIO_PROMEDIO_TTL_SEGUNDOS', '14400'))
 
+
 class DevelopmentConfig(Config):
     DEBUG = True
 
+
 class ProductionConfig(Config):
     DEBUG = False
-
-class TestingConfig(Config):
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'

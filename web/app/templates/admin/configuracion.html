@@ -1,0 +1,22 @@
+{% extends "portal.html" %}
+{% block titulo %}Parámetros{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Parámetros del sistema</h1>
+        <p>Umbrales de brechas y recomendaciones, comisión de la plataforma y otros valores de operación.
+           Al guardar se invalida la caché de análisis en Redis.</p>
+    </div>
+</div>
+<form method="post" class="tarjeta formulario">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% for p in parametros %}
+    <div class="campo">
+        <label for="{{ p.clave }}">{{ p.descripcion or p.clave }}</label>
+        <input type="{{ 'number' if p.tipo_dato in ('int', 'float') else 'text' }}" step="any" id="{{ p.clave }}" name="{{ p.clave }}" value="{{ p.valor or '' }}">
+        <div class="ayuda"><code>{{ p.clave }}</code>{% if p.updated_at %} · modificado {{ p.updated_at|fecha }}{% endif %}</div>
+    </div>
+    {% endfor %}
+    <div class="formulario-acciones"><button class="btn btn-primario">Guardar</button></div>
+</form>
+{% endblock %}

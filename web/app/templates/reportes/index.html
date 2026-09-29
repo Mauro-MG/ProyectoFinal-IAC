@@ -1,0 +1,101 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import estado, opciones %}
+{% block titulo %}Reportes{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Reportes</h1>
+        <p>Tendencias de precio, actividad de pedidos y oportunidades de abasto. Cada exportación queda registrada en la bitácora.</p>
+    </div>
+    <div class="acciones">
+        {% if current_user.tiene_permiso('reportes.ver') %}
+        <a class="btn" href="{{ url_for('exportar', tipo='disponibilidad') }}">Disponibilidad (CSV)</a>
+        {% endif %}
+        {% if current_user.tiene_permiso('analisis.ver') %}
+        <a class="btn" href="{{ url_for('exportar', tipo='brechas') }}">Brechas (CSV)</a>
+        {% endif %}
+        {% if puede_oportunidades %}
+        <a class="btn btn-primario" href="{{ url_for('exportar', tipo='oportunidades') }}">Oportunidades de abasto (CSV)</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if datos.tendencia is defined %}
+<div class="tarjeta">
+    <div class="tarjeta-titulo">
+        <h2>Tendencia de precio</h2>
+        <form method="get"><select name="producto_id" data-autoenviar aria-label="Producto">{{ opciones(productos, datos.producto_id, vacio='Elige un producto') }}</select></form>
+    </div>
+    {% if datos.tendencia and datos.tendencia.series %}<div id="grafica-tendencia" class="grafica"></div>
+    {% else %}<p class="tenue">Sin datos para el producto elegido.</p>{% endif %}
+</div>
+
+<div class="rejilla rejilla-2" style="margin-top: 1rem">
+    <div class="tarjeta">
+        <h2>Pedidos por estado</h2>
+        <div id="grafica-pedidos" class="grafica"></div>
+    </div>
+    <div class="tarjeta">
+        <h2>Ranking de zonas por acceso</h2>
+        <table class="subtabla">
+            <thead><tr><th>#</th><th>Zona</th><th class="num">Índice</th><th>Clasificación</th></tr></thead>
+            <tbody>
+            {% for z in datos.zonas %}
+            <tr><td>{{ z.ranking }}</td><td>{{ z.nombre }}</td><td class="num">{{ z.indice_acceso }} %</td><td>{{ z.clasificacion }}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% if datos.oportunidades is defined %}
+<div class="tarjeta">
+    <div class="tarjeta-titulo">
+        <h2>Oportunidades de abasto</h2>
+        <small>Productos con brecha alta o media y demanda{% if not current_user.tiene_permiso('reportes.ver') %}, en tus zonas de entrega{% endif %}</small>
+    </div>
+    <table class="subtabla">
+        <thead><tr><th>Zona</th><th>Producto</th><th class="num">Cobertura</th><th class="num">Comercios sin existencia</th><th class="num">Ventas 30 d</th><th class="num">Proveedores</th><th>Brecha</th></tr></thead>
+        <tbody>
+        {% for f in datos.oportunidades %}
+        <tr><td>{{ f.zona }}</td><td>{{ f.producto }}</td><td class="num">{{ f.cobertura }} %</td>
+            <td class="num">{{ f.sin_disponibilidad }} de {{ f.comercios_analizados }}</td><td class="num">{{ f.ventas|round|int }}</td>
+            <td class="num">{{ f.proveedores }}</td><td>{{ estado(f.nivel) }}</td></tr>
+        {% else %}
+        <tr><td colspan="7" class="vacio">No hay oportunidades con los datos actuales.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% elif current_user.tiene_permiso('pedidos.atender') %}
+<div class="tarjeta">
+    <h2>Oportunidades de abasto</h2>
+    <p class="tenue">Este reporte muestra, para tus zonas de entrega, qué productos faltan en los comercios y cuánta demanda tienen.
+        Está incluido en el plan Destacado para proveedores.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if datos.tendencia is defined %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script>
+Highcharts.setOptions({ credits: { enabled: false }, colors: ['#25609e', '#c27c0e', '#1f6f4a', '#5b3f8c', '#b3322a', '#7d8a84'] });
+{% if datos.tendencia and datos.tendencia.series %}
+Highcharts.chart('grafica-tendencia', {
+    title: { text: null },
+    xAxis: { categories: {{ datos.tendencia.categorias|tojson }}, title: { text: 'Semana' } },
+    yAxis: { title: { text: 'Precio promedio (MXN)' } },
+    tooltip: { shared: true, valuePrefix: '$', valueDecimals: 2 },
+    series: {{ datos.tendencia.series|tojson }},
+});
+{% endif %}
+Highcharts.chart('grafica-pedidos', {
+    chart: { type: 'pie' }, title: { text: null },
+    tooltip: { pointFormat: '{point.y} pedidos' },
+    series: [{ name: 'Pedidos', data: {{ datos.pedidos|tojson }} }],
+});
+</script>
+{% endif %}
+{% endblock %}

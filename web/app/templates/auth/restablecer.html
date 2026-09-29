@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "_macros.html" import campo %}
+{% block titulo %}Nueva contraseña{% endblock %}
+{% block contenido %}
+<div class="acceso-cuenta tarjeta">
+    <h1>Nueva contraseña</h1>
+    <form method="post" style="margin-top: 1rem">
+        {{ form.hidden_tag() }}
+        {{ campo(form.password, autocomplete='new-password') }}
+        {{ campo(form.confirmar, autocomplete='new-password') }}
+        <button class="btn btn-primario">Guardar</button>
+    </form>
+</div>
+{% endblock %}

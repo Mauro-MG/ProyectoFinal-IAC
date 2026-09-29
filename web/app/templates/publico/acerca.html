@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block titulo %}Acerca del proyecto{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Acerca de AbastoRed</h1>
+        <p>Proyecto 14 · Plataforma híbrida para comercio formal e informal. Integración de Aplicaciones, Universidad de Monterrey.</p>
+    </div>
+</div>
+
+<div class="rejilla rejilla-2">
+    <div class="tarjeta">
+        <h2>Equipo 01</h2>
+        <ul class="lista-simple">
+            <li>José Humberto Moreno <span class="tenue">596055</span></li>
+            <li>David López <span class="tenue">600390</span></li>
+            <li>Mauro Montelongo <span class="tenue">595821</span></li>
+            <li>Humberto Vargas <span class="tenue">604775</span></li>
+        </ul>
+    </div>
+    <div class="tarjeta">
+        <h2>Qué problema atiende</h2>
+        <p>Muchos comerciantes de tianguis y tiendas de barrio no llevan inventario, compran a ciegas en la central
+           de abastos y no saben qué productos faltan en su colonia. AbastoRed les da inventario simple, precios
+           de mayoreo comparables y pedidos a proveedores, y con esos mismos datos el municipio ve dónde
+           hay zonas con poco acceso a la canasta básica.</p>
+    </div>
+</div>
+
+<div class="tarjeta">
+    <h2>Cómo se calculan los indicadores</h2>
+    <dl class="datos">
+        <dt>Cobertura</dt>
+        <dd>Porcentaje de los comercios de la zona que tienen existencia de un producto.</dd>
+        <dt>Brecha de surtido</dt>
+        <dd>Clasificación de la cobertura: alta (menos de 30 %), media (menos de 60 %), baja (menos de 80 %).
+            Los umbrales los ajusta el administrador.</dd>
+        <dt>Déficit de puntos</dt>
+        <dd>Puntos de venta con existencia que la zona necesitaría según su población, menos los que ya tiene.</dd>
+        <dt>Índice de acceso</dt>
+        <dd>Promedio de la cobertura de todos los productos de la canasta básica en la zona.</dd>
+        <dt>Recomendación de surtido</dt>
+        <dd>Se sugiere un producto a un comercio si no lo vende, tiene baja cobertura en su zona, hay demanda
+            (es canasta básica o registra ventas) y algún proveedor lo entrega ahí.</dd>
+    </dl>
+</div>
+{% endblock %}

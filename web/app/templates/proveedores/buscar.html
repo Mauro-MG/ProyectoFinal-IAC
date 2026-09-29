@@ -1,0 +1,72 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import estado %}
+{% block titulo %}¿Quién me lo vende?{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('proveedores_lista') }}">Proveedores</a></div>
+        <h1>{% if producto %}¿Quién me vende {{ producto.nombre }}?{% else %}Buscar proveedor por producto{% endif %}</h1>
+        {% if renglon %}
+        <p>En {{ comercio.nombre_comercio }} tienes {{ renglon.existencia|cantidad }} {{ producto.unidad_medida }} {{ estado(renglon.estado) }}.
+           Para llegar a tu máximo te faltan <strong>{{ renglon.cantidad_sugerida|cantidad }} {{ producto.unidad_medida }}</strong>.</p>
+        {% endif %}
+    </div>
+</div>
+
+<form class="filtros" method="get">
+    <div class="campo"><label for="producto_id">Producto</label>
+        <select id="producto_id" name="producto_id" data-autoenviar>
+            <option value="">Elige un producto</option>
+            {% for p in productos %}<option value="{{ p.id }}" {{ 'selected' if producto and p.id == producto.id }}>{{ p.nombre }}</option>{% endfor %}
+        </select></div>
+    {% if comercios %}
+    <div class="campo"><label for="comercio_id">Para</label>
+        <select id="comercio_id" name="comercio_id" data-autoenviar>
+            {% for c in comercios %}<option value="{{ c.id }}" {{ 'selected' if c.id == comercio.id }}>{{ c.nombre_comercio }}</option>{% endfor %}
+        </select></div>
+    {% endif %}
+</form>
+
+{% if producto %}
+{% set sugerida = renglon.cantidad_sugerida if renglon else none %}
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Proveedor</th><th class="num">Precio mayoreo</th><th class="num">Venta mínima</th><th class="num">Disponible</th>
+            <th class="num">Pedido mínimo</th><th>Entrega</th><th>Condiciones</th>{% if comercio %}<th>Pedir</th>{% endif %}</tr></thead>
+        <tbody>
+        {% for o in ofertas %}
+        {% set pv = o.proveedor %}
+        <tr>
+            <td><a href="{{ url_for('proveedor_detalle', id=pv.id, comercio_id=comercio.id if comercio else None) }}">{{ pv.nombre_empresa }}</a>
+                {% if pv.plan == 'DESTACADO' %}<span class="etiqueta-estado destacado">Destacado</span>{% endif %}
+                {% if comercio and not o.cubre_zona %}<br><small>No entrega en tu zona</small>{% endif %}</td>
+            <td class="num"><strong>{{ o.precio_mayoreo|moneda }}</strong></td>
+            <td class="num">{{ o.cantidad_minima|cantidad }} {{ producto.unidad_medida }}</td>
+            <td class="num">{% if o.existencia_disponible > 0 %}{{ o.existencia_disponible|cantidad }}{% else %}<span class="etiqueta-estado critico">Sin existencia</span>{% endif %}</td>
+            <td class="num">{{ pv.pedido_minimo|moneda }}</td>
+            <td class="nowrap">{{ 'Mismo día' if pv.tiempo_entrega_dias == 0 else pv.tiempo_entrega_dias ~ ' día(s)' }}</td>
+            <td><small>{{ pv.condiciones_venta or '—' }}</small></td>
+            {% if comercio %}
+            <td>{% if o.cubre_zona and o.existencia_disponible > 0 %}
+                <form class="acciones" method="post" action="{{ url_for('pedido_nuevo') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="comercio_id" value="{{ comercio.id }}">
+                    <input type="hidden" name="proveedor_id" value="{{ pv.id }}">
+                    <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                    <input class="input-chico" type="number" name="cantidad" min="{{ o.cantidad_minima }}" step="any"
+                           value="{{ ([sugerida or 0, o.cantidad_minima]|max)|cantidad }}" aria-label="Cantidad">
+                    <button class="btn btn-chico btn-primario">Agregar a pedido</button>
+                </form>
+            {% endif %}</td>
+            {% endif %}
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="vacio">Ningún proveedor ofrece este producto todavía.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="nota">Primero aparecen los proveedores que entregan en tu zona y tienen existencia, ordenados del precio más bajo al más alto.
+    Si ya tienes un borrador con ese proveedor, el producto se agrega a ese mismo pedido.</p>
+{% endif %}
+{% endblock %}

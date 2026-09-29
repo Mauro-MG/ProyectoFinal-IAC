@@ -1,7 +1,5 @@
-from app import create_app
-import os
-
-app = create_app()
+"""Servidor de desarrollo: python run.py"""
+from app import app
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

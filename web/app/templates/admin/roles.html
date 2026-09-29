@@ -1,0 +1,34 @@
+{% extends "portal.html" %}
+{% block titulo %}Roles y permisos{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Roles y permisos</h1>
+        <p>Matriz de permisos por rol. Los cambios aplican de inmediato a todos los usuarios del rol y quedan en la bitácora.</p>
+    </div>
+</div>
+<form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="tabla-contenedor">
+        <table>
+            <thead>
+            <tr><th>Permiso</th>{% for r in roles %}<th style="text-align: center; white-space: normal; min-width: 90px">{{ r.nombre }}</th>{% endfor %}</tr>
+            </thead>
+            <tbody>
+            {% for codigo, descripcion in permisos.items() %}
+            <tr>
+                <td>{{ descripcion }}<br><small><code>{{ codigo }}</code></small></td>
+                {% for r in roles %}
+                <td style="text-align: center">
+                    <input type="checkbox" name="permisos_{{ r.id }}" value="{{ codigo }}" aria-label="{{ r.nombre }}: {{ descripcion }}"
+                           {{ 'checked' if codigo in (r.permisos or []) }}>
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="formulario-acciones"><button class="btn btn-primario">Guardar permisos</button></div>
+</form>
+{% endblock %}

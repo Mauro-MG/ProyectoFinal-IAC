@@ -1,0 +1,47 @@
+{% extends "portal.html" %}
+{% block titulo %}Agregar productos{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('inventario', comercio_id=comercio.id) }}">Inventario de {{ comercio.nombre_comercio }}</a></div>
+        <h1>¿Qué productos vendes?</h1>
+        <p>Marca los productos del catálogo maestro que manejas. La existencia, el mínimo y el precio son opcionales;
+           puedes capturarlos después. El mínimo es la cantidad a partir de la cual te avisamos que debes surtir.</p>
+    </div>
+</div>
+
+{% if not productos %}
+<div class="tarjeta"><p>Ya vendes todos los productos del catálogo maestro.</p></div>
+{% else %}
+<form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="tabla-contenedor">
+        <table>
+            <thead><tr><th></th><th>Producto</th><th>Unidad</th><th>Existencia actual</th><th>Stock mínimo</th><th>Stock máximo</th><th>Precio de venta</th></tr></thead>
+            <tbody>
+            {% set categoria = namespace(actual=None) %}
+            {% for p in productos %}
+            {% if p.categoria.nombre != categoria.actual %}
+                {% set categoria.actual = p.categoria.nombre %}
+                <tr><th colspan="7">{{ p.categoria.nombre }}</th></tr>
+            {% endif %}
+            <tr data-producto="{{ p.id }}">
+                <td><input type="checkbox" name="producto_id" value="{{ p.id }}" id="p{{ p.id }}" {{ 'checked' if p.id in seleccion }}></td>
+                <td><label for="p{{ p.id }}">{{ p.nombre }}</label>{% if p.es_canasta_basica %} <small>· canasta básica</small>{% endif %}</td>
+                <td>{{ p.unidad_medida }}</td>
+                <td><input class="input-chico" type="number" min="0" step="any" name="existencia_{{ p.id }}" value="{{ datos.get('existencia_%d'|format(p.id), '') }}"></td>
+                <td><input class="input-chico" type="number" min="0" step="any" name="minimo_{{ p.id }}" value="{{ datos.get('minimo_%d'|format(p.id), '') }}"></td>
+                <td><input class="input-chico" type="number" min="0" step="any" name="maximo_{{ p.id }}" value="{{ datos.get('maximo_%d'|format(p.id), '') }}"></td>
+                <td><input class="input-chico" type="number" min="0.01" step="0.01" name="precio_{{ p.id }}" value="{{ datos.get('precio_%d'|format(p.id), '') }}" placeholder="$"></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="formulario-acciones">
+        <button class="btn btn-primario">Agregar seleccionados</button>
+        <a class="btn" href="{{ url_for('inventario', comercio_id=comercio.id) }}">Cancelar</a>
+    </div>
+</form>
+{% endif %}
+{% endblock %}

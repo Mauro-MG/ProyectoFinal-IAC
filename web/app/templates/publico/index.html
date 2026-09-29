@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block titulo %}Inicio{% endblock %}
+{% block contenido %}
+<section class="portada">
+    <div>
+        <h1>¿Dónde encuentro lo que necesito, y a cuánto?</h1>
+        <p>Existencias y precios reportados por tianguis, puestos de mercado y tiendas de barrio del área
+           metropolitana de Monterrey. Los datos los actualizan los propios comerciantes.</p>
+        <form class="buscador" action="{{ url_for('disponibilidad_publica') }}" method="get">
+            <input type="search" name="q" placeholder="Ej. leche, frijol, tomate…" aria-label="Producto">
+            <input type="hidden" name="existencia" value="1">
+            <button class="btn btn-primario">Buscar</button>
+        </form>
+    </div>
+    <div class="cifras" style="margin: 0">
+        <div class="cifra"><div class="valor">{{ resumen.comercios }}</div><div class="etiqueta">puntos de venta verificados</div></div>
+        <div class="cifra"><div class="valor">{{ resumen.productos }}</div><div class="etiqueta">productos con existencia hoy</div></div>
+        <div class="cifra"><div class="valor">{{ resumen.proveedores }}</div><div class="etiqueta">proveedores mayoristas</div></div>
+        <div class="cifra"><div class="valor">{{ resumen.zonas }}</div><div class="etiqueta">zonas monitoreadas</div></div>
+    </div>
+</section>
+
+<div class="tarjeta-titulo">
+    <h2>Acceso a la canasta básica por zona</h2>
+    <a href="{{ url_for('comercios_publico') }}">Ver puntos de venta →</a>
+</div>
+<div class="tabla-contenedor">
+    <table>
+        <thead>
+        <tr><th>Zona</th><th>Municipio</th><th class="num">Puntos de venta</th><th>Acceso a canasta básica</th><th></th></tr>
+        </thead>
+        <tbody>
+        {% for z in zonas|sort(attribute='nombre') %}
+        <tr>
+            <td>{{ z.nombre }}</td>
+            <td>{{ z.municipio }}</td>
+            <td class="num">{{ z.comercios }}</td>
+            <td style="min-width: 180px">
+                {{ z.indice_acceso }} % · {{ z.clasificacion }}
+                <div class="barra-progreso {{ 'alerta' if z.indice_acceso < 50 }}"><span style="width: {{ z.indice_acceso }}%"></span></div>
+            </td>
+            <td><a href="{{ url_for('disponibilidad_publica', zona_id=z.id, existencia=1) }}">Ver disponibilidad</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="nota">El porcentaje indica, en promedio, cuántos de los puntos de venta de la zona tienen existencia de cada
+    producto de la canasta básica. Se recalcula con cada actualización de inventario.</p>
+
+<section class="rejilla rejilla-3" style="margin-top: 2rem">
+    <div class="tarjeta">
+        <h3>Si tienes un puesto o una tienda</h3>
+        <p class="tenue">Registra lo que vendes, lleva tu inventario y recibe aviso cuando algo se te esté acabando.
+            Compara precios de mayoreo y haz tu pedido desde aquí.</p>
+        <p><a href="{{ url_for('registro') }}">Crear cuenta de comerciante →</a></p>
+    </div>
+    <div class="tarjeta">
+        <h3>Si eres proveedor</h3>
+        <p class="tenue">Publica tu catálogo mayorista, define tu pedido mínimo y tus zonas de entrega,
+            y recibe pedidos de comercios que hoy compras no te llegan.</p>
+        <p><a href="{{ url_for('registro') }}">Crear cuenta de proveedor →</a></p>
+    </div>
+    <div class="tarjeta">
+        <h3>Para el municipio</h3>
+        <p class="tenue">Cobertura territorial, brechas de surtido e índice de acceso por zona para decidir
+            dónde hacen falta puntos de venta.</p>
+        <p><a href="{{ url_for('acerca') }}">Cómo se calculan los indicadores →</a></p>
+    </div>
+</section>
+{% endblock %}
