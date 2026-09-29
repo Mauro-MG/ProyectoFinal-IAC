@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{# Portal privado: menú lateral construido con los permisos del rol #}
+{% set p = current_user.tiene_permiso %}
+{% macro opcion(endpoint, texto, prefijo=None) -%}
+<a href="{{ url_for(endpoint) }}"
+   class="{{ 'activo' if request.endpoint == endpoint or (prefijo and request.endpoint and request.endpoint.startswith(prefijo)) }}">{{ texto }}</a>
+{%- endmacro %}
+
+{% block barra %}
+<div class="usuario-barra">
+    <span class="nombre">{{ current_user.nombre_completo }}</span>
+    <span class="rol">{{ current_user.rol.nombre }}</span>
+    <a href="{{ url_for('logout') }}">Salir</a>
+</div>
+{% endblock %}
+
+{% block cuerpo %}
+<div class="portal">
+    <aside class="lateral" id="lateral">
+        <div class="grupo">Operación</div>
+        {{ opcion('panel', 'Panel') }}
+        {% if p('comercios.gestionar') or p('comercios.ver_todos') %}
+            {{ opcion('comercios_lista', 'Comercios' if p('comercios.ver_todos') else 'Mis comercios', 'comercio') }}
+        {% endif %}
+        {% if p('inventario.gestionar') %}{{ opcion('inventario', 'Inventario', 'inventario') }}{% endif %}
+        {% if p('recomendaciones.ver') %}{{ opcion('recomendaciones', 'Recomendaciones') }}{% endif %}
+        {% if p('proveedores.consultar') %}{{ opcion('proveedores_lista', 'Proveedores', 'proveedor') }}{% endif %}
+        {% if p('pedidos.crear') or p('pedidos.atender') or p('pedidos.ver_todos') %}
+            {{ opcion('pedidos_lista', 'Pedidos recibidos' if p('pedidos.atender') else 'Pedidos de abasto', 'pedido') }}
+        {% endif %}
+
+        {% if p('proveedor.catalogo') %}
+        <div class="grupo">Mi empresa</div>
+        {{ opcion('mi_catalogo', 'Catálogo mayorista') }}
+        {{ opcion('mi_empresa', 'Datos y zonas de entrega') }}
+        {% endif %}
+
+        {% if p('precios.consultar') or p('analisis.ver') or p('reportes.ver') or p('pedidos.atender') %}
+        <div class="grupo">Análisis</div>
+        {% if p('precios.consultar') %}{{ opcion('comparacion', 'Comparación de precios') }}{% endif %}
+        {% if p('analisis.ver') %}
+            {{ opcion('cobertura', 'Cobertura territorial') }}
+            {{ opcion('brechas', 'Brechas de surtido') }}
+            {% if not p('catalogos.gestionar') %}{{ opcion('zonas_lista', 'Zonas', 'zona') }}{% endif %}
+        {% endif %}
+        {% if p('reportes.ver') or p('pedidos.atender') %}{{ opcion('reportes', 'Reportes', 'export') }}{% endif %}
+        {% endif %}
+
+        {% if p('catalogos.gestionar') or p('usuarios.gestionar') or p('auditoria.ver') %}
+        <div class="grupo">Administración</div>
+        {% if p('catalogos.gestionar') %}
+            {{ opcion('productos_lista', 'Catálogo maestro', 'producto') }}
+            {{ opcion('categorias', 'Categorías', 'categoria') }}
+            {{ opcion('zonas_lista', 'Zonas', 'zona') }}
+        {% endif %}
+        {% if p('usuarios.gestionar') %}{{ opcion('usuarios_lista', 'Usuarios', 'usuario') }}{% endif %}
+        {% if p('roles.gestionar') %}{{ opcion('roles', 'Roles y permisos') }}{% endif %}
+        {% if p('config.gestionar') %}{{ opcion('configuracion', 'Parámetros') }}{% endif %}
+        {% if p('auditoria.ver') %}{{ opcion('auditoria_lista', 'Auditoría', 'auditoria') }}{% endif %}
+        {% endif %}
+
+        <div class="grupo">Público</div>
+        <a href="{{ url_for('disponibilidad_publica') }}">Ver sitio público</a>
+    </aside>
+
+    <main class="contenido">
+        {% include "_mensajes.html" %}
+        {% block contenido %}{% endblock %}
+    </main>
+</div>
+{% endblock %}

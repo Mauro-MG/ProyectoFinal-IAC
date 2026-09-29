@@ -1,0 +1,97 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import estado %}
+{% block titulo %}Inventario · {{ comercio.nombre_comercio }}{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Inventario</h1>
+        <p>{{ comercio.nombre_comercio }} · {{ comercio.zona.nombre if comercio.zona else 'sin zona' }}
+           {% if comercio.estado_registro != 'VERIFICADO' %}{{ estado(comercio.estado_registro) }}{% endif %}</p>
+    </div>
+    <div class="acciones">
+        {% if comercios|length > 1 %}
+        <form method="get">
+            <select name="comercio_id" data-autoenviar aria-label="Comercio">
+                {% for c in comercios %}<option value="{{ c.id }}" {{ 'selected' if c.id == comercio.id }}>{{ c.nombre_comercio }}</option>{% endfor %}
+            </select>
+        </form>
+        {% endif %}
+        <a class="btn btn-primario" href="{{ url_for('inventario_agregar', comercio_id=comercio.id) }}">Agregar productos</a>
+    </div>
+</div>
+
+<div class="cifras">
+    <div class="cifra"><div class="valor">{{ resumen.productos }}</div><div class="etiqueta">productos que vendes</div></div>
+    <div class="cifra {{ 'alerta' if resumen.bajo }}"><div class="valor">{{ resumen.bajo }}</div><div class="etiqueta">en stock bajo</div></div>
+    <div class="cifra {{ 'critico' if resumen.agotado }}"><div class="valor">{{ resumen.agotado }}</div><div class="etiqueta">agotados</div></div>
+    <div class="cifra"><div class="valor">{{ resumen.valor|moneda }}</div><div class="etiqueta">valor a precio de venta</div></div>
+</div>
+
+{% if faltantes %}
+<div class="tarjeta">
+    <div class="tarjeta-titulo"><h2>Por surtir</h2><small>Productos en o por debajo de su stock mínimo</small></div>
+    <table class="subtabla">
+        <thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Mínimo</th><th class="num">Sugerido</th><th class="num">Mayoreo desde</th><th></th></tr></thead>
+        <tbody>
+        {% for f in faltantes %}
+        {% set r = f.inventario %}
+        <tr>
+            <td>{{ r.producto.nombre }} {{ estado(r.estado) }}</td>
+            <td class="num">{{ r.existencia|cantidad }}</td>
+            <td class="num">{{ r.stock_minimo|cantidad }}</td>
+            <td class="num">{{ r.cantidad_sugerida|cantidad }} {{ r.producto.unidad_medida }}</td>
+            <td class="num">{{ f.precio_mayoreo_min|moneda }}</td>
+            <td>{% if f.proveedores %}
+                <a class="btn btn-chico btn-primario" href="{{ url_for('proveedores_por_producto', producto_id=r.producto_id, comercio_id=comercio.id) }}">Comparar {{ f.proveedores }} proveedor(es)</a>
+                {% else %}<small>Ningún proveedor lo entrega en tu zona</small>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="tarjeta-titulo" style="margin-top: 1.25rem">
+    <h2>Mi catálogo</h2>
+    <form method="get" class="acciones">
+        <input type="hidden" name="comercio_id" value="{{ comercio.id }}">
+        <select name="estado" data-autoenviar aria-label="Filtrar por estado">
+            <option value="">Todos los estados</option>
+            {% for e in ['DISPONIBLE', 'BAJO', 'AGOTADO'] %}<option value="{{ e }}" {{ 'selected' if estado == e }}>{{ e|capitalize }}</option>{% endfor %}
+        </select>
+    </form>
+</div>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Producto</th><th class="num">Existencia</th><th class="num">Mín / Máx</th><th class="num">Precio</th><th>Estado</th><th>Actualizado</th><th>Registrar venta</th><th></th></tr></thead>
+        <tbody>
+        {% for r in renglones %}
+        <tr>
+            <td>{{ r.producto.nombre }}<br><small>{{ r.producto.categoria.nombre }}</small></td>
+            <td class="num">{{ r.existencia|cantidad }} {{ r.producto.unidad_medida }}</td>
+            <td class="num">{{ r.stock_minimo|cantidad }} / {{ r.stock_maximo|cantidad if r.stock_maximo else '—' }}</td>
+            <td class="num">{{ r.precio_venta|moneda }}</td>
+            <td>{{ estado(r.estado) }}</td>
+            <td class="nowrap"><small>{{ r.updated_at|fecha }}</small></td>
+            <td>
+                <form class="acciones" method="post" action="{{ url_for('inventario_movimiento', id=r.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="tipo" value="SALIDA">
+                    <input type="hidden" name="motivo" value="Venta">
+                    <input type="hidden" name="volver" value="{{ request.full_path }}">
+                    <input class="input-chico" type="number" name="cantidad" min="0.01" step="any" placeholder="Cant." aria-label="Cantidad vendida" required>
+                    <button class="btn btn-chico">Vendí</button>
+                </form>
+            </td>
+            <td><a class="btn btn-chico" href="{{ url_for('inventario_item', id=r.id) }}">Detalle</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="vacio">
+            {% if estado %}No hay productos en ese estado.{% else %}
+            Aún no eliges qué productos vendes. <a href="{{ url_for('inventario_agregar', comercio_id=comercio.id) }}">Agrégalos desde el catálogo maestro</a>.{% endif %}
+        </td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import campo, casilla %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('productos_lista') }}">Catálogo maestro</a></div>
+        <h1>{{ titulo }}</h1>
+    </div>
+</div>
+<form method="post" class="formulario tarjeta">
+    {{ form.hidden_tag() }}
+    {{ campo(form.nombre, placeholder='Ej. Arroz blanco 1 kg', ayuda='Incluye la presentación cuando se vende empacado.') }}
+    <div class="fila-campos">
+        {{ campo(form.categoria_id) }}
+        {{ campo(form.unidad_medida, ayuda='Unidad en la que se cuenta la existencia.') }}
+        {{ campo(form.codigo_barras) }}
+    </div>
+    {{ campo(form.descripcion, rows=2) }}
+    {{ casilla(form.es_canasta_basica) }}
+    <div class="formulario-acciones">
+        <button class="btn btn-primario">Guardar</button>
+        <a class="btn" href="{{ url_for('productos_lista') }}">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import estado_pedido %}
+{% block titulo %}{{ pedido.folio_legible }}{% endblock %}
+{% block contenido %}
+{% set pv = pedido.proveedor %}
+{% set faltante = pv.pedido_minimo - pedido.subtotal %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('pedidos_lista') }}">Pedidos</a></div>
+        <h1>Pedido {{ pedido.folio_legible }} {{ estado_pedido(pedido) }}</h1>
+        <p>{{ pedido.comercio.nombre_comercio }} ({{ pedido.comercio.zona.nombre if pedido.comercio.zona else 'sin zona' }})
+           → {{ pv.nombre_empresa }}</p>
+    </div>
+</div>
+
+{% if acciones %}
+<div class="tarjeta">
+    <h2>Siguiente paso</h2>
+    {% if 'rechazar' in acciones %}
+    <p class="tenue">Revisa que tengas existencia de todo antes de aceptar. Si rechazas, indica el motivo para que el comerciante pueda buscar otro proveedor.</p>
+    {% elif 'recibir' in acciones %}
+    <p class="tenue">Confirma cuando tengas la mercancía. Las cantidades se sumarán automáticamente a tu inventario.</p>
+    {% elif 'enviar' in acciones %}
+    <p class="tenue">Cuando confirmes, el proveedor recibirá el pedido y podrá aceptarlo o rechazarlo. Ya no podrás modificarlo.</p>
+    {% endif %}
+    <div class="acciones" style="margin-top: .75rem">
+        {% for accion in acciones %}
+        <form method="post" action="{{ url_for('pedido_accion', id=pedido.id, accion=accion) }}" class="acciones"
+              {% if accion == 'cancelar' %}data-confirmar="¿Cancelar el pedido {{ pedido.folio_legible }}?"{% endif %}>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if accion == 'rechazar' %}
+            <input type="text" name="comentario" placeholder="Motivo del rechazo" required style="width: 240px">
+            {% endif %}
+            <button class="btn {{ 'btn-peligro' if accion in ('rechazar', 'cancelar') else 'btn-primario' }}"
+                    {{ 'disabled' if accion == 'enviar' and (faltante > 0 or not pedido.detalles) }}>{{ etiquetas[accion] }}</button>
+        </form>
+        {% endfor %}
+    </div>
+    {% if 'enviar' in acciones and faltante > 0 %}
+    <p class="nota">Te faltan {{ faltante|moneda }} para alcanzar el pedido mínimo de {{ pv.nombre_empresa }} ({{ pv.pedido_minimo|moneda }}).</p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if pedido.estado == 'RECHAZADO' and pedido.motivo_rechazo %}
+<div class="mensaje error">Rechazado por el proveedor: {{ pedido.motivo_rechazo }}</div>
+{% endif %}
+
+<div class="rejilla rejilla-2" style="margin-top: 1rem">
+    <div>
+        <div class="tabla-contenedor">
+            <table>
+                <thead><tr><th>Producto</th><th class="num">Cantidad</th><th class="num">Precio</th><th class="num">Subtotal</th>{% if editable %}<th></th>{% endif %}</tr></thead>
+                <tbody>
+                {% for d in pedido.detalles %}
+                <tr>
+                    <td>{{ d.producto.nombre }}</td>
+                    <td class="num">{{ d.cantidad|cantidad }} {{ d.producto.unidad_medida }}</td>
+                    <td class="num">{{ d.precio_unitario|moneda }}</td>
+                    <td class="num">{{ d.subtotal|moneda }}</td>
+                    {% if editable %}
+                    <td><form class="en-linea" method="post" action="{{ url_for('pedido_quitar', id=pedido.id, detalle_id=d.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn-enlace" title="Quitar">Quitar</button></form></td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="vacio">El pedido no tiene productos.</td></tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                <tr><td colspan="3" class="num"><strong>Total</strong></td><td class="num"><strong>{{ pedido.subtotal|moneda }}</strong></td>{% if editable %}<td></td>{% endif %}</tr>
+                </tfoot>
+            </table>
+        </div>
+
+        {% if editable and catalogo %}
+        <form method="post" action="{{ url_for('pedido_agregar', id=pedido.id) }}" class="tarjeta">
+            <h3>Agregar otro producto de {{ pv.nombre_empresa }}</h3>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="acciones">
+                <select name="producto_id" style="flex: 1; min-width: 200px" aria-label="Producto">
+                    {% for o in catalogo %}
+                    <option value="{{ o.producto_id }}">{{ o.producto.nombre }} · {{ o.precio_mayoreo|moneda }} (mín. {{ o.cantidad_minima|cantidad }})</option>
+                    {% endfor %}
+                </select>
+                <input class="input-chico" type="number" name="cantidad" min="0.01" step="any" placeholder="Cant." required aria-label="Cantidad">
+                <button class="btn">Agregar</button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="tarjeta">
+        <h2>Seguimiento</h2>
+        <dl class="datos" style="margin-bottom: 1rem">
+            <dt>Enviado</dt><dd>{{ pedido.fecha_envio|fecha }}</dd>
+            <dt>Respuesta</dt><dd>{{ pedido.fecha_respuesta|fecha }}</dd>
+            <dt>Entrega estimada</dt><dd>{{ pedido.fecha_entrega_estimada|fecha(false) }}</dd>
+            <dt>Entregado</dt><dd>{{ pedido.fecha_entrega_real|fecha }}</dd>
+            <dt>Pedido mínimo</dt><dd>{{ pv.pedido_minimo|moneda }}</dd>
+        </dl>
+        <ul class="linea-tiempo">
+            {% for h in pedido.historial %}
+            <li><strong>{{ ESTADOS_PEDIDO[h.estado_nuevo] }}</strong><br>
+                <small>{{ h.created_at|fecha }} · {{ h.usuario.nombre_completo if h.usuario else 'sistema' }}</small>
+                {% if h.comentario %}<br><small>“{{ h.comentario }}”</small>{% endif %}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

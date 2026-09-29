@@ -1,0 +1,30 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import campo, casilla %}
+{% block titulo %}{{ zona.nombre if zona else 'Nueva zona' }}{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('zonas_lista') }}">Zonas</a></div>
+        <h1>{{ zona.nombre if zona else 'Nueva zona' }}</h1>
+    </div>
+</div>
+<form method="post" class="formulario tarjeta">
+    {{ form.hidden_tag() }}
+    <div class="fila-campos">
+        {{ campo(form.nombre) }}
+        {{ campo(form.municipio) }}
+        {{ campo(form.estado) }}
+    </div>
+    <div class="fila-campos">
+        {{ campo(form.latitud_centro) }}
+        {{ campo(form.longitud_centro) }}
+        {{ campo(form.radio_km) }}
+    </div>
+    {{ campo(form.poblacion, ayuda='Habitantes estimados dentro del radio (INEGI por AGEB o estimación municipal).') }}
+    {{ casilla(form.activa) }}
+    <div class="formulario-acciones">
+        <button class="btn btn-primario">Guardar</button>
+        <a class="btn" href="{{ url_for('zonas_lista') }}">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import estado, opciones %}
+{% block titulo %}Brechas de surtido{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Brechas de surtido</h1>
+        <p>Por zona y producto: cuántos comercios hay, cuántos tienen existencia y qué tan lejos está la zona de la
+           oferta que su población necesita. Brecha alta = cobertura menor a {{ umbrales[0] }} %, media &lt; {{ umbrales[1] }} %,
+           baja &lt; {{ umbrales[2] }} %. Se estima un punto de venta con existencia por cada {{ '{:,}'.format(habitantes_por_punto) }} habitantes.</p>
+    </div>
+    <a class="btn" href="{{ url_for('exportar', tipo='brechas') }}">Exportar CSV</a>
+</div>
+
+<form class="filtros" method="get">
+    <div class="campo"><label for="zona_id">Zona</label><select id="zona_id" name="zona_id">{{ opciones(zonas, filtros.zona_id) }}</select></div>
+    <div class="campo"><label for="categoria_id">Categoría</label><select id="categoria_id" name="categoria_id">{{ opciones(categorias, filtros.categoria_id) }}</select></div>
+    <div class="campo"><label for="producto_id">Producto</label><select id="producto_id" name="producto_id">{{ opciones(productos, filtros.producto_id, vacio='Todos') }}</select></div>
+    <div class="campo corto"><label for="nivel">Brecha</label>
+        <select id="nivel" name="nivel"><option value="">Todas</option>
+            {% for n in ['ALTA', 'MEDIA', 'BAJA', 'SIN_BRECHA'] %}<option value="{{ n }}" {{ 'selected' if filtros.nivel == n }}>{{ n|replace('_', ' ')|capitalize }}</option>{% endfor %}
+        </select></div>
+    <label class="casilla"><input type="checkbox" name="canasta" value="1" {{ 'checked' if filtros.solo_canasta }}> Sólo canasta básica</label>
+    <button class="btn btn-primario">Filtrar</button>
+    <a class="btn" href="{{ url_for('brechas') }}">Limpiar</a>
+</form>
+
+<div class="cifras">
+    <div class="cifra critico"><div class="valor">{{ totales.get('ALTA', 0) }}</div><div class="etiqueta">brecha alta</div></div>
+    <div class="cifra alerta"><div class="valor">{{ totales.get('MEDIA', 0) }}</div><div class="etiqueta">brecha media</div></div>
+    <div class="cifra"><div class="valor">{{ totales.get('BAJA', 0) }}</div><div class="etiqueta">brecha baja</div></div>
+    <div class="cifra ok"><div class="valor">{{ totales.get('SIN_BRECHA', 0) }}</div><div class="etiqueta">sin brecha</div></div>
+</div>
+
+{% if grafica.categorias|length > 1 %}
+<div class="tarjeta"><div id="grafica-brechas" class="grafica"></div></div>
+{% endif %}
+
+<div class="tabla-contenedor" style="margin-top: 1rem">
+    <table>
+        <thead><tr><th>Zona</th><th>Producto</th><th class="num">Comercios analizados</th><th class="num">Con disponibilidad</th>
+            <th class="num">Sin disponibilidad</th><th class="num">Cobertura</th><th class="num">Déficit de puntos</th>
+            <th class="num">Ventas 30 días</th><th class="num">Proveedores</th><th>Últ. actualización</th><th>Brecha</th></tr></thead>
+        <tbody>
+        {% for f in filas %}
+        <tr>
+            <td>{{ f.zona }}</td>
+            <td>{{ f.producto }}{% if f.canasta_basica %}<br><small>canasta básica</small>{% endif %}</td>
+            <td class="num">{{ f.comercios_analizados }}</td>
+            <td class="num">{{ f.con_disponibilidad }}</td>
+            <td class="num">{{ f.sin_disponibilidad }}</td>
+            <td class="num">{{ f.cobertura }} %</td>
+            <td class="num">{{ f.deficit_puntos if f.deficit_puntos is not none else '—' }}</td>
+            <td class="num">{{ f.ventas|round|int }}</td>
+            <td class="num">{{ f.proveedores }}</td>
+            <td class="nowrap"><small>{{ f.ultima_actualizacion|fecha(false) }}</small></td>
+            <td>{{ estado(f.nivel) }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="11" class="vacio">Sin resultados para los filtros seleccionados.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if grafica.categorias|length > 1 %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script>
+Highcharts.chart('grafica-brechas', {
+    chart: { type: 'column' }, title: { text: 'Productos por nivel de brecha en cada zona' }, credits: { enabled: false },
+    colors: ['#b3322a', '#c27c0e', '#25609e', '#237a4b'],
+    xAxis: { categories: {{ grafica.categorias|tojson }} },
+    yAxis: { title: { text: 'Productos' }, allowDecimals: false },
+    plotOptions: { column: { stacking: 'normal' } },
+    tooltip: { shared: true },
+    series: {{ grafica.series|tojson }},
+});
+</script>
+{% endif %}
+{% endblock %}

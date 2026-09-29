@@ -1,0 +1,140 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import opciones %}
+{% block titulo %}Cobertura territorial{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Cobertura territorial</h1>
+        <p>¿Qué zonas tienen menor disponibilidad de canasta básica? El índice de acceso es el promedio de la cobertura
+           de los {{ zonas[0].canasta_total if zonas else 0 }} productos de canasta básica en cada zona.</p>
+    </div>
+    <a class="btn" href="{{ url_for('brechas', canasta=1) }}">Ver brechas por producto</a>
+</div>
+
+<form class="filtros" method="get">
+    <div class="campo"><label for="producto_id">Mostrar disponibilidad de</label>
+        <select id="producto_id" name="producto_id" data-autoenviar>{{ opciones(productos, producto_id, vacio='Todos los comercios (por sector)') }}</select></div>
+</form>
+
+<div class="tarjeta">
+    <div id="mapa" class="mapa"></div>
+    <div class="leyenda">
+        {% if producto_id %}
+        <span><i style="background:#237a4b"></i>Con existencia</span>
+        <span><i style="background:#b3322a"></i>Agotado</span>
+        <span><i style="background:#9aa39e"></i>No lo vende</span>
+        {% else %}
+        <span><i style="background:#25609e"></i>Comercio formal</span>
+        <span><i style="background:#c27c0e"></i>Comercio informal</span>
+        {% endif %}
+        <span><i style="background:#5b3f8c; border-radius: 2px"></i>Proveedor</span>
+        <span>Círculo de zona: rojo = acceso crítico · ámbar = limitado · azul = aceptable · verde = adecuado</span>
+    </div>
+</div>
+
+<div class="tabla-contenedor" style="margin-top: 1rem">
+    <table>
+        <thead><tr><th>#</th><th>Zona</th><th class="num">Población</th><th class="num">Comercios</th><th class="num">Formal / informal</th>
+            <th class="num">Densidad</th><th class="num">Hab. por comercio</th><th class="num">Proveedores</th><th class="num">Productos disponibles</th>
+            <th style="min-width: 150px">Índice de acceso</th><th>Clasificación</th></tr></thead>
+        <tbody>
+        {% for z in zonas %}
+        <tr>
+            <td>{{ z.ranking }}</td>
+            <td><a href="{{ url_for('brechas', zona_id=z.id, canasta=1) }}">{{ z.nombre }}</a><br><small>{{ z.municipio }}</small></td>
+            <td class="num">{{ '{:,}'.format(z.poblacion) }}</td>
+            <td class="num">{{ z.comercios }}</td>
+            <td class="num">{{ z.formales }} / {{ z.informales }}</td>
+            <td class="num">{{ z.densidad_km2 }} /km²</td>
+            <td class="num">{{ '{:,}'.format(z.habitantes_por_comercio) if z.habitantes_por_comercio else '—' }}</td>
+            <td class="num">{{ z.proveedores }}</td>
+            <td class="num">{{ z.productos_disponibles }}</td>
+            <td>{{ z.indice_acceso }} %
+                <div class="barra-progreso {{ 'alerta' if z.indice_acceso < 50 }}"><span style="width: {{ z.indice_acceso }}%"></span></div></td>
+            <td>{{ z.clasificacion }}<br><small>{{ z.canasta_critica }} productos en brecha alta</small></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="tarjeta">
+    <h2>Índice de acceso por zona</h2>
+    <div id="grafica-zonas" class="grafica"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script>
+const zonas = {{ zonas|tojson }};
+const puntos = {{ puntos|tojson }};
+const filtrandoProducto = {{ 'true' if producto_id else 'false' }};
+
+function colorIndice(indice) {
+    if (indice < 30) return '#b3322a';
+    if (indice < 60) return '#c27c0e';
+    if (indice < 80) return '#25609e';
+    return '#237a4b';
+}
+
+const mapa = L.map('mapa').setView([25.73, -100.35], 11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18, attribution: '&copy; OpenStreetMap',
+}).addTo(mapa);
+
+const capaZonas = L.layerGroup(zonas.map(z =>
+    L.circle([z.latitud, z.longitud], {
+        radius: z.radio_km * 1000, color: colorIndice(z.indice_acceso), weight: 2, fillOpacity: 0.08,
+    }).bindPopup(`<strong>${z.nombre}</strong><br>Índice de acceso: ${z.indice_acceso} % (${z.clasificacion})<br>` +
+                 `${z.comercios} comercios · ${z.proveedores} proveedores`)
+)).addTo(mapa);
+
+const capaComercios = L.layerGroup(puntos.comercios.map(c => {
+    let color = c.sector === 'Formal' ? '#25609e' : '#c27c0e';
+    let detalle = c.tipo;
+    if (filtrandoProducto) {
+        if (c.existencia === null || c.existencia === undefined) { color = '#9aa39e'; detalle = 'No lo vende'; }
+        else if (c.existencia > 0) { color = '#237a4b'; detalle = `Existencia: ${c.existencia}`; }
+        else { color = '#b3322a'; detalle = 'Agotado'; }
+    }
+    return L.circleMarker([c.lat, c.lon], { radius: 6, color: '#fff', weight: 1.5, fillColor: color, fillOpacity: 0.95 })
+        .bindPopup(`<strong>${c.nombre}</strong><br>${c.zona || ''}<br>${detalle}`);
+})).addTo(mapa);
+
+const capaProveedores = L.layerGroup(puntos.proveedores.map(p =>
+    L.marker([p.lat, p.lon], { icon: L.divIcon({ className: '', html:
+        '<div style="width:14px;height:14px;background:#5b3f8c;border:2px solid #fff;border-radius:3px;box-shadow:0 0 2px #0006"></div>' }) })
+     .bindPopup(`<strong>${p.nombre}</strong><br>Proveedor · entrega en ${p.zonas} zona(s)`)
+)).addTo(mapa);
+
+// Mapa de calor: densidad de oferta (con producto: sólo comercios con existencia, ponderados por cantidad)
+const calor = puntos.comercios
+    .filter(c => !filtrandoProducto || c.existencia > 0)
+    .map(c => [c.lat, c.lon, filtrandoProducto ? Math.min(c.existencia / 20, 1) : 0.6]);
+const capaCalor = L.heatLayer(calor, { radius: 30, blur: 25, maxZoom: 14 });
+
+L.control.layers(null, {
+    'Zonas': capaZonas, 'Comercios': capaComercios, 'Proveedores': capaProveedores, 'Mapa de calor de oferta': capaCalor,
+}, { collapsed: false }).addTo(mapa);
+
+if (zonas.length) {
+    mapa.fitBounds(L.featureGroup(capaZonas.getLayers()).getBounds(), { padding: [20, 20] });
+}
+
+const ordenadas = [...zonas].sort((a, b) => a.indice_acceso - b.indice_acceso);
+Highcharts.chart('grafica-zonas', {
+    chart: { type: 'bar' }, title: { text: null }, credits: { enabled: false }, legend: { enabled: false },
+    xAxis: { categories: ordenadas.map(z => z.nombre) },
+    yAxis: { max: 100, title: { text: 'Índice de acceso (%)' },
+             plotLines: [{ value: 30, color: '#b3322a', dashStyle: 'Dash', width: 1, label: { text: 'Crítico' } }] },
+    tooltip: { valueSuffix: ' %' },
+    series: [{ name: 'Índice de acceso', data: ordenadas.map(z => ({ y: z.indice_acceso, color: colorIndice(z.indice_acceso) })) }],
+});
+</script>
+{% endblock %}

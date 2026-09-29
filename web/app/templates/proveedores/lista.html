@@ -1,0 +1,52 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import opciones %}
+{% block titulo %}Proveedores{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Proveedores</h1>
+        <p>{% if comercio %}Mostrando los que entregan en la zona de {{ comercio.nombre_comercio }}.{% else %}Mayoristas y distribuidores registrados.{% endif %}</p>
+    </div>
+    <form method="get" action="{{ url_for('proveedores_por_producto') }}" class="acciones">
+        {% if comercio %}<input type="hidden" name="comercio_id" value="{{ comercio.id }}">{% endif %}
+        <select name="producto_id" aria-label="Producto" required>
+            <option value="">Busca por producto…</option>
+            {% for p in catalogo_productos %}<option value="{{ p.id }}">{{ p.nombre }}</option>{% endfor %}
+        </select>
+        <button class="btn btn-primario">¿Quién lo vende?</button>
+    </form>
+</div>
+
+<form class="filtros" method="get">
+    {% if comercios|length > 1 %}
+    <div class="campo"><label for="comercio_id">Para mi comercio</label>
+        <select id="comercio_id" name="comercio_id" data-autoenviar>
+            {% for c in comercios %}<option value="{{ c.id }}" {{ 'selected' if comercio and c.id == comercio.id }}>{{ c.nombre_comercio }}</option>{% endfor %}
+        </select></div>
+    {% endif %}
+    <div class="campo"><label for="zona_id">Entregan en</label>
+        <select id="zona_id" name="zona_id" data-autoenviar>{{ opciones(zonas, zona_id, vacio='Cualquier zona') }}</select></div>
+</form>
+
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Proveedor</th><th class="num">Productos</th><th class="num">Pedido mínimo</th><th>Entrega</th><th>Condiciones</th><th></th></tr></thead>
+        <tbody>
+        {% for p in proveedores %}
+        <tr>
+            <td><a href="{{ url_for('proveedor_detalle', id=p.id, comercio_id=comercio.id if comercio else None) }}">{{ p.nombre_empresa }}</a>
+                {% if p.plan == 'DESTACADO' %}<span class="etiqueta-estado destacado">Destacado</span>{% endif %}
+                <br><small>{{ p.descripcion or '' }}</small></td>
+            <td class="num">{{ productos.get(p.id, 0) }}</td>
+            <td class="num">{{ p.pedido_minimo|moneda }}</td>
+            <td class="nowrap">{{ 'Mismo día' if p.tiempo_entrega_dias == 0 else p.tiempo_entrega_dias ~ ' día(s)' }}</td>
+            <td><small>{{ p.condiciones_venta or '—' }}</small></td>
+            <td><a class="btn btn-chico" href="{{ url_for('proveedor_detalle', id=p.id, comercio_id=comercio.id if comercio else None) }}">Catálogo</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="vacio">Ningún proveedor entrega en esta zona todavía.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

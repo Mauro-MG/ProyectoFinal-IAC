@@ -1,27 +1,45 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="card detail-card">
-    <div class="card-body">
-        <h2>Detalle Evento #{{ evento.id }}</h2>
-        <p><strong>Fecha:</strong> {{ evento.created_at }}</p>
-        <p><strong>Usuario ID:</strong> {{ evento.usuario_id }}</p>
-        <p><strong>Tipo:</strong> {{ evento.tipo_evento }}</p>
-        <p><strong>Entidad:</strong> {{ evento.entidad }} (ID: {{ evento.entidad_id }})</p>
-        <p><strong>Descripción:</strong> {{ evento.descripcion }}</p>
-        
-        {% if evento.datos_anteriores %}
-        <h4 class="mt-4">Datos Anteriores</h4>
-        <pre class="bg-light p-3 border border-radius"><code class="json">{{ evento.datos_anteriores | tojson(indent=2) }}</code></pre>
-        {% endif %}
-        
-        {% if evento.datos_nuevos %}
-        <h4 class="mt-4">Datos Nuevos</h4>
-        <pre class="bg-light p-3 border border-radius"><code class="json">{{ evento.datos_nuevos | tojson(indent=2) }}</code></pre>
-        {% endif %}
-        
-        <div class="mt-4">
-            <a href="{{ url_for('auditoria.lista') }}" class="btn btn-secondary">Volver</a>
-        </div>
+{% extends "portal.html" %}
+{% block titulo %}Evento {{ evento.id }}{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('auditoria_lista') }}">Auditoría</a></div>
+        <h1>{{ evento.descripcion }}</h1>
+        <p>{{ evento.tipo_evento }} · {{ evento.entidad }} {{ evento.entidad_id or '' }}</p>
     </div>
 </div>
+<div class="rejilla rejilla-2">
+    <div class="tarjeta">
+        <dl class="datos">
+            <dt>Fecha</dt><dd>{{ evento.created_at|fecha }}</dd>
+            <dt>Usuario</dt><dd>{{ evento.usuario.email if evento.usuario else 'sistema' }}</dd>
+            <dt>IP</dt><dd>{{ evento.ip_address or '—' }}</dd>
+            <dt>Navegador</dt><dd><small>{{ evento.user_agent or '—' }}</small></dd>
+        </dl>
+    </div>
+    <div class="tarjeta">
+        <h3>Datos anteriores</h3>
+        <pre style="white-space: pre-wrap; font-size: .82rem">{{ evento.datos_anteriores|tojson(indent=2) if evento.datos_anteriores else '—' }}</pre>
+        <h3 style="margin-top: .75rem">Datos nuevos</h3>
+        <pre style="white-space: pre-wrap; font-size: .82rem">{{ evento.datos_nuevos|tojson(indent=2) if evento.datos_nuevos else '—' }}</pre>
+    </div>
+</div>
+{% if relacionados|length > 1 %}
+<h2 style="margin-top: 1.25rem">Historial de {{ evento.entidad }} {{ evento.entidad_id }}</h2>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Fecha</th><th>Usuario</th><th>Evento</th><th>Descripción</th></tr></thead>
+        <tbody>
+        {% for e in relacionados %}
+        <tr {% if e.id == evento.id %}class="resaltado"{% endif %}>
+            <td class="nowrap"><a href="{{ url_for('auditoria_detalle', id=e.id) }}">{{ e.created_at|fecha }}</a></td>
+            <td>{{ e.usuario.email if e.usuario else 'sistema' }}</td>
+            <td>{{ e.tipo_evento }}</td>
+            <td>{{ e.descripcion }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,49 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import estado_pedido, paginacion %}
+{% block titulo %}Pedidos{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>{{ {'recibidos': 'Pedidos recibidos', 'mios': 'Pedidos de abasto', 'todos': 'Pedidos de abasto'}[vista] }}</h1>
+        <p>{% if vista == 'recibidos' %}Acepta o rechaza los pedidos nuevos y actualiza su estado conforme avanzan.
+           {% elif vista == 'mios' %}Para hacer un pedido, busca el producto en <a href="{{ url_for('proveedores_lista') }}">Proveedores</a> o desde tu inventario.
+           {% else %}Todos los pedidos de la plataforma (sólo lectura).{% endif %}</p>
+    </div>
+</div>
+
+<form class="filtros" method="get">
+    <div class="campo corto"><label for="estado">Estado</label>
+        <select id="estado" name="estado" data-autoenviar>
+            <option value="">Todos</option>
+            {% for clave, texto in ESTADOS_PEDIDO.items() if not (vista == 'recibidos' and clave == 'BORRADOR') %}
+            <option value="{{ clave }}" {{ 'selected' if estado == clave }}>{{ texto }}</option>
+            {% endfor %}
+        </select></div>
+</form>
+
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Folio</th>
+            {% if vista != 'mios' %}<th>Comercio</th>{% endif %}
+            {% if vista != 'recibidos' %}<th>Proveedor</th>{% endif %}
+            <th class="num">Partidas</th><th class="num">Importe</th><th>Estado</th><th>Entrega estimada</th><th>Última actualización</th></tr></thead>
+        <tbody>
+        {% for p in pagina.items %}
+        <tr class="{{ 'resaltado' if vista == 'recibidos' and p.estado == 'ENVIADO' }}">
+            <td><a href="{{ url_for('pedido_detalle', id=p.id) }}">{{ p.folio_legible }}</a></td>
+            {% if vista != 'mios' %}<td>{{ p.comercio.nombre_comercio }}<br><small>{{ p.comercio.zona.nombre if p.comercio.zona }}</small></td>{% endif %}
+            {% if vista != 'recibidos' %}<td>{{ p.proveedor.nombre_empresa }}{% if vista == 'todos' %}<br><small>para {{ p.comercio.nombre_comercio }}</small>{% endif %}</td>{% endif %}
+            <td class="num">{{ p.detalles|length }}</td>
+            <td class="num">{{ p.subtotal|moneda }}</td>
+            <td>{{ estado_pedido(p) }}</td>
+            <td class="nowrap">{{ p.fecha_entrega_estimada|fecha(false) }}</td>
+            <td class="nowrap"><small>{{ p.updated_at|fecha }}</small></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="vacio">No hay pedidos.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{{ paginacion(pagina) }}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_macros.html" import opciones %}
+{% block titulo %}Puntos de venta{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Puntos de venta</h1>
+        <p>Tianguis, puestos y tiendas verificados por la coordinación municipal.</p>
+    </div>
+    <form method="get">
+        <select name="zona_id" data-autoenviar aria-label="Zona">{{ opciones(zonas, zona_id, vacio='Todas las zonas') }}</select>
+    </form>
+</div>
+
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Comercio</th><th>Tipo</th><th>Ubicación</th><th>Horario</th><th class="num">Productos con existencia</th><th></th></tr></thead>
+        <tbody>
+        {% for c in comercios %}
+        <tr>
+            <td>{{ c.nombre_comercio }}</td>
+            <td>{{ c.tipo_legible }}</td>
+            <td>{{ c.direccion }}{% if c.colonia %}, {{ c.colonia }}{% endif %}<br><small>{{ c.zona.nombre if c.zona else c.municipio }}</small></td>
+            <td class="nowrap">{% if c.horario_apertura %}{{ c.horario_apertura.strftime('%H:%M') }}–{{ c.horario_cierre.strftime('%H:%M') if c.horario_cierre }}{% else %}—{% endif %}</td>
+            <td class="num">{{ productos_por_comercio.get(c.id, 0) }}</td>
+            <td><a href="{{ url_for('disponibilidad_publica', q='', zona_id=c.zona_id) }}">Ver zona</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="vacio">No hay puntos de venta verificados en esta zona.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

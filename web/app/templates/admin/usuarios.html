@@ -1,0 +1,34 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import opciones %}
+{% block titulo %}Usuarios{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Usuarios</h1>
+        <p>Las cuentas de comerciante y proveedor se crean desde el registro público. Aquí se asignan roles internos
+           (analista, coordinador, auditor) y se desactivan cuentas.</p>
+    </div>
+</div>
+<form class="filtros" method="get">
+    <div class="campo"><label for="q">Buscar</label><input type="search" id="q" name="q" value="{{ texto }}" placeholder="Nombre o correo"></div>
+    <div class="campo"><label for="rol_id">Rol</label><select id="rol_id" name="rol_id" data-autoenviar>{{ opciones(roles, rol_id, vacio='Todos') }}</select></div>
+    <button class="btn">Buscar</button>
+</form>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Último acceso</th><th>Estado</th><th></th></tr></thead>
+        <tbody>
+        {% for u in usuarios %}
+        <tr>
+            <td>{{ u.nombre_completo }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.rol.nombre }}</td>
+            <td class="nowrap"><small>{{ u.ultimo_acceso|fecha }}</small></td>
+            <td>{% if u.activo %}<span class="etiqueta-estado ok">Activa</span>{% else %}<span class="etiqueta-estado neutro">Inactiva</span>{% endif %}</td>
+            <td><a class="btn btn-chico" href="{{ url_for('usuario_editar', id=u.id) }}">Editar</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "_macros.html" import estado, paginacion, opciones %}
+{% block titulo %}Disponibilidad{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Disponibilidad de productos</h1>
+        <p>Existencia y precio reportados por cada comercio verificado. La columna «Actualizado» indica cuándo
+           el comerciante capturó el dato por última vez.</p>
+    </div>
+</div>
+
+<form class="filtros" method="get">
+    <div class="campo"><label for="q">Producto</label>
+        <input type="search" id="q" name="q" value="{{ texto }}" placeholder="Nombre del producto"></div>
+    <div class="campo"><label for="zona_id">Zona</label>
+        <select id="zona_id" name="zona_id">{{ opciones(zonas, zona_id) }}</select></div>
+    <div class="campo"><label for="categoria_id">Categoría</label>
+        <select id="categoria_id" name="categoria_id">{{ opciones(categorias, categoria_id) }}</select></div>
+    <label class="casilla"><input type="checkbox" name="existencia" value="1" {{ 'checked' if solo_con_existencia }}> Sólo con existencia</label>
+    <button class="btn btn-primario">Filtrar</button>
+    <a class="btn" href="{{ url_for('disponibilidad_publica') }}">Limpiar</a>
+</form>
+
+<div class="tabla-contenedor">
+    <table>
+        <thead>
+        <tr><th>Producto</th><th>Comercio</th><th>Zona</th><th class="num">Existencia</th><th class="num">Precio</th><th>Actualizado</th></tr>
+        </thead>
+        <tbody>
+        {% for inv, comercio, producto, zona in pagina.items %}
+        <tr>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ comercio.nombre_comercio }}<br><small>{{ comercio.tipo_legible }}</small></td>
+            <td>{{ zona.nombre if zona else '—' }}</td>
+            <td class="num">
+                {% if inv.existencia > 0 %}{{ inv.existencia|cantidad }} {{ producto.unidad_medida }}
+                {% else %}{{ estado('AGOTADO', 'Agotado') }}{% endif %}
+            </td>
+            <td class="num">{{ inv.precio_venta|moneda }}</td>
+            <td class="nowrap">{{ inv.updated_at|fecha }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="vacio">No hay productos que coincidan con la búsqueda.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{{ paginacion(pagina) }}
+{% endblock %}

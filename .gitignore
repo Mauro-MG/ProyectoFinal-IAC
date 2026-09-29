@@ -52,3 +52,9 @@ yarn-error.log
 # OS
 .DS_Store
 Thumbs.db
+
+# Pruebas
+.pytest_cache/
+
+# Videos de demostración (se comparten aparte, pesan demasiado para git)
+*.mp4

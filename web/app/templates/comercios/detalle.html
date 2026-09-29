@@ -1,21 +1,76 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="card detail-card">
-    <div class="card-body">
-        <h2>{{ comercio.nombre_comercio }}</h2>
-        <span class="badge badge-{{ 'primary' if comercio.tipo_comercio.startswith('FORMAL') else 'warning' }}">
-            {{ comercio.tipo_comercio }}
-        </span>
-        <hr>
-        <p><strong>Dirección:</strong> {{ comercio.direccion }}, {{ comercio.municipio }}, {{ comercio.estado }}</p>
-        <p><strong>Estado del Registro:</strong> {{ comercio.estado_registro }}</p>
-        <p><strong>Propietario:</strong> {{ comercio.usuario.nombre }} {{ comercio.usuario.apellido_paterno }}</p>
-        <p><strong>Fecha de Creación:</strong> {{ comercio.created_at.strftime('%d/%m/%Y') }}</p>
-        
-        <div class="mt-4">
-            <a href="{{ url_for('comercios.editar', id=comercio.id) }}" class="btn btn-primary">Editar</a>
-            <a href="{{ url_for('comercios.lista') }}" class="btn btn-secondary">Volver</a>
-        </div>
+{% extends "portal.html" %}
+{% from "_macros.html" import estado, estado_pedido %}
+{% block titulo %}{{ comercio.nombre_comercio }}{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('comercios_lista') }}">Comercios</a></div>
+        <h1>{{ comercio.nombre_comercio }} {{ estado(comercio.estado_registro) }}</h1>
+        <p>{{ comercio.tipo_legible }} · {{ comercio.sector }}</p>
     </div>
+    <div class="acciones">
+        {% if comercio.usuario_id == current_user.id %}
+        <a class="btn btn-primario" href="{{ url_for('inventario', comercio_id=comercio.id) }}">Inventario</a>
+        {% endif %}
+        {% if puede_editar %}
+        <a class="btn" href="{{ url_for('comercio_editar', id=comercio.id) }}">Editar</a>
+        <form class="en-linea" method="post" action="{{ url_for('comercio_desactivar', id=comercio.id) }}"
+              data-confirmar="El comercio dejará de aparecer en la plataforma. ¿Continuar?">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-peligro">Dar de baja</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="rejilla rejilla-2">
+    <div class="tarjeta">
+        <h2>Datos</h2>
+        <dl class="datos">
+            <dt>Dirección</dt><dd>{{ comercio.direccion }}{% if comercio.colonia %}, {{ comercio.colonia }}{% endif %}</dd>
+            <dt>Municipio</dt><dd>{{ comercio.municipio }}, {{ comercio.estado }}</dd>
+            <dt>Zona</dt><dd>{{ comercio.zona.nombre if comercio.zona else 'Sin asignar' }}</dd>
+            <dt>Coordenadas</dt><dd>{% if comercio.latitud %}{{ comercio.latitud }}, {{ comercio.longitud }}{% else %}—{% endif %}</dd>
+            <dt>Horario</dt><dd>{% if comercio.horario_apertura %}{{ comercio.horario_apertura.strftime('%H:%M') }} a {{ comercio.horario_cierre.strftime('%H:%M') if comercio.horario_cierre }}{% else %}—{% endif %}</dd>
+            <dt>Teléfono</dt><dd>{{ comercio.telefono_comercio or '—' }}</dd>
+            <dt>Responsable</dt><dd>{{ comercio.usuario.nombre_completo }} ({{ comercio.usuario.email }})</dd>
+            <dt>Registrado</dt><dd>{{ comercio.created_at|fecha }}</dd>
+            {% if comercio.fecha_verificacion %}<dt>Validación</dt><dd>{{ comercio.fecha_verificacion|fecha }}</dd>{% endif %}
+        </dl>
+    </div>
+
+    <div class="tarjeta">
+        <h2>Validación municipal</h2>
+        {% if current_user.tiene_permiso('comercios.validar') %}
+        <p class="tenue">Valida el comercio después de confirmar en sitio que existe y opera en la dirección indicada.</p>
+        <form method="post" action="{{ url_for('comercio_validar', id=comercio.id) }}" style="margin-top: .75rem">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="campo"><label for="motivo">Observaciones</label><input type="text" id="motivo" name="motivo"></div>
+            <div class="acciones">
+                <button class="btn btn-primario" name="estado" value="VERIFICADO">Validar</button>
+                <button class="btn" name="estado" value="SUSPENDIDO">Suspender</button>
+                <button class="btn btn-peligro" name="estado" value="RECHAZADO">Rechazar</button>
+            </div>
+        </form>
+        {% elif comercio.estado_registro == 'PENDIENTE' %}
+        <p class="tenue">Tu comercio está en revisión. Puedes cargar tu inventario y hacer pedidos; aparecerá en el sitio público cuando la coordinación municipal lo valide.</p>
+        {% else %}
+        <p class="tenue">Estado actual: {{ comercio.estado_registro|lower }}.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="tarjeta">
+    <h2>Pedidos recientes</h2>
+    <ul class="lista-simple">
+        {% for p in comercio.pedidos|sort(attribute='created_at', reverse=true) %}
+        {% if loop.index <= 5 %}
+        <li><a href="{{ url_for('pedido_detalle', id=p.id) }}">{{ p.folio_legible }} · {{ p.proveedor.nombre_empresa }}</a>
+            <span>{{ p.subtotal|moneda }} {{ estado_pedido(p) }}</span></li>
+        {% endif %}
+        {% else %}
+        <li class="tenue">Sin pedidos.</li>
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %}

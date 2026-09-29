@@ -1,30 +1,18 @@
 {% extends "base.html" %}
-
-{% block title %}Iniciar Sesión - AbastoRed{% endblock %}
-
-{% block content %}
-<div class="auth-container">
-    <div class="auth-card">
-        <h2>Iniciar Sesión</h2>
-        <form method="POST">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                {{ form.email.label }}
-                {{ form.email(class="form-control") }}
-            </div>
-            <div class="form-group">
-                {{ form.password.label }}
-                {{ form.password(class="form-control") }}
-            </div>
-            <div class="form-actions">
-                {{ form.submit(class="btn btn-primary btn-block") }}
-            </div>
-        </form>
-        <div class="auth-links">
-            <a href="{{ url_for('auth.recuperar') }}">¿Olvidaste tu contraseña?</a>
-            <br>
-            <a href="{{ url_for('auth.registro') }}">¿No tienes cuenta? Regístrate</a>
-        </div>
-    </div>
+{% from "_macros.html" import campo %}
+{% block titulo %}Iniciar sesión{% endblock %}
+{% block contenido %}
+<div class="acceso-cuenta tarjeta">
+    <h1>Iniciar sesión</h1>
+    <form method="post" style="margin-top: 1rem">
+        {{ form.hidden_tag() }}
+        {{ campo(form.email, autocomplete='username', autofocus=true) }}
+        {{ campo(form.password, autocomplete='current-password') }}
+        <button class="btn btn-primario" style="width: 100%; justify-content: center">Entrar</button>
+    </form>
+    <p style="margin-top: 1rem; font-size: .9rem">
+        <a href="{{ url_for('recuperar') }}">Olvidé mi contraseña</a> ·
+        <a href="{{ url_for('registro') }}">Crear cuenta</a>
+    </p>
 </div>
 {% endblock %}

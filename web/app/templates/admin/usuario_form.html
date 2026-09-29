@@ -1,0 +1,21 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import campo, casilla %}
+{% block titulo %}{{ usuario.email }}{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('usuarios_lista') }}">Usuarios</a></div>
+        <h1>{{ usuario.nombre_completo }}</h1>
+        <p>{{ usuario.email }} · registrado el {{ usuario.created_at|fecha(false) }}</p>
+    </div>
+</div>
+<form method="post" class="formulario tarjeta" style="max-width: 460px">
+    {{ form.hidden_tag() }}
+    {{ campo(form.rol_id, ayuda='Los permisos de cada rol se configuran en Roles y permisos.') }}
+    {{ casilla(form.activo) }}
+    <div class="formulario-acciones">
+        <button class="btn btn-primario">Guardar</button>
+        <a class="btn" href="{{ url_for('usuarios_lista') }}">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import estado, estado_pedido %}
+{% block titulo %}Panel{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Hola, {{ current_user.nombre }}</h1>
+        <p>{{ current_user.rol.descripcion }}</p>
+    </div>
+</div>
+
+{# ------------------------------------------------ comerciante / minorista #}
+{% if datos.comerciante %}
+{% set c = datos.comerciante %}
+{% if not c.comercios %}
+<div class="tarjeta">
+    <h2>Registra tu comercio para empezar</h2>
+    <p class="tenue">Con tu comercio registrado podrás elegir los productos que vendes, llevar tu inventario y hacer pedidos a proveedores.</p>
+    <p style="margin-top: .75rem"><a class="btn btn-primario" href="{{ url_for('comercio_nuevo') }}">Registrar comercio</a></p>
+</div>
+{% else %}
+<div class="cifras">
+    <div class="cifra"><div class="valor">{{ c.comercios|length }}</div><div class="etiqueta">comercio(s)</div></div>
+    <div class="cifra"><div class="valor">{{ c.productos }}</div><div class="etiqueta">productos en catálogo</div></div>
+    <div class="cifra {{ 'critico' if c.faltantes }}"><div class="valor">{{ c.faltantes|length }}</div><div class="etiqueta">productos por surtir</div></div>
+    <div class="cifra"><div class="valor">{{ c.pedidos|length }}</div><div class="etiqueta">pedidos abiertos</div></div>
+</div>
+
+<div class="rejilla rejilla-2">
+    <div class="tarjeta">
+        <div class="tarjeta-titulo"><h2>Se te está acabando</h2><a href="{{ url_for('inventario') }}">Inventario →</a></div>
+        {% if c.faltantes %}
+        <ul class="lista-simple">
+            {% for f in c.faltantes[:6] %}
+            <li>
+                <span>{{ f.inventario.producto.nombre }} {{ estado(f.inventario.estado) }}<br>
+                    <small>{{ f.comercio.nombre_comercio }} · quedan {{ f.inventario.existencia|cantidad }} {{ f.inventario.producto.unidad_medida }}</small></span>
+                {% if f.proveedores %}
+                <a class="btn btn-chico" href="{{ url_for('proveedores_por_producto', producto_id=f.inventario.producto_id, comercio_id=f.comercio.id) }}">Buscar proveedor</a>
+                {% else %}<small>sin proveedor en tu zona</small>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}<p class="tenue">Todo tu inventario está por encima del mínimo.</p>{% endif %}
+    </div>
+
+    <div class="tarjeta">
+        <div class="tarjeta-titulo"><h2>Recomendado para {{ c.comercios[0].nombre_comercio }}</h2><a href="{{ url_for('recomendaciones') }}">Ver todas →</a></div>
+        {% if c.recomendaciones %}
+        <ul class="lista-simple">
+            {% for r in c.recomendaciones %}
+            <li><span>{{ r.producto }}<br><small>{{ r.motivo }} · cobertura en tu zona {{ r.cobertura }} %</small></span>
+                <small>{{ r.proveedores }} proveedor(es)</small></li>
+            {% endfor %}
+        </ul>
+        {% else %}<p class="tenue">Por ahora no hay productos con baja oferta en tu zona que no vendas.</p>{% endif %}
+    </div>
+</div>
+
+{% if c.pedidos %}
+<div class="tarjeta">
+    <div class="tarjeta-titulo"><h2>Pedidos en curso</h2><a href="{{ url_for('pedidos_lista') }}">Todos →</a></div>
+    <ul class="lista-simple">
+        {% for p in c.pedidos[:5] %}
+        <li><a href="{{ url_for('pedido_detalle', id=p.id) }}">{{ p.folio_legible }} · {{ p.proveedor.nombre_empresa }}</a>
+            <span>{{ p.subtotal|moneda }} {{ estado_pedido(p) }}</span></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endif %}
+{% endif %}
+
+{# ------------------------------------------------ proveedor #}
+{% if datos.proveedor %}
+{% set pv = datos.proveedor %}
+{% if not pv.proveedor %}
+<div class="tarjeta">
+    <h2>Captura los datos de tu empresa</h2>
+    <p class="tenue">Indica tu pedido mínimo, tiempo de entrega y zonas donde entregas para que los comerciantes te encuentren.</p>
+    <p style="margin-top: .75rem"><a class="btn btn-primario" href="{{ url_for('mi_empresa') }}">Capturar datos</a></p>
+</div>
+{% else %}
+<div class="cifras">
+    <div class="cifra {{ 'alerta' if pv.por_atender }}"><div class="valor">{{ pv.por_atender|length }}</div><div class="etiqueta">pedidos por aceptar</div></div>
+    <div class="cifra"><div class="valor">{{ pv.en_proceso|length }}</div><div class="etiqueta">en preparación o en camino</div></div>
+    <div class="cifra"><div class="valor">{{ pv.ofertas }}</div><div class="etiqueta">productos en catálogo</div></div>
+    <div class="cifra {{ 'critico' if pv.sin_existencia }}"><div class="valor">{{ pv.sin_existencia }}</div><div class="etiqueta">sin existencia</div></div>
+    <div class="cifra"><div class="valor">{{ pv.vendido_mes|moneda }}</div><div class="etiqueta">entregado este mes</div></div>
+</div>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Pedido</th><th>Comercio</th><th>Zona</th><th class="num">Importe</th><th>Estado</th><th>Enviado</th></tr></thead>
+        <tbody>
+        {% for p in pv.por_atender + pv.en_proceso %}
+        <tr class="{{ 'resaltado' if p.estado == 'ENVIADO' }}">
+            <td><a href="{{ url_for('pedido_detalle', id=p.id) }}">{{ p.folio_legible }}</a></td>
+            <td>{{ p.comercio.nombre_comercio }}</td>
+            <td>{{ p.comercio.zona.nombre if p.comercio.zona }}</td>
+            <td class="num">{{ p.subtotal|moneda }}</td>
+            <td>{{ estado_pedido(p) }}</td>
+            <td class="nowrap">{{ p.fecha_envio|fecha }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="vacio">No tienes pedidos pendientes.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endif %}
+
+{# ------------------------------------------------ analista / coordinador #}
+{% if datos.analisis %}
+{% set a = datos.analisis %}
+<div class="tarjeta">
+    <div class="tarjeta-titulo">
+        <h2>Zonas que requieren atención</h2>
+        <a href="{{ url_for('cobertura') }}">Cobertura territorial →</a>
+    </div>
+    <p class="tenue" style="margin-bottom: .75rem">{{ a.criticas }} de {{ a.total_zonas }} zonas con acceso crítico a la canasta básica.</p>
+    <table class="subtabla">
+        <thead><tr><th>#</th><th>Zona</th><th class="num">Índice de acceso</th><th class="num">Canasta en brecha alta</th><th>Clasificación</th></tr></thead>
+        <tbody>
+        {% for z in a.zonas %}
+        <tr><td>{{ z.ranking }}</td><td>{{ z.nombre }} <small>{{ z.municipio }}</small></td>
+            <td class="num">{{ z.indice_acceso }} %</td><td class="num">{{ z.canasta_critica }} / {{ z.canasta_total }}</td>
+            <td>{{ z.clasificacion }}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{# ------------------------------------------------ administrador #}
+{% if datos.admin %}
+{% set ad = datos.admin %}
+<div class="cifras" style="margin-top: 1rem">
+    <div class="cifra"><div class="valor">{{ ad.usuarios }}</div><div class="etiqueta">usuarios activos</div></div>
+    <div class="cifra {{ 'alerta' if ad.comercios_pendientes }}"><div class="valor">{{ ad.comercios_pendientes }}</div><div class="etiqueta">comercios por validar</div></div>
+    <div class="cifra"><div class="valor">{{ ad.pedidos_por_estado.get('ENTREGADO', 0) }}</div><div class="etiqueta">pedidos entregados</div></div>
+    <div class="cifra ok"><div class="valor">{{ ad.comisiones|moneda }}</div><div class="etiqueta">comisiones generadas</div></div>
+    <div class="cifra ok"><div class="valor">{{ ad.ingreso_suscripciones|moneda }}</div><div class="etiqueta">suscripciones / mes ({{ ad.destacados }} destacados)</div></div>
+</div>
+{% endif %}
+
+{# ------------------------------------------------ auditoría #}
+{% if datos.auditoria %}
+<div class="tarjeta">
+    <div class="tarjeta-titulo"><h2>Últimos eventos</h2><a href="{{ url_for('auditoria_lista') }}">Bitácora →</a></div>
+    <ul class="lista-simple">
+        {% for e in datos.auditoria %}
+        <li><span>{{ e.descripcion }}<br><small>{{ e.usuario.email if e.usuario else 'sistema' }} · {{ e.entidad }}</small></span>
+            <small class="nowrap">{{ e.created_at|fecha }}</small></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{# ------------------------------------------------ notificaciones (MongoDB) #}
+{% if avisos %}
+<div class="tarjeta">
+    <h2>Avisos</h2>
+    <ul class="lista-simple">
+        {% for a in avisos %}
+        <li><span>{% if a.url %}<a href="{{ a.url }}">{{ a.mensaje }}</a>{% else %}{{ a.mensaje }}{% endif %}</span>
+            <small class="nowrap">{{ a.fecha|fecha }}</small></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endblock %}
