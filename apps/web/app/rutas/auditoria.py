@@ -5,9 +5,9 @@ from flask import render_template, request
 from flask_login import login_required
 
 from app import app
-from app.extensions import db
-from app.models import AuditoriaEvento, Usuario
-from app.models.auditoria import TIPOS_EVENTO
+from abasto_dominio.extensiones import db
+from abasto_dominio.modelos import AuditoriaEvento, Usuario
+from abasto_dominio.modelos.auditoria import TIPOS_EVENTO
 from app.permisos import permiso_requerido
 
 

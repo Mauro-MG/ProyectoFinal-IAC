@@ -1,112 +1,64 @@
+// AbastoRed - Equipo 01
+// Colecciones de MongoDB, índices y validación de esquema.
+// Se ejecuta una sola vez, al crear el volumen de datos del contenedor.
+//
+// Todas las colecciones se relacionan con PostgreSQL por identificadores:
+// usuario_id, comercio_id, proveedor_id, pedido_id (UUID como texto) y
+// zona_id, producto_id (enteros).
+
 db = db.getSiblingDB('abastored');
 
-// Create collections
-db.createCollection('catalogo_productos');
-db.createCollection('audit_logs');
-db.createCollection('sync_batches');
-db.createCollection('price_snapshots');
-db.createCollection('geo_telemetry');
-db.createCollection('error_logs');
-db.createCollection('notifications');
-
-// Create indexes
-db.catalogo_productos.createIndex({ "sku": 1 }, { unique: true });
-db.catalogo_productos.createIndex({ "nombre": "text", "categoria_principal": "text" });
-db.catalogo_productos.createIndex({ "estado": 1 });
-
-db.audit_logs.createIndex({ "timestamp": -1 });
-db.audit_logs.createIndex({ "actor_id": 1, "timestamp": -1 });
-db.audit_logs.createIndex({ "entidad_afectada": 1 });
-
-db.sync_batches.createIndex({ "batch_id": 1 }, { unique: true });
-db.sync_batches.createIndex({ "status": 1 });
-db.sync_batches.createIndex({ "created_at": -1 });
-
-db.price_snapshots.createIndex({ "product_id": 1 });
-db.price_snapshots.createIndex({ "zone_id": 1 });
-db.price_snapshots.createIndex({ "timestamp": -1 });
-db.price_snapshots.createIndex({ "product_id": 1, "zone_id": 1, "timestamp": -1 });
-
-db.geo_telemetry.createIndex({ "device_id": 1, "timestamp": -1 });
-db.geo_telemetry.createIndex({ "location": "2dsphere" });
-
-db.error_logs.createIndex({ "timestamp": -1 });
-db.error_logs.createIndex({ "level": 1 });
-
-db.notifications.createIndex({ "user_id": 1, "read": 1 });
-db.notifications.createIndex({ "created_at": -1 });
-
-// Insert sample documents
-db.catalogo_productos.insertMany([
-  {
-    schema_version: 1,
-    sku: "TORTILLA-MAIZ-KG",
-    nombre: "Tortilla de maíz",
-    categoria_principal: "Abarrotes",
-    unidad_medida: "kg",
-    atributos: [
-      { k: "canasta_basica", v: true },
-      { k: "perecedero", v: true }
-    ],
-    estado: "activo",
-    updated_at: new Date()
-  },
-  {
-    schema_version: 1,
-    sku: "LIMON-SEMILLA-KG",
-    nombre: "Limón con semilla",
-    categoria_principal: "Frutas y Verduras",
-    unidad_medida: "kg",
-    atributos: [
-      { k: "origen_frecuente", v: "Michoacán" },
-      { k: "perecedero", v: true }
-    ],
-    estado: "activo",
-    updated_at: new Date()
-  }
-]);
-
-db.price_snapshots.insertMany([
-  {
-    schema_version: 1,
-    product_id: 1, // Tortilla de maíz
-    zone_id: 1,
-    average_price: 21.00,
-    min_price: 20.00,
-    max_price: 22.00,
-    sample_size: 2,
-    timestamp: new Date()
-  },
-  {
-    schema_version: 1,
-    product_id: 10, // Tomate saladette
-    zone_id: 2,
-    average_price: 24.25,
-    min_price: 23.50,
-    max_price: 25.00,
-    sample_size: 2,
-    timestamp: new Date()
-  }
-]);
-
-db.error_logs.insertOne({
-  schema_version: 1,
-  level: "INFO",
-  message: "System initialized",
-  service: "database-init",
-  timestamp: new Date()
+// --------------------------------------------------------------- notificaciones
+db.createCollection('notificaciones', {
+  validator: { $jsonSchema: {
+    bsonType: 'object',
+    required: ['usuario_id', 'tipo', 'titulo', 'mensaje', 'leida', 'creada_en'],
+    properties: {
+      usuario_id: { bsonType: 'string' },
+      tipo: { enum: ['pedido', 'stock_bajo', 'precio_atipico', 'comercio', 'importacion', 'sistema'] },
+      titulo: { bsonType: 'string', maxLength: 200 },
+      mensaje: { bsonType: 'string', maxLength: 1000 },
+      prioridad: { enum: ['normal', 'alta'] },
+      leida: { bsonType: 'bool' },
+      creada_en: { bsonType: 'date' }
+    }
+  }}
 });
+db.notificaciones.createIndex({ usuario_id: 1, leida: 1, creada_en: -1 });
+db.notificaciones.createIndex({ tipo: 1, creada_en: -1 });
+db.notificaciones.createIndex({ expira_en: 1 }, { expireAfterSeconds: 0 });   // borrado automático a los 90 días
 
-db.audit_logs.insertOne({
-  schema_version: 1,
-  timestamp: new Date(),
-  actor_id: null,
-  accion: "INICIALIZACION",
-  entidad_afectada: "MONGODB",
-  datos_anteriores: null,
-  datos_nuevos: { colecciones_creadas: true },
-  ip_address: null,
-  flag_anomalia: false
-});
+// --------------------------------------------------------------- eventos del pedido
+db.createCollection('eventos_pedido');
+db.eventos_pedido.createIndex({ pedido_id: 1, fecha: 1 });
+db.eventos_pedido.createIndex({ proveedor_id: 1, fecha: -1 });
+db.eventos_pedido.createIndex({ estado_nuevo: 1, fecha: -1 });
 
-print("MongoDB initialization complete!");
+// --------------------------------------------------------------- históricos de algoritmos
+db.createCollection('snapshots_precios');
+db.snapshots_precios.createIndex({ fecha: 1, zona_id: 1, producto_id: 1, sector: 1 }, { unique: true });
+db.snapshots_precios.createIndex({ producto_id: 1, fecha: -1 });
+
+db.createCollection('ejecuciones_analisis');
+db.ejecuciones_analisis.createIndex({ fecha: -1 });
+db.ejecuciones_analisis.createIndex({ 'zonas.zona_id': 1, fecha: -1 });
+
+// --------------------------------------------------------------- importaciones CSV
+db.createCollection('importaciones');
+db.importaciones.createIndex({ comercio_id: 1, fecha: -1 });
+
+// --------------------------------------------------------------- bitácora de peticiones a microservicios
+db.createCollection('bitacora_peticiones');
+db.bitacora_peticiones.createIndex({ servicio: 1, fecha: -1 });
+db.bitacora_peticiones.createIndex({ correlation_id: 1 });
+db.bitacora_peticiones.createIndex({ status: 1, fecha: -1 });
+db.bitacora_peticiones.createIndex({ fecha: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });   // 30 días
+
+// --------------------------------------------------------------- archivos (GridFS, bucket "archivos")
+db.createCollection('archivos.files');
+db.createCollection('archivos.chunks');
+db['archivos.files'].createIndex({ 'metadata.entidad': 1, 'metadata.entidad_id': 1 });
+db['archivos.files'].createIndex({ 'metadata.categoria': 1, uploadDate: -1 });
+db['archivos.chunks'].createIndex({ files_id: 1, n: 1 }, { unique: true });
+
+print('MongoDB de AbastoRed inicializada');

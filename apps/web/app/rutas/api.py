@@ -1,22 +1,21 @@
 """
-API JSON mínima del monolito, protegida con JWT + lista de revocación en Redis.
+API JSON del monolito.
 
-Es la base de lo que en el segundo parcial se separará en microservicios
-(que además responderán en XML para la aplicación de escritorio).
+Desde el segundo parcial los tokens los emite ms-seguridad (/api/v1/auth/login)
+y las operaciones de la app móvil y de escritorio viven en los microservicios.
+El web conserva sólo estas rutas de consulta, protegidas con el mismo mecanismo
+común: firma JWT + sesión activa en Redis (abasto_dominio.sesiones).
 """
 from functools import wraps
 from uuid import UUID
 
-import jwt
-from flask import current_app, jsonify, request
-from redis.exceptions import RedisError
+from flask import jsonify, request
 
-from app import app, extensions
-from app.extensions import csrf, db
-from app.models import Comercio, InventarioComercio, PrecioComercio, ProductoMaestro, Usuario, ZonaMunicipal
-from app.rutas.auth import clave_token_revocado, emitir_jwt
-from app.servicios.auditoria import registrar_evento
-from app.servicios.precios import SECTOR
+from app import app
+from app.extensions import db
+from abasto_dominio import sesiones
+from abasto_dominio.modelos import Comercio, InventarioComercio, PrecioComercio, ProductoMaestro, Usuario, ZonaMunicipal
+from abasto_dominio.servicios.precios import SECTOR
 
 
 def jwt_requerido(vista):
@@ -25,54 +24,18 @@ def jwt_requerido(vista):
         encabezado = request.headers.get('Authorization', '')
         if not encabezado.startswith('Bearer '):
             return jsonify(error='Token JWT requerido'), 401
-        token = encabezado.removeprefix('Bearer ').strip()
-
         try:
-            if extensions.redis_client.exists(clave_token_revocado(token)):
-                return jsonify(error='Token JWT revocado'), 401
-        except RedisError:
-            # Sin Redis no se puede confirmar la revocación: se rechaza por seguridad
-            return jsonify(error='Servicio de sesiones no disponible'), 503
-
-        try:
-            datos = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
-            usuario = db.session.get(Usuario, UUID(datos.get('user_id')))
-        except jwt.ExpiredSignatureError:
-            return jsonify(error='Token JWT expirado'), 401
-        except (jwt.InvalidTokenError, TypeError, ValueError):
+            claims = sesiones.validar_token(encabezado.removeprefix('Bearer ').strip())
+            usuario = db.session.get(Usuario, UUID(claims['sub']))
+        except sesiones.ErrorSesion as error:
+            return jsonify(error=error.mensaje, codigo=error.codigo), error.codigo_http
+        except ValueError:
             return jsonify(error='Token JWT inválido'), 401
-
         if not usuario or not usuario.activo:
             return jsonify(error='Usuario no autorizado'), 401
         request.usuario_api = usuario
-        request.token_api = token
         return vista(*args, **kwargs)
     return envoltura
-
-
-@app.route('/api/auth/token', methods=['POST'])
-@csrf.exempt
-def api_token():
-    datos = request.get_json(silent=True) or {}
-    usuario = Usuario.query.filter_by(email=(datos.get('email') or '').strip().lower(), activo=True).first()
-    if not usuario or not usuario.check_password(datos.get('password') or ''):
-        return jsonify(error='Credenciales inválidas'), 401
-    registrar_evento(usuario.id, 'LOGIN', 'Usuario', usuario.id, 'Token JWT emitido para la API')
-    db.session.commit()
-    return jsonify(access_token=emitir_jwt(usuario), token_type='Bearer',
-                   expires_in=int(current_app.config['JWT_ACCESS_TOKEN_EXPIRES'].total_seconds()))
-
-
-@app.route('/api/auth/logout', methods=['POST'])
-@csrf.exempt
-@jwt_requerido
-def api_logout():
-    try:
-        extensions.redis_client.setex(clave_token_revocado(request.token_api),
-                                      int(current_app.config['JWT_ACCESS_TOKEN_EXPIRES'].total_seconds()), '1')
-    except RedisError:
-        return jsonify(error='No se pudo revocar el token'), 503
-    return jsonify(mensaje='Token revocado')
 
 
 @app.route('/api/me')

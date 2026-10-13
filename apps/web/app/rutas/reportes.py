@@ -5,22 +5,46 @@ from datetime import date
 
 from flask import Response, abort, render_template, request
 from flask_login import current_user, login_required
+from pymongo.errors import PyMongoError
 from sqlalchemy import func
 
 from app import app
-from app.extensions import db
-from app.models.pedido import ESTADOS_PEDIDO
-from app.models import Comercio, InventarioComercio, PedidoAbasto, ProductoMaestro, ZonaMunicipal
-from app.servicios import analisis
-from app.servicios.auditoria import registrar_evento
-from app.servicios.precios import tendencia_semanal
+from app.microservicios import ServicioNoDisponible, llamar
+from abasto_dominio.extensiones import db
+from abasto_dominio.modelos.pedido import ESTADOS_PEDIDO
+from abasto_dominio.modelos import (Comercio, InventarioComercio, PedidoAbasto, ProductoMaestro, Proveedor,
+                                    ZonaMunicipal)
+from abasto_dominio.servicios import analisis, eventos
+from abasto_dominio.servicios.auditoria import registrar_evento
+from abasto_dominio.servicios.precios import tendencia_semanal
 
 
 def puede_ver_oportunidades(usuario):
     """Analistas y coordinadores siempre; proveedores sólo con plan Destacado."""
     if usuario.tiene_permiso('reportes.ver'):
         return True
-    return usuario.tiene_permiso('pedidos.atender') and usuario.proveedor and usuario.proveedor.plan == 'DESTACADO'
+    empresa = usuario.proveedor_vinculado  # dueño u operador
+    return usuario.tiene_permiso('pedidos.atender') and empresa is not None and empresa.plan == 'DESTACADO'
+
+
+def desempeno_proveedores(dias=90):
+    """
+    Pipeline de MongoDB sobre eventos_pedido, servido por ms-pedidos. Un
+    proveedor sólo recibe su propio renglón. Respaldo: la misma agregación directa.
+    """
+    try:
+        respuesta = llamar('pedidos', 'GET', '/estadisticas/proveedores', params={'dias': dias})
+        if respuesta.ok:
+            return respuesta.datos['proveedores'], 'ms-pedidos'
+    except ServicioNoDisponible:
+        pass
+    try:
+        empresa = None if current_user.tiene_permiso('analisis.ver') else current_user.proveedor_vinculado
+        filas = eventos.desempeno_proveedores(dias, empresa.id if empresa else None)
+        nombres = {str(p.id): p.nombre_empresa for p in Proveedor.query.all()}
+        return [{**f, 'proveedor': nombres.get(f['proveedor_id'])} for f in filas], 'MongoDB (directo)'
+    except PyMongoError:
+        return [], 'no disponible'
 
 
 def oportunidades_abasto(zona_ids=None):
@@ -54,8 +78,10 @@ def reportes():
     if puede_ver_oportunidades(current_user):
         zona_ids = None
         if not current_user.tiene_permiso('reportes.ver'):
-            zona_ids = {z.id for z in current_user.proveedor.zonas}
+            zona_ids = {z.id for z in current_user.proveedor_vinculado.zonas}
         datos['oportunidades'] = oportunidades_abasto(zona_ids)[:15]
+    if current_user.tiene_permiso('analisis.ver') or current_user.tiene_permiso('pedidos.atender'):
+        datos['desempeno'], datos['fuente_desempeno'] = desempeno_proveedores()
 
     return render_template('reportes/index.html', datos=datos, puede_oportunidades=puede_ver_oportunidades(current_user),
                            productos=ProductoMaestro.query.filter_by(activo=True).order_by(ProductoMaestro.nombre).all())
@@ -77,7 +103,7 @@ def exportar(tipo):
     if tipo == 'oportunidades':
         if not puede_ver_oportunidades(current_user):
             abort(403)
-        zona_ids = None if current_user.tiene_permiso('reportes.ver') else {z.id for z in current_user.proveedor.zonas}
+        zona_ids = None if current_user.tiene_permiso('reportes.ver') else {z.id for z in current_user.proveedor_vinculado.zonas}
         filas = oportunidades_abasto(zona_ids)
         respuesta = _csv('oportunidades_abasto',
                          ['Zona', 'Municipio', 'Producto', 'Canasta básica', 'Comercios', 'Con existencia',

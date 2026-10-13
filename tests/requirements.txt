@@ -1,0 +1,7 @@
+# Dependencias para correr las pruebas desde la raíz del repositorio:
+#   python -m venv .venv
+#   .venv\Scripts\activate            (Linux/macOS: source .venv/bin/activate)
+#   pip install -e libs/abasto_dominio -e libs/abasto_api -r tests/requirements.txt
+# PyJWT, lxml y requests ya vienen con las bibliotecas.
+pytest==8.3.3
+fakeredis[lua]==2.25.1

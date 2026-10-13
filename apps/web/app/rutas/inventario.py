@@ -4,19 +4,22 @@ Catálogo del comercio e inventario.
 Catálogo maestro (producto genérico) -> catálogo del comercio (lo que sí vende,
 con su existencia, stock mínimo/máximo y precio).
 """
+import csv
+import io
 from decimal import Decimal, InvalidOperation
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import Response, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app import app
-from app.extensions import db
+from app.microservicios import ServicioNoDisponible, llamar
+from abasto_dominio.extensiones import db
 from app.formularios import InventarioForm, MovimientoForm
-from app.models import Categoria, Comercio, InventarioComercio, PrecioComercio, ProductoMaestro
+from abasto_dominio.modelos import Categoria, Comercio, InventarioComercio, PrecioComercio, ProductoMaestro
 from app.permisos import permiso_requerido
-from app.servicios import ReglaNegocioError, analisis
-from app.servicios.auditoria import registrar_evento
-from app.servicios.inventario import (actualizar_precio, agregar_al_catalogo, quitar_del_catalogo,
+from abasto_dominio.servicios import ReglaNegocioError, analisis
+from abasto_dominio.servicios.auditoria import registrar_evento
+from abasto_dominio.servicios.inventario import (actualizar_precio, agregar_al_catalogo, quitar_del_catalogo,
                                       registrar_movimiento)
 
 
@@ -204,3 +207,62 @@ def inventario_quitar(id):
     db.session.commit()
     flash(f'{renglon.producto.nombre} se quitó de tu catálogo. El historial se conserva.', 'ok')
     return redirect(url_for('inventario', comercio_id=renglon.comercio_id))
+
+
+# ---------------------------------------------------------------- importación masiva (ms-inventario)
+
+@app.route('/inventario/<uuid:comercio_id>/importar', methods=['GET', 'POST'])
+@login_required
+@permiso_requerido('importaciones.ejecutar')
+def inventario_importar(comercio_id):
+    """
+    Carga del inventario desde CSV. El archivo se reenvía a ms-inventario,
+    que lo guarda en GridFS, aplica cada fila en su propio savepoint y deja el
+    resultado en MongoDB (importaciones). Un bloqueo en Redis evita dos cargas
+    simultáneas del mismo comercio.
+    """
+    comercio = _comercio_propio(comercio_id)
+    resultado = None
+    if request.method == 'POST':
+        archivo = request.files.get('archivo')
+        if not archivo or not archivo.filename:
+            flash('Selecciona el archivo CSV.', 'error')
+        else:
+            try:
+                respuesta = llamar('inventario', 'POST', f'/comercios/{comercio.id}/importaciones',
+                                   files={'archivo': (archivo.filename, archivo.stream, 'text/csv')})
+                if respuesta.ok:
+                    resultado = respuesta.datos
+                    flash(f"Importación terminada: {resultado['agregados']} agregados, "
+                          f"{resultado['actualizados']} actualizados, {resultado['con_error']} con error.",
+                          'ok' if not resultado['con_error'] else 'alerta')
+                else:
+                    flash(respuesta.mensaje_error, 'error')
+            except ServicioNoDisponible:
+                flash('El servicio de inventario no está disponible; intenta más tarde.', 'error')
+
+    historial, fuente = [], 'ms-inventario'
+    try:
+        respuesta = llamar('inventario', 'GET', f'/comercios/{comercio.id}/importaciones')
+        historial = respuesta.datos.get('importaciones', []) if respuesta.ok else []
+    except ServicioNoDisponible:
+        fuente = 'no disponible'
+    return render_template('inventario/importar.html', comercio=comercio, resultado=resultado,
+                           historial=historial, fuente=fuente)
+
+
+@app.route('/inventario/<uuid:comercio_id>/plantilla.csv')
+@login_required
+@permiso_requerido('importaciones.ejecutar')
+def inventario_plantilla(comercio_id):
+    """Plantilla con el inventario actual, lista para editar y volver a subir."""
+    comercio = _comercio_propio(comercio_id)
+    salida = io.StringIO()
+    escritor = csv.writer(salida)
+    escritor.writerow(['producto', 'existencia', 'stock_minimo', 'stock_maximo', 'precio'])
+    for r in (InventarioComercio.query.filter_by(comercio_id=comercio.id, activo=True)
+              .join(ProductoMaestro).order_by(ProductoMaestro.nombre)):
+        escritor.writerow([r.producto.nombre, r.existencia, r.stock_minimo, r.stock_maximo or '',
+                           r.precio_venta or ''])
+    return Response('﻿' + salida.getvalue(), mimetype='text/csv',
+                    headers={'Content-Disposition': 'attachment; filename="inventario.csv"'})

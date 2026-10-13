@@ -3,12 +3,12 @@ from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app import app
-from app.extensions import db
+from abasto_dominio.extensiones import db
 from app.formularios import CategoriaForm, ProductoForm, ZonaForm
-from app.models import Categoria, ProductoMaestro, ZonaMunicipal
+from abasto_dominio.modelos import Categoria, ProductoMaestro, ZonaMunicipal
 from app.permisos import permiso_requerido
-from app.servicios.auditoria import registrar_evento
-from app.servicios.cache import invalidar_analisis
+from abasto_dominio.servicios.auditoria import registrar_evento
+from abasto_dominio.servicios.cache import invalidar_analisis
 
 
 def _campos(objeto, nombres):

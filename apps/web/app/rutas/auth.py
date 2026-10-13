@@ -1,34 +1,18 @@
 import secrets
-from datetime import datetime, timezone
-from hashlib import sha256
 from uuid import UUID
 
-import jwt
 from flask import current_app, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from redis.exceptions import RedisError
 
-from app import app, extensions
-from app.extensions import db
+from app import app
+from abasto_dominio import extensiones, sesiones
+from abasto_dominio.extensiones import db
 from app.formularios import LoginForm, RecuperarForm, RegistroForm, RestablecerForm
-from app.models import Rol, Usuario
-from app.servicios.auditoria import registrar_evento
+from abasto_dominio.modelos import Rol, Usuario
+from abasto_dominio.servicios.auditoria import registrar_evento
 
 TTL_RECUPERACION = 30 * 60
-
-
-def emitir_jwt(usuario):
-    ahora = datetime.now(timezone.utc)
-    return jwt.encode({
-        'user_id': str(usuario.id),
-        'rol': usuario.rol.nombre,
-        'iat': ahora,
-        'exp': ahora + current_app.config['JWT_ACCESS_TOKEN_EXPIRES'],
-    }, current_app.config['JWT_SECRET_KEY'], algorithm='HS256')
-
-
-def clave_token_revocado(token):
-    return f"jwt:blacklist:{sha256(token.encode('utf-8')).hexdigest()}"
 
 
 def _destino_seguro(destino):
@@ -39,7 +23,12 @@ def _destino_seguro(destino):
 def _iniciar_sesion(usuario):
     login_user(usuario)
     usuario.ultimo_acceso = db.func.now()
-    session['jwt_token'] = emitir_jwt(usuario)
+    # Mismo JWT y sesión en Redis que usan los microservicios; el web lo manda al llamarlos
+    try:
+        tokens = sesiones.emitir_tokens(usuario, origen='web', ip=request.remote_addr, con_refresh=False)
+        session['jwt_token'], session['jwt_jti'] = tokens['access_token'], tokens['jti']
+    except RedisError:
+        current_app.logger.warning('Redis no disponible: sesión web sin token para los microservicios.')
     registrar_evento(usuario.id, 'LOGIN', 'Usuario', usuario.id, 'Inicio de sesión')
     db.session.commit()
 
@@ -51,10 +40,16 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        usuario = Usuario.query.filter_by(email=form.email.data.strip().lower(), activo=True).first()
+        email = form.email.data.strip().lower()
+        if sesiones.login_bloqueado(email):
+            flash('Demasiados intentos fallidos. Espera 15 minutos o recupera tu contraseña.', 'error')
+            return render_template('auth/login.html', form=form), 429
+        usuario = Usuario.query.filter_by(email=email, activo=True).first()
         if usuario and usuario.check_password(form.password.data):
+            sesiones.limpiar_intentos(email)
             _iniciar_sesion(usuario)
             return redirect(_destino_seguro(request.args.get('next')) or url_for('panel'))
+        sesiones.registrar_intento_fallido(email)
         flash('Correo o contraseña incorrectos.', 'error')
     return render_template('auth/login.html', form=form)
 
@@ -63,12 +58,12 @@ def login():
 @login_required
 def logout():
     token = session.pop('jwt_token', None)
+    session.pop('jwt_jti', None)
     if token:
         try:
-            extensions.redis_client.setex(clave_token_revocado(token),
-                                          int(current_app.config['JWT_ACCESS_TOKEN_EXPIRES'].total_seconds()), '1')
-        except RedisError:
-            current_app.logger.warning('No se pudo registrar el JWT revocado en Redis.')
+            sesiones.revocar(sesiones.decodificar(token))
+        except (RedisError, sesiones.ErrorSesion):
+            current_app.logger.warning('No se pudo revocar el JWT de la sesión web.')
 
     registrar_evento(current_user.id, 'LOGOUT', 'Usuario', current_user.id, 'Cierre de sesión')
     db.session.commit()
@@ -117,7 +112,7 @@ def recuperar():
         if usuario:
             token = secrets.token_urlsafe(32)
             try:
-                extensions.redis_client.setex(f'recuperacion:{token}', TTL_RECUPERACION, str(usuario.id))
+                extensiones.redis_client.setex(f'recuperacion:{token}', TTL_RECUPERACION, str(usuario.id))
                 # Aún no hay servidor de correo: el enlace se escribe en el log del contenedor web
                 current_app.logger.info('Enlace de recuperación para %s: %s', usuario.email,
                                         url_for('restablecer', token=token, _external=True))
@@ -133,7 +128,7 @@ def recuperar():
 @app.route('/restablecer/<token>', methods=['GET', 'POST'])
 def restablecer(token):
     try:
-        usuario_id = extensions.redis_client.get(f'recuperacion:{token}')
+        usuario_id = extensiones.redis_client.get(f'recuperacion:{token}')
     except RedisError:
         usuario_id = None
     usuario = db.session.get(Usuario, UUID(usuario_id)) if usuario_id else None
@@ -147,7 +142,7 @@ def restablecer(token):
         registrar_evento(usuario.id, 'ACTUALIZACION', 'Usuario', usuario.id, 'Contraseña restablecida')
         db.session.commit()
         try:
-            extensions.redis_client.delete(f'recuperacion:{token}')
+            extensiones.redis_client.delete(f'recuperacion:{token}')
         except RedisError:
             pass
         flash('Contraseña actualizada. Ya puedes iniciar sesión.', 'ok')

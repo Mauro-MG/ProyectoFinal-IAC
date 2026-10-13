@@ -18,8 +18,8 @@ import pytest
 from flask import g
 
 from app import app as flask_app
-from app.extensions import db
-from app.models import (AuditoriaEvento, Comercio, InventarioComercio, PedidoAbasto, ProductoMaestro, Proveedor,
+from abasto_dominio.extensiones import db
+from abasto_dominio.modelos import (AuditoriaEvento, Comercio, InventarioComercio, PedidoAbasto, ProductoMaestro, Proveedor,
                         Usuario)
 
 CLAVE = 'Password123!'

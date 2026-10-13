@@ -16,6 +16,9 @@
             </select>
         </form>
         {% endif %}
+        {% if current_user.tiene_permiso('importaciones.ejecutar') %}
+        <a class="btn" href="{{ url_for('inventario_importar', comercio_id=comercio.id) }}">Importar CSV</a>
+        {% endif %}
         <a class="btn btn-primario" href="{{ url_for('inventario_agregar', comercio_id=comercio.id) }}">Agregar productos</a>
     </div>
 </div>

@@ -7,7 +7,8 @@
         <h1>Brechas de surtido</h1>
         <p>Por zona y producto: cuántos comercios hay, cuántos tienen existencia y qué tan lejos está la zona de la
            oferta que su población necesita. Brecha alta = cobertura menor a {{ umbrales[0] }} %, media &lt; {{ umbrales[1] }} %,
-           baja &lt; {{ umbrales[2] }} %. Se estima un punto de venta con existencia por cada {{ '{:,}'.format(habitantes_por_punto) }} habitantes.</p>
+           baja &lt; {{ umbrales[2] }} %. Se estima un punto de venta con existencia por cada {{ '{:,}'.format(habitantes_por_punto) }} habitantes.
+           <small>Fuente: {{ fuente }}</small></p>
     </div>
     <a class="btn" href="{{ url_for('exportar', tipo='brechas') }}">Exportar CSV</a>
 </div>
@@ -62,6 +63,13 @@
         </tbody>
     </table>
 </div>
+{% if paginacion.paginas > 1 %}
+<div class="paginacion">
+    {% if paginacion.pagina > 1 %}<a href="{{ url_pagina(paginacion.pagina - 1) }}">← Anterior</a>{% endif %}
+    <span class="tenue">Página {{ paginacion.pagina }} de {{ paginacion.paginas }} · {{ paginacion.total }} combinaciones zona-producto</span>
+    {% if paginacion.pagina < paginacion.paginas %}<a href="{{ url_pagina(paginacion.pagina + 1) }}">Siguiente →</a>{% endif %}
+</div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

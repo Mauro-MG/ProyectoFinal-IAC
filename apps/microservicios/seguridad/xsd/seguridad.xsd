@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generado con: python -m abasto_api.contratos apps/microservicios/seguridad -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://abastored.mx/esquemas/v1" targetNamespace="https://abastored.mx/esquemas/v1" elementFormDefault="qualified" version="1.0">
+  <xs:annotation>
+    <xs:documentation>Contratos XML v1 de ms-seguridad (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
+  </xs:annotation>
+  <!-- Elementos raíz: uno por petición o respuesta -->
+  <xs:element name="actividad" type="ActividadSalida"/>
+  <xs:element name="auditoria" type="AuditoriaSalida"/>
+  <xs:element name="error" type="ErrorSalida"/>
+  <xs:element name="login" type="LoginEntrada"/>
+  <xs:element name="permisos_entrada" type="PermisosEntrada"/>
+  <xs:element name="rastreo" type="RastreoSalida"/>
+  <xs:element name="renovar" type="RenovarEntrada"/>
+  <xs:element name="resultado" type="Resultado"/>
+  <xs:element name="rol" type="RolSalida"/>
+  <xs:element name="roles" type="RolesSalida"/>
+  <xs:element name="salud" type="Salud"/>
+  <xs:element name="sesion" type="SesionSalida"/>
+  <xs:element name="sesiones" type="SesionesSalida"/>
+  <xs:element name="tokens" type="TokensSalida"/>
+  <xs:element name="usuario" type="UsuarioSalida"/>
+  <xs:element name="usuario_cambio" type="UsuarioCambio"/>
+  <xs:element name="usuarios" type="UsuariosSalida"/>
+  <xs:element name="validacion" type="ValidacionSalida"/>
+  <xs:element name="validar" type="ValidarEntrada"/>
+  <!-- Tipos -->
+  <xs:complexType name="ActividadSalida">
+    <xs:all>
+      <xs:element name="horas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="servicios" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="servicio" maxOccurs="unbounded" type="ActividadServicio" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ActividadServicio">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="peticiones" type="xs:integer" minOccurs="1"/>
+      <xs:element name="errores_cliente" type="xs:integer" minOccurs="1"/>
+      <xs:element name="errores_servidor" type="xs:integer" minOccurs="1"/>
+      <xs:element name="respuestas_xml" type="xs:integer" minOccurs="1"/>
+      <xs:element name="duracion_prom_ms" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="duracion_max_ms" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="ultima" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="contador_hoy" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="AuditoriaSalida">
+    <xs:all>
+      <xs:element name="paginacion" type="Paginacion" minOccurs="1"/>
+      <xs:element name="items" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" maxOccurs="unbounded" type="EventoAuditoria" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Dependencia">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DetalleError">
+    <xs:all>
+      <xs:element name="campo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ErrorSalida">
+    <xs:annotation>
+      <xs:documentation>Error estandarizado (en JSON viene dentro de la llave `error`).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="codigo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="status" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="400"/>
+            <xs:maxInclusive value="599"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ruta" type="xs:string" minOccurs="0"/>
+      <xs:element name="correlation_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="detalles" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="detalle" maxOccurs="unbounded" type="DetalleError" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EventoAuditoria">
+    <xs:all>
+      <xs:element name="id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="usuario_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="tipo_evento" type="xs:string" minOccurs="1"/>
+      <xs:element name="entidad" type="xs:string" minOccurs="1"/>
+      <xs:element name="entidad_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+      <xs:element name="datos_anteriores" minOccurs="0">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="datos_nuevos" minOccurs="0">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ip" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="LoginEntrada">
+    <xs:all>
+      <xs:element name="email" type="xs:string" minOccurs="1"/>
+      <xs:element name="password" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="128"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="origen" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="web"/>
+            <xs:enumeration value="movil"/>
+            <xs:enumeration value="escritorio"/>
+            <xs:enumeration value="api"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Paginacion">
+    <xs:annotation>
+      <xs:documentation>Datos de paginación de toda lista.</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="pagina" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="por_pagina" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="total" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="paginas" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PermisoDisponible">
+    <xs:all>
+      <xs:element name="codigo" type="xs:string" minOccurs="1"/>
+      <xs:element name="descripcion" type="xs:string" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PermisosEntrada">
+    <xs:all>
+      <xs:element name="permisos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="permiso" maxOccurs="50" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="RastreoSalida">
+    <xs:all>
+      <xs:element name="correlation_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="pasos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="paso" maxOccurs="unbounded" minOccurs="0">
+              <xs:complexType mixed="true">
+                <xs:sequence>
+                  <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="RenovarEntrada">
+    <xs:all>
+      <xs:element name="refresh_token" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="20"/>
+            <xs:maxLength value="200"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Resultado">
+    <xs:annotation>
+      <xs:documentation>Respuesta de operaciones que no regresan un recurso (bajas, revocaciones, marcados).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+      <xs:element name="jti" type="xs:string" minOccurs="0"/>
+      <xs:element name="sesiones_cerradas" type="xs:integer" minOccurs="0"/>
+      <xs:element name="cambiadas" type="xs:integer" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="RolSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+      <xs:element name="permisos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="permiso" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="RolesSalida">
+    <xs:all>
+      <xs:element name="permisos_disponibles" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="permiso" maxOccurs="unbounded" type="PermisoDisponible" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="roles" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="rol" maxOccurs="unbounded" type="RolSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Salud">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="version" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="dependencias" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="Dependencia" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="SesionActiva">
+    <xs:all>
+      <xs:element name="jti" type="xs:string" minOccurs="1"/>
+      <xs:element name="usuario_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="rol" type="xs:string" minOccurs="1"/>
+      <xs:element name="nombre" type="xs:string" minOccurs="0"/>
+      <xs:element name="origen" type="xs:string" minOccurs="0"/>
+      <xs:element name="ip" type="xs:string" minOccurs="0"/>
+      <xs:element name="creada" type="xs:string" minOccurs="0"/>
+      <xs:element name="ttl" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="SesionSalida">
+    <xs:all>
+      <xs:element name="usuario_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="nombre" type="xs:string" minOccurs="0"/>
+      <xs:element name="rol" type="xs:string" minOccurs="1"/>
+      <xs:element name="permisos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="permiso" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="origen" type="xs:string" minOccurs="0"/>
+      <xs:element name="jti" type="xs:string" minOccurs="1"/>
+      <xs:element name="segundos_restantes" type="xs:integer" minOccurs="1"/>
+      <xs:element name="proveedor_id" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="SesionesSalida">
+    <xs:all>
+      <xs:element name="total" type="xs:integer" minOccurs="1"/>
+      <xs:element name="sesiones" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sesion" maxOccurs="unbounded" type="SesionActiva" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="TokensSalida">
+    <xs:all>
+      <xs:element name="access_token" type="xs:string" minOccurs="1"/>
+      <xs:element name="token_type" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Bearer"/>
+            <xs:enumeration value="Bearer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="expires_in" type="xs:integer" minOccurs="1"/>
+      <xs:element name="refresh_token" type="xs:string" minOccurs="0"/>
+      <xs:element name="usuario" type="UsuarioSalida" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="UsuarioCambio">
+    <xs:all>
+      <xs:element name="rol_id" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="activo" type="xs:boolean" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="UsuarioSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:string" minOccurs="1"/>
+      <xs:element name="email" type="xs:string" minOccurs="1"/>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="apellido" type="xs:string" minOccurs="1"/>
+      <xs:element name="telefono" type="xs:string" minOccurs="0"/>
+      <xs:element name="rol" type="xs:string" minOccurs="1"/>
+      <xs:element name="rol_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="activo" type="xs:boolean" minOccurs="1"/>
+      <xs:element name="proveedor_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="ultimo_acceso" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="permisos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="permiso" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="UsuariosSalida">
+    <xs:all>
+      <xs:element name="paginacion" type="Paginacion" minOccurs="1"/>
+      <xs:element name="items" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" maxOccurs="unbounded" type="UsuarioSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ValidacionSalida">
+    <xs:all>
+      <xs:element name="valido" type="xs:boolean" minOccurs="1"/>
+      <xs:element name="motivo" type="xs:string" minOccurs="0"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="0"/>
+      <xs:element name="usuario_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="rol" type="xs:string" minOccurs="0"/>
+      <xs:element name="permisos" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="permiso" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="expira" type="xs:dateTime" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ValidarEntrada">
+    <xs:all>
+      <xs:element name="token" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="20"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

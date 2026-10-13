@@ -1,51 +1,50 @@
-# Módulo de microservicios
+# Microservicios
 
-**Estado:** diseñado, se implementa en el segundo parcial.
+Ocho aplicaciones Flask independientes, cada una en su propio contenedor (gunicorn, puerto 8000
+dentro de la red; publicado en 8101–8108). Comparten dos bibliotecas del repositorio:
 
-Cada servicio será una aplicación Flask independiente, con su propio `Dockerfile`, y se podrá
-desplegar y actualizar por separado. No comparte vistas, plantillas ni sesiones con el sistema web;
-sólo lee las bases de datos autorizadas y valida el JWT contra la lista de revocación en Redis.
+- `libs/abasto_dominio`: modelos SQLAlchemy y reglas de negocio (las mismas que usa el web).
+- `libs/abasto_api`: la clase `Servicio`, que da a todos el mismo comportamiento: `/api/v1`, JWT con
+  sesión en Redis y permisos por ruta, validación con Pydantic, JSON o XML según `Accept` (o
+  `?formato=xml`), XSD, errores estandarizados, límite de peticiones, `X-Correlation-ID`, bitácora en
+  MongoDB, `/health/*`, OpenAPI 3.1 y Swagger UI.
 
-## Servicios
+| Servicio | Puerto | Responsabilidad |
+| :--- | :--- | :--- |
+| `seguridad/` | 8101 | Login, refresh, logout, usuarios, roles, sesiones, auditoría, actividad |
+| `comercios/` | 8102 | Comercios, validación municipal, zonas, fotos y evidencias (GridFS) |
+| `catalogo/` | 8103 | Catálogo maestro, proveedores, ofertas, catálogo mayorista |
+| `inventario/` | 8104 | Existencias, movimientos, faltantes, importación CSV, disponibilidad pública |
+| `precios/` | 8105 | Precio al consumidor, revisión de atípicos, comparación, snapshots |
+| `pedidos/` | 8106 | Pedidos, partidas, estados, historial, desempeño de proveedores |
+| `analisis/` | 8107 | Cobertura, índice de acceso, brechas, recomendaciones, evolución |
+| `notificaciones/` | 8108 | Avisos internos, contador de no leídas, lote para otros servicios |
 
-| Servicio | Carpeta | Responsabilidad | Base de la lógica actual |
-| :--- | :--- | :--- | :--- |
-| Comercios | `comercios/` | Alta, consulta y validación de comercios | `apps/web/app/rutas/comercios.py` |
-| Productos | `productos/` | Catálogo maestro y catálogo por comercio | `apps/web/app/rutas/catalogo.py` |
-| Precios | `precios/` | Registro y validación de precios (RN-001) | `apps/web/app/servicios/inventario.py` |
-| Inventario | `inventario/` | Existencias y movimientos (RN-009) | `apps/web/app/servicios/inventario.py` |
-| Pedidos | `pedidos/` | Flujo de pedidos de abasto (RN-004, RN-010 a RN-014) | `apps/web/app/servicios/pedidos.py` |
-| Geográfico | `geografico/` | Zonas, asignación de zona por ubicación, buffers | `apps/web/app/servicios/geo.py`, `db/postgres/02_geo.sql` |
-| Cobertura | `cobertura/` | Cobertura e índice de acceso por zona | `apps/web/app/servicios/analisis.py` |
-| Comparación | `comparacion/` | Consumidor formal/informal vs. mayoreo | `apps/web/app/servicios/precios.py` |
-| Recomendaciones | `recomendaciones/` | Recomendación de surtido por reglas | `apps/web/app/servicios/analisis.py` |
-| Acceso alimentario | `acceso_alimentario/` | Índice de acceso y ranking de zonas | `apps/web/app/servicios/analisis.py` |
-| Alertas | `alertas/` | Precios atípicos, stock bajo, pedidos sin respuesta | nuevo |
-| Reportes | `reportes/` | Exportaciones JSON/XML para la app de escritorio | `apps/web/app/rutas/reportes.py` |
-| Monitoreo | `monitoreo/` | Consulta periódica de `/health/*` e historial de disponibilidad | nuevo |
-
-La lógica de negocio del monolito ya está separada en `apps/web/app/servicios/` (sin dependencias de
-Flask ni de las vistas) precisamente para moverla a estos servicios sin reescribirla.
-
-## Estructura que tendrá cada servicio
+## Estructura de cada servicio
 
 ```
 <servicio>/
-├── Dockerfile
-├── requirements.txt
-├── app.py              # rutas /api/v1/..., respuesta JSON o XML según Accept
-├── esquemas/           # validación de entrada y esquemas XSD de salida
-├── openapi.yaml        # documentación Swagger
-└── tests/
+├── app.py          # srv = Servicio(...); rutas con @srv.ruta('/...', 'GET', permisos=[...], ...)
+├── esquemas.py     # modelos de entrada, consulta y salida + CONTRATOS_XML (raíz -> modelo)
+├── xsd/<servicio>.xsd   # generado de esquemas.py (no se edita a mano)
+└── Dockerfile      # se construye desde la raíz del repositorio (instala libs/)
 ```
 
-## Requisitos comunes
+## Tareas comunes
 
-- Versionamiento en la ruta: `/api/v1/...`
-- Respuesta JSON (app móvil) o XML (app de escritorio) según el encabezado `Accept`.
-- JWT obligatorio en rutas protegidas; consulta a Redis para tokens revocados.
-- Límite de consumo por usuario/IP con contadores en Redis (`rate_limit:*`).
-- Identificador de correlación `X-Correlation-ID` en cada petición y en los logs.
-- Endpoints de salud: `/health/live`, `/health/ready`, `/health/database`, `/health/redis`,
-  `/health/mongodb`, `/health/storage`.
-- Pruebas de carga con Locust por perfil (comerciante, proveedor, analista).
+```bash
+# Regenerar los XSD después de cambiar un esquema (hay una prueba que verifica que estén al día)
+python -m abasto_api.contratos apps/microservicios/pedidos
+
+# Reconstruir y reiniciar un servicio
+docker compose up -d --build ms-pedidos
+
+# Ver su bitácora (una línea JSON por petición)
+docker compose logs -f ms-pedidos
+
+# Token de servicio para probar POST /notificaciones/lote
+docker exec ms-pedidos python -c "from app import app; from abasto_dominio.sesiones import token_servicio; app.app_context().push(); print(token_servicio('prueba', ['notificaciones.crear']))"
+```
+
+Las fichas técnicas de cada servicio (13 elementos), los contratos y las claves de Redis están en el
+documento técnico (capítulos 13 a 17); la evidencia de cada endpoint en `docs/evidencias/`.

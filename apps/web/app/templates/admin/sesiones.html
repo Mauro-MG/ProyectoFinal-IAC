@@ -1,0 +1,59 @@
+{% extends "portal.html" %}
+{% block titulo %}Sesiones abiertas{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Sesiones abiertas</h1>
+        <p>Cada inicio de sesión (web, API o servicio) es un JWT registrado en Redis. Al cerrarla, el token queda
+           revocado y deja de servir en el web y en todos los microservicios. <small>Fuente: ms-seguridad · Redis</small></p>
+    </div>
+    {% if usuario_id %}<a class="btn" href="{{ url_for('sesiones_lista') }}">Ver todas</a>{% endif %}
+</div>
+
+{% if not disponible %}
+<div class="mensaje error">El servicio de seguridad no respondió; no se pueden listar las sesiones.</div>
+{% else %}
+<div class="cifras">
+    <div class="cifra"><div class="valor">{{ sesiones|length }}</div><div class="etiqueta">sesiones abiertas</div></div>
+    {% for origen, total in resumen|dictsort %}
+    <div class="cifra"><div class="valor">{{ total }}</div><div class="etiqueta">desde {{ origen }}</div></div>
+    {% endfor %}
+</div>
+
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Usuario</th><th>Rol</th><th>Origen</th><th>IP</th><th>Inicio</th><th class="num">Expira en</th><th></th></tr></thead>
+        <tbody>
+        {% for s in sesiones %}
+        {% set u = usuarios.get(s.usuario_id) %}
+        <tr class="{{ 'resaltado' if s.jti == propia }}">
+            <td>{{ u.nombre_completo if u else (s.nombre or 'Token de servicio') }}{% if s.jti == propia %} <small>(esta sesión)</small>{% endif %}
+                <br><small><a href="{{ url_for('sesiones_lista', usuario_id=s.usuario_id) }}">{{ u.email if u else s.usuario_id }}</a></small></td>
+            <td>{{ s.rol }}</td>
+            <td>{{ s.origen or '—' }}</td>
+            <td><small>{{ s.ip or '—' }}</small></td>
+            <td class="nowrap"><small>{{ s.creada|fecha }}</small></td>
+            <td class="num">{% if s.ttl and s.ttl > 0 %}{{ (s.ttl // 3600) }} h {{ (s.ttl % 3600) // 60 }} min{% else %}—{% endif %}</td>
+            <td class="nowrap">
+                {% if s.jti != propia %}
+                <form class="en-linea" method="post" action="{{ url_for('sesion_revocar', jti=s.jti) }}" data-confirmar="¿Cerrar esta sesión?">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn-enlace">Cerrar</button></form>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="vacio">No hay sesiones abiertas.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if usuario_id and sesiones and not usuario_id.startswith('servicio:') %}
+<form method="post" action="{{ url_for('usuario_cerrar_sesiones', id=usuario_id) }}" style="margin-top: .75rem"
+      data-confirmar="Se cerrarán todas las sesiones de este usuario. ¿Continuar?">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn-peligro">Cerrar todas las sesiones de este usuario</button>
+</form>
+{% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "abasto_dominio"
+version = "2.0.0"
+description = "Modelos, reglas de negocio y sesiones de AbastoRed, compartidos por el sistema web y los microservicios"
+requires-python = ">=3.11"
+dependencies = [
+    "Flask==3.1.0",
+    "SQLAlchemy==2.0.30",
+    "Flask-SQLAlchemy==3.1.1",
+    "psycopg2-binary==2.9.9",
+    "redis==5.0.4",
+    "pymongo==4.7.0",
+    "PyJWT==2.8.0",
+    "bcrypt==4.1.3",
+    "Flask-Login==0.6.3",
+    "requests==2.32.3",
+]
+
+[tool.setuptools.packages.find]
+include = ["abasto_dominio*"]

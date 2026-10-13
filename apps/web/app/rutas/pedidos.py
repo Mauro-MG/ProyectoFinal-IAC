@@ -6,11 +6,11 @@ from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app import app
-from app.extensions import db
-from app.models import CatalogoProveedor, Comercio, PedidoAbasto, ProductoMaestro, Proveedor
+from abasto_dominio.extensiones import db
+from abasto_dominio.modelos import CatalogoProveedor, Comercio, PedidoAbasto, ProductoMaestro, Proveedor
 from app.permisos import permiso_requerido
-from app.servicios import ReglaNegocioError
-from app.servicios import pedidos as flujo
+from abasto_dominio.servicios import ReglaNegocioError
+from abasto_dominio.servicios import pedidos as flujo
 
 
 def _pedido_visible(id):
@@ -46,7 +46,8 @@ def pedidos_lista():
         vista = 'todos'
     elif current_user.tiene_permiso('pedidos.atender'):
         vista = 'recibidos'
-        proveedor_id = current_user.proveedor.id if current_user.proveedor else None
+        empresa = current_user.proveedor_vinculado  # dueño u operador del proveedor
+        proveedor_id = empresa.id if empresa else None
         # El proveedor no ve los borradores del comerciante
         consulta = consulta.filter(PedidoAbasto.proveedor_id == proveedor_id, PedidoAbasto.estado != 'BORRADOR')
     else:

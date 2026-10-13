@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generado con: python -m abasto_api.contratos apps/microservicios/analisis -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://abastored.mx/esquemas/v1" targetNamespace="https://abastored.mx/esquemas/v1" elementFormDefault="qualified" version="1.0">
+  <xs:annotation>
+    <xs:documentation>Contratos XML v1 de ms-analisis (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
+  </xs:annotation>
+  <!-- Elementos raíz: uno por petición o respuesta -->
+  <xs:element name="brechas" type="BrechasSalida"/>
+  <xs:element name="ejecucion" type="EjecucionSalida"/>
+  <xs:element name="error" type="ErrorSalida"/>
+  <xs:element name="evolucion" type="EvolucionSalida"/>
+  <xs:element name="mapa" type="MapaSalida"/>
+  <xs:element name="oportunidades" type="OportunidadesSalida"/>
+  <xs:element name="recomendaciones" type="RecomendacionesSalida"/>
+  <xs:element name="resultado" type="Resultado"/>
+  <xs:element name="salud" type="Salud"/>
+  <xs:element name="zonas" type="ZonasSalida"/>
+  <!-- Tipos -->
+  <xs:complexType name="Brecha">
+    <xs:all>
+      <xs:element name="zona_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="zona" type="xs:string" minOccurs="1"/>
+      <xs:element name="municipio" type="xs:string" minOccurs="1"/>
+      <xs:element name="producto_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="producto" type="xs:string" minOccurs="1"/>
+      <xs:element name="canasta_basica" type="xs:boolean" minOccurs="1"/>
+      <xs:element name="comercios_analizados" type="xs:integer" minOccurs="1"/>
+      <xs:element name="lo_venden" type="xs:integer" minOccurs="1"/>
+      <xs:element name="con_disponibilidad" type="xs:integer" minOccurs="1"/>
+      <xs:element name="sin_disponibilidad" type="xs:integer" minOccurs="1"/>
+      <xs:element name="agotados" type="xs:integer" minOccurs="1"/>
+      <xs:element name="existencia_total" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="cobertura" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="puntos_requeridos" type="xs:integer" minOccurs="0"/>
+      <xs:element name="deficit_puntos" type="xs:integer" minOccurs="0"/>
+      <xs:element name="ventas" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="proveedores" type="xs:integer" minOccurs="1"/>
+      <xs:element name="precio_mayoreo_min" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="precio_promedio" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="ultima_actualizacion" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="nivel" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="ALTA"/>
+            <xs:enumeration value="MEDIA"/>
+            <xs:enumeration value="BAJA"/>
+            <xs:enumeration value="SIN_BRECHA"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="BrechasSalida">
+    <xs:all>
+      <xs:element name="paginacion" type="Paginacion" minOccurs="1"/>
+      <xs:element name="brechas" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="brecha" maxOccurs="unbounded" type="Brecha" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="totales" type="TotalesBrecha" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Dependencia">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DetalleError">
+    <xs:all>
+      <xs:element name="campo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EjecucionSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:string" minOccurs="1"/>
+      <xs:element name="zonas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="criticas" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ErrorSalida">
+    <xs:annotation>
+      <xs:documentation>Error estandarizado (en JSON viene dentro de la llave `error`).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="codigo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="status" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="400"/>
+            <xs:maxInclusive value="599"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ruta" type="xs:string" minOccurs="0"/>
+      <xs:element name="correlation_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="detalles" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="detalle" maxOccurs="unbounded" type="DetalleError" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EvolucionSalida">
+    <xs:all>
+      <xs:element name="dias" type="xs:integer" minOccurs="1"/>
+      <xs:element name="zona_id" type="xs:integer" minOccurs="0"/>
+      <xs:element name="datos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dato" maxOccurs="unbounded" type="PuntoEvolucion" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="MapaSalida">
+    <xs:all>
+      <xs:element name="comercios" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="comercio" maxOccurs="unbounded" type="PuntoComercio" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="proveedores" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="proveedor" maxOccurs="unbounded" type="PuntoProveedor" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Oportunidad">
+    <xs:all>
+      <xs:element name="zona_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="zona" type="xs:string" minOccurs="1"/>
+      <xs:element name="producto_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="producto" type="xs:string" minOccurs="1"/>
+      <xs:element name="cobertura" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="nivel" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="ALTA"/>
+            <xs:enumeration value="MEDIA"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="sin_disponibilidad" type="xs:integer" minOccurs="1"/>
+      <xs:element name="comercios_analizados" type="xs:integer" minOccurs="1"/>
+      <xs:element name="ventas" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="proveedores" type="xs:integer" minOccurs="1"/>
+      <xs:element name="precio_mayoreo_min" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="precio_promedio" type="xs:decimal" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="OportunidadesSalida">
+    <xs:all>
+      <xs:element name="total" type="xs:integer" minOccurs="1"/>
+      <xs:element name="oportunidades" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="oportunidad" maxOccurs="unbounded" type="Oportunidad" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Paginacion">
+    <xs:annotation>
+      <xs:documentation>Datos de paginación de toda lista.</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="pagina" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="por_pagina" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="total" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="paginas" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PuntoComercio">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="1"/>
+      <xs:element name="sector" type="xs:string" minOccurs="1"/>
+      <xs:element name="zona" type="xs:string" minOccurs="0"/>
+      <xs:element name="lat" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="lon" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="existencia" type="xs:decimal" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PuntoEvolucion">
+    <xs:all>
+      <xs:element name="zona_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="zona" type="xs:string" minOccurs="1"/>
+      <xs:element name="dia" type="xs:string" minOccurs="1"/>
+      <xs:element name="indice_acceso" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="ejecuciones" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PuntoProveedor">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="lat" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="lon" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="zonas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="plan" type="xs:string" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Recomendacion">
+    <xs:all>
+      <xs:element name="producto_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="producto" type="xs:string" minOccurs="1"/>
+      <xs:element name="canasta_basica" type="xs:boolean" minOccurs="1"/>
+      <xs:element name="motivo" type="xs:string" minOccurs="1"/>
+      <xs:element name="cobertura" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="con_disponibilidad" type="xs:integer" minOccurs="1"/>
+      <xs:element name="comercios_analizados" type="xs:integer" minOccurs="1"/>
+      <xs:element name="ventas" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="proveedores" type="xs:integer" minOccurs="1"/>
+      <xs:element name="precio_mayoreo_min" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="precio_promedio" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="margen_estimado" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="puntaje" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="RecomendacionesSalida">
+    <xs:all>
+      <xs:element name="comercio_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="zona" type="xs:string" minOccurs="1"/>
+      <xs:element name="umbral_cobertura" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="recomendaciones" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="recomendacion" maxOccurs="unbounded" type="Recomendacion" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Resultado">
+    <xs:annotation>
+      <xs:documentation>Respuesta de operaciones que no regresan un recurso (bajas, revocaciones, marcados).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+      <xs:element name="jti" type="xs:string" minOccurs="0"/>
+      <xs:element name="sesiones_cerradas" type="xs:integer" minOccurs="0"/>
+      <xs:element name="cambiadas" type="xs:integer" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Salud">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="version" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="dependencias" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="Dependencia" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="TotalesBrecha">
+    <xs:all>
+      <xs:element name="ALTA" type="xs:integer" minOccurs="1"/>
+      <xs:element name="MEDIA" type="xs:integer" minOccurs="1"/>
+      <xs:element name="BAJA" type="xs:integer" minOccurs="1"/>
+      <xs:element name="SIN_BRECHA" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Umbrales">
+    <xs:all>
+      <xs:element name="alta" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="media" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="baja" type="xs:decimal" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ZonaIndicador">
+    <xs:all>
+      <xs:element name="id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="municipio" type="xs:string" minOccurs="1"/>
+      <xs:element name="poblacion" type="xs:integer" minOccurs="1"/>
+      <xs:element name="latitud" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="longitud" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="radio_km" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="comercios" type="xs:integer" minOccurs="1"/>
+      <xs:element name="formales" type="xs:integer" minOccurs="1"/>
+      <xs:element name="informales" type="xs:integer" minOccurs="1"/>
+      <xs:element name="proveedores" type="xs:integer" minOccurs="1"/>
+      <xs:element name="productos_disponibles" type="xs:integer" minOccurs="1"/>
+      <xs:element name="densidad_km2" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="habitantes_por_comercio" type="xs:integer" minOccurs="0"/>
+      <xs:element name="indice_acceso" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="canasta_critica" type="xs:integer" minOccurs="1"/>
+      <xs:element name="canasta_total" type="xs:integer" minOccurs="1"/>
+      <xs:element name="clasificacion" type="xs:string" minOccurs="1"/>
+      <xs:element name="ranking" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ZonasSalida">
+    <xs:all>
+      <xs:element name="umbrales" type="Umbrales" minOccurs="1"/>
+      <xs:element name="zonas" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="zona" maxOccurs="unbounded" type="ZonaIndicador" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

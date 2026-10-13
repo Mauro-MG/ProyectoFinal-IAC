@@ -73,4 +73,55 @@
         {% endfor %}
     </ul>
 </div>
+
+<div class="tarjeta">
+    <h2>Fotos y evidencias</h2>
+    <p class="tenue">Fachada del negocio, evidencias de la visita de validación y documentos. JPG, PNG, WEBP o PDF hasta 10 MB.
+       <small>Fuente: {{ fuente_archivos }}</small></p>
+    {% if fotos %}
+    <div class="galeria">
+        {% for a in fotos %}
+        <a href="{{ url_for('archivo_ver', archivo_id=a.id) }}" target="_blank" title="{{ a.descripcion or a.nombre }}">
+            <img src="{{ url_for('archivo_ver', archivo_id=a.id) }}" alt="{{ a.descripcion or a.nombre }}" loading="lazy"></a>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="tabla-contenedor">
+        <table>
+            <thead><tr><th>Archivo</th><th>Tipo</th><th class="num">Tamaño</th><th>Subido</th><th></th></tr></thead>
+            <tbody>
+            {% for a in archivos %}
+            <tr>
+                <td><a href="{{ url_for('archivo_ver', archivo_id=a.id) }}" target="_blank">{{ a.nombre }}</a>
+                    {% if a.descripcion %}<br><small>{{ a.descripcion }}</small>{% endif %}</td>
+                <td>{{ categorias_archivo.get(a.categoria, a.categoria) }}</td>
+                <td class="num">{{ '%.0f'|format(a.tamano_bytes / 1024) }} KB</td>
+                <td class="nowrap"><small>{{ a.subido_en|fecha }}</small></td>
+                <td>{% if current_user.tiene_permiso('archivos.gestionar') and (a.usuario_id == current_user.id|string or current_user.tiene_permiso('catalogos.gestionar')) %}
+                    <form class="en-linea" method="post" action="{{ url_for('archivo_eliminar', archivo_id=a.id) }}" data-confirmar="¿Eliminar {{ a.nombre }}?">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn-enlace">Eliminar</button></form>{% endif %}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="vacio">Sin archivos.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if current_user.tiene_permiso('archivos.gestionar') and (comercio.usuario_id == current_user.id or current_user.tiene_permiso('comercios.validar')) %}
+    <form class="filtros" method="post" enctype="multipart/form-data" action="{{ url_for('comercio_subir_archivo', id=comercio.id) }}" style="margin-top: .75rem">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="campo"><label for="archivo">Archivo</label>
+            <input type="file" id="archivo" name="archivo" accept="image/jpeg,image/png,image/webp,application/pdf" required></div>
+        <div class="campo corto"><label for="categoria">Tipo</label>
+            <select id="categoria" name="categoria">
+                {% for clave, texto in categorias_archivo.items() %}
+                <option value="{{ clave }}" {{ 'selected' if (clave == 'evidencia_validacion') == current_user.tiene_permiso('comercios.validar') and clave != 'documento' }}>{{ texto }}</option>
+                {% endfor %}
+            </select></div>
+        <div class="campo"><label for="descripcion">Descripción</label><input type="text" id="descripcion" name="descripcion" maxlength="200"></div>
+        <button class="btn btn-primario">Subir</button>
+    </form>
+    {% endif %}
+</div>
 {% endblock %}

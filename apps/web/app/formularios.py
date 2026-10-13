@@ -3,7 +3,7 @@ from wtforms import (BooleanField, DecimalField, IntegerField, PasswordField, Se
                      StringField, TextAreaField, TimeField, widgets)
 from wtforms.validators import DataRequired, Email, EqualTo, Length, NumberRange, Optional, ValidationError
 
-from app.models.comercio import TIPOS_COMERCIO
+from abasto_dominio.modelos.comercio import TIPOS_COMERCIO
 
 UNIDADES = [('pieza', 'pieza'), ('kg', 'kg'), ('litro', 'litro'), ('paquete', 'paquete'), ('caja', 'caja')]
 
@@ -134,3 +134,13 @@ class UsuarioAdminForm(FlaskForm):
 class RestablecerForm(FlaskForm):
     password = PasswordField('Nueva contraseña', validators=[DataRequired(), Length(min=8, message='Mínimo 8 caracteres')])
     confirmar = PasswordField('Confirmar contraseña', validators=[EqualTo('password', message='No coinciden')])
+
+
+class OperadorForm(FlaskForm):
+    """Alta de un empleado del proveedor (rol Operador de Proveedor). Recibe una contraseña temporal."""
+    nombre = StringField('Nombre', validators=[DataRequired(), Length(max=100)])
+    apellido_paterno = StringField('Apellido', validators=[DataRequired(), Length(max=100)])
+    email = StringField('Correo electrónico', validators=[DataRequired(), Email(), Length(max=255)])
+    telefono = StringField('Teléfono (opcional)', validators=[Optional(), Length(max=20)])
+    password = PasswordField('Contraseña temporal',
+                             validators=[DataRequired(), Length(min=8, message='Mínimo 8 caracteres')])

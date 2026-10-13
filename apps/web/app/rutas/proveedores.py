@@ -9,17 +9,20 @@ from decimal import Decimal
 
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from redis.exceptions import RedisError
 
+from abasto_dominio import sesiones
 from app import app
-from app.extensions import db
-from app.formularios import OfertaForm, ProveedorForm
-from app.models import (CatalogoProveedor, InventarioComercio, PrecioMayoreo, ProductoMaestro, Proveedor,
-                        ZonaMunicipal)
+from abasto_dominio.extensiones import db
+from app.formularios import OfertaForm, OperadorForm, ProveedorForm
+from abasto_dominio.modelos import (CatalogoProveedor, InventarioComercio, PrecioMayoreo, ProductoMaestro, Proveedor,
+                                    Rol, Usuario, ZonaMunicipal)
 from app.permisos import permiso_requerido
 from app.rutas.inventario import comercios_del_usuario
-from app.servicios.auditoria import registrar_evento
-from app.servicios.cache import invalidar_analisis
-from app.servicios.precios import ofertas_producto
+from abasto_dominio.servicios.auditoria import registrar_evento
+from abasto_dominio.servicios.cache import invalidar_analisis
+from abasto_dominio.servicios.notificaciones import notificar
+from abasto_dominio.servicios.precios import ofertas_producto
 
 CAMPOS_PROVEEDOR = ('nombre_empresa', 'rfc', 'pedido_minimo', 'tiempo_entrega_dias', 'condiciones_venta')
 
@@ -210,3 +213,63 @@ def mi_catalogo_editar(id):
     invalidar_analisis()
     flash(f'{oferta.producto.nombre} actualizado.', 'ok')
     return redirect(url_for('mi_catalogo'))
+
+
+# ---------------------------------------------------------------- equipo del proveedor (operadores)
+
+@app.route('/mi-empresa/equipo', methods=['GET', 'POST'])
+@login_required
+@permiso_requerido('proveedor.equipo')
+def mi_equipo():
+    """
+    El dueño da de alta a sus empleados con el perfil Operador de Proveedor:
+    ven y atienden los pedidos de la empresa, pero no cambian precios, catálogo
+    ni datos de la empresa.
+    """
+    proveedor = current_user.proveedor
+    if not proveedor:
+        flash('Primero registra los datos de tu empresa.', 'info')
+        return redirect(url_for('mi_empresa'))
+    form = OperadorForm()
+    if form.validate_on_submit():
+        email = form.email.data.strip().lower()
+        if Usuario.query.filter(db.func.lower(Usuario.email) == email).first():
+            form.email.errors.append('Ya existe una cuenta con ese correo.')
+        else:
+            operador = Usuario(email=email, nombre=form.nombre.data.strip(),
+                               apellido_paterno=form.apellido_paterno.data.strip(),
+                               telefono=form.telefono.data or None, proveedor_id=proveedor.id,
+                               rol=Rol.query.filter_by(nombre='Operador de Proveedor').one())
+            operador.set_password(form.password.data)
+            db.session.add(operador)
+            db.session.flush()
+            registrar_evento(current_user.id, 'CREACION', 'Usuario', operador.id,
+                             f'Operador {email} agregado a {proveedor.nombre_empresa}')
+            db.session.commit()
+            notificar(operador.id, 'sistema', f'Bienvenido al equipo de {proveedor.nombre_empresa}',
+                      'Desde «Pedidos recibidos» puedes aceptar, preparar y despachar los pedidos de la empresa.',
+                      url='/pedidos', origen='web')
+            flash(f'{operador.nombre_completo} ya puede entrar con {email} y la contraseña temporal.', 'ok')
+            return redirect(url_for('mi_equipo'))
+    operadores = sorted(proveedor.operadores, key=lambda u: (not u.activo, u.nombre))
+    return render_template('proveedores/equipo.html', proveedor=proveedor, operadores=operadores, form=form)
+
+
+@app.route('/mi-empresa/equipo/<uuid:id>/estado', methods=['POST'])
+@login_required
+@permiso_requerido('proveedor.equipo')
+def mi_equipo_estado(id):
+    operador = db.get_or_404(Usuario, id)
+    if not current_user.proveedor or operador.proveedor_id != current_user.proveedor.id:
+        abort(403)
+    operador.activo = not operador.activo
+    registrar_evento(current_user.id, 'CAMBIO_ESTADO', 'Usuario', operador.id,
+                     f'Operador {operador.email} {"reactivado" if operador.activo else "dado de baja"}')
+    db.session.commit()
+    if not operador.activo:
+        try:
+            sesiones.revocar_todas(operador.id)  # deja de poder entrar al web y a la API de inmediato
+        except RedisError:
+            pass
+    flash(f'{operador.nombre_completo} {"puede volver a entrar" if operador.activo else "ya no tiene acceso"}.', 'ok')
+    return redirect(url_for('mi_equipo'))

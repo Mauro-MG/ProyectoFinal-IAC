@@ -10,26 +10,7 @@ from functools import wraps
 from flask import abort, redirect, request, url_for
 from flask_login import current_user
 
-PERMISOS = {
-    'usuarios.gestionar': 'Gestionar usuarios',
-    'roles.gestionar': 'Gestionar roles y permisos',
-    'config.gestionar': 'Configurar parámetros del sistema',
-    'catalogos.gestionar': 'Gestionar catálogo maestro, categorías y zonas',
-    'comercios.gestionar': 'Registrar y administrar sus propios comercios',
-    'comercios.ver_todos': 'Consultar todos los comercios',
-    'comercios.validar': 'Validar o rechazar comercios',
-    'inventario.gestionar': 'Administrar catálogo del comercio, existencias y precios',
-    'precios.consultar': 'Consultar comparación de precios',
-    'proveedores.consultar': 'Consultar proveedores y precios de mayoreo',
-    'pedidos.crear': 'Crear pedidos de abasto',
-    'pedidos.atender': 'Recibir y atender pedidos (proveedor)',
-    'pedidos.ver_todos': 'Consultar todos los pedidos',
-    'proveedor.catalogo': 'Administrar catálogo mayorista y condiciones de venta',
-    'analisis.ver': 'Consultar cobertura, brechas e índice de acceso',
-    'recomendaciones.ver': 'Consultar recomendaciones de surtido',
-    'reportes.ver': 'Consultar y exportar reportes',
-    'auditoria.ver': 'Consultar la bitácora de auditoría',
-}
+from abasto_dominio.permisos import PERMISOS  # noqa: F401  (catálogo compartido con los microservicios)
 
 
 def permiso_requerido(*codigos):

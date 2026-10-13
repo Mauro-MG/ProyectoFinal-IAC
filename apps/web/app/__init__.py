@@ -4,35 +4,53 @@ Sistema web de AbastoRed (monolito Flask).
 La aplicación se crea una sola vez en este módulo. Cada archivo de app/rutas/
 importa `app` y registra sus vistas con @app.route, agrupadas por proceso de
 negocio (inventario, pedidos, análisis...). La lógica que no depende de HTTP
-vive en app/servicios/ para poder reutilizarla después en los microservicios.
+vive en la biblioteca compartida libs/abasto_dominio, la misma que usan los
+microservicios.
 """
 import os
 from uuid import UUID
 
-from flask import Flask, jsonify, render_template, request
-from pymongo import MongoClient
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
+from flask_login import current_user, logout_user
 
-from app import extensions
+from abasto_dominio import extensiones, sesiones
 from app.config import DevelopmentConfig, ProductionConfig
-from app.extensions import csrf, db, init_redis, login_manager
+from app.extensions import csrf, db, login_manager
 
 app = Flask(__name__)
 app.config.from_object(ProductionConfig if os.environ.get('FLASK_ENV') == 'production' else DevelopmentConfig)
 
-db.init_app(app)
+extensiones.init_app(app)
 csrf.init_app(app)
 login_manager.init_app(app)
-init_redis(app)
-extensions.mongo_client = MongoClient(app.config['MONGO_URI'], serverSelectionTimeoutMS=1000)
 
 
 @login_manager.user_loader
 def cargar_usuario(user_id):
-    from app.models import Usuario
+    from abasto_dominio.modelos import Usuario
     try:
         return db.session.get(Usuario, UUID(user_id))
     except ValueError:
         return None
+
+
+@app.before_request
+def verificar_sesion_en_redis():
+    """
+    Mecanismo común de sesión: si el JWT de esta sesión se revocó (cierre de
+    sesión desde la API, el administrador cerró las sesiones del usuario, etc.),
+    también se cierra la sesión del navegador. Si Redis no responde, el web
+    sigue funcionando con la sesión de Flask.
+    """
+    if request.endpoint in (None, 'static', 'health') or not current_user.is_authenticated:
+        return None
+    jti = session.get('jwt_jti')
+    if jti and sesiones.sesion_activa(jti) is False:
+        logout_user()
+        session.clear()
+        flash('Tu sesión se cerró (desde otro dispositivo o por el administrador). Inicia sesión de nuevo.', 'alerta')
+        return redirect(url_for('login'))
+    return None
 
 
 @app.route('/health')
@@ -63,6 +81,6 @@ from app import plantillas  # noqa: E402,F401
 
 # Vistas del sistema web
 from app.rutas import (  # noqa: E402,F401
-    admin, analisis, api, auditoria, auth, catalogo, comercios, inventario,
-    panel, pedidos, precios, proveedores, publico, reportes,
+    admin, analisis, api, archivos, auditoria, auth, catalogo, comercios, inventario, monitoreo,
+    notificaciones, panel, pedidos, precios, proveedores, publico, reportes,
 )
