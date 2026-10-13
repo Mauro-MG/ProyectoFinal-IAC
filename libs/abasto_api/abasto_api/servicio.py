@@ -377,8 +377,12 @@ class Servicio:
                     'content': {'application/json': {'schema': {'$ref': '#/components/schemas/Error'}},
                                 'application/xml': {'schema': {'$ref': '#/components/schemas/Error'}}}}
             rutas.setdefault(f'/api/v1{ruta}', {})[r['metodo']] = operacion
+        for operaciones in rutas.values():
+            for operacion in operaciones.values():
+                for parametro in operacion['parameters']:
+                    parametro['schema'] = _a_openapi_30(parametro['schema'])
         return {
-            'openapi': '3.1.0',
+            'openapi': '3.0.3',
             'info': {'title': f'AbastoRed · {self.titulo}', 'version': self.version, 'description': self.descripcion},
             'servers': [{'url': '/', 'description': 'Este servicio'}],
             'tags': [{'name': t} for t in dict.fromkeys(r['etiqueta'] for r in self.rutas)],
@@ -387,9 +391,47 @@ class Servicio:
                 'securitySchemes': {'bearerAuth': {
                     'type': 'http', 'scheme': 'bearer', 'bearerFormat': 'JWT',
                     'description': 'Token de ms-seguridad: POST /api/v1/auth/login'}},
-                'schemas': esquemas,
+                'schemas': {nombre: _a_openapi_30(e) for nombre, e in esquemas.items()},
             },
         }
+
+
+def _a_openapi_30(nodo):
+    """
+    Pydantic genera JSON Schema 2020-12 (el de OpenAPI 3.1), pero Swagger UI 4 y
+    varias herramientas sólo leen OpenAPI 3.0. Se traducen las diferencias:
+    anyOf con null -> nullable, const -> enum, exclusiveMinimum numérico ->
+    minimum + exclusiveMinimum: true, examples -> example.
+    """
+    if isinstance(nodo, list):
+        return [_a_openapi_30(n) for n in nodo]
+    if not isinstance(nodo, dict):
+        return nodo
+    nodo = {k: _a_openapi_30(v) for k, v in nodo.items()}
+    opciones = nodo.get('anyOf')
+    if opciones and any(o.get('type') == 'null' for o in opciones):
+        resto = [o for o in opciones if o.get('type') != 'null']
+        del nodo['anyOf']
+        if len(resto) == 1 and '$ref' not in resto[0]:
+            nodo = {**resto[0], **nodo}
+        elif len(resto) == 1:
+            nodo['allOf'] = resto
+        else:
+            nodo['anyOf'] = resto
+        nodo['nullable'] = True
+    if 'const' in nodo:
+        nodo['enum'] = [nodo.pop('const')]
+    for exclusivo, limite in (('exclusiveMinimum', 'minimum'), ('exclusiveMaximum', 'maximum')):
+        if isinstance(nodo.get(exclusivo), (int, float)) and not isinstance(nodo[exclusivo], bool):
+            nodo[limite] = nodo[exclusivo]
+            nodo[exclusivo] = True
+    if isinstance(nodo.get('examples'), list):
+        ejemplos = nodo.pop('examples')
+        if ejemplos:
+            nodo.setdefault('example', ejemplos[0])
+    if 'default' in nodo and nodo['default'] is None:
+        del nodo['default']  # en 3.0 un default nulo choca con enum y anyOf; omitirlo significa lo mismo
+    return nodo
 
 
 _ESQUEMA_ERROR = {

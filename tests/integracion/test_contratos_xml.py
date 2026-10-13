@@ -6,6 +6,7 @@ también cumplen el contrato.
 import pytest
 import requests
 from lxml import etree
+from openapi_spec_validator import validate
 
 from apoyo import NS, PUERTOS, RAIZ, base, url
 
@@ -102,9 +103,13 @@ def test_xml_con_raiz_equivocada_es_400(api):
     assert 'pedido_entrada' in r.json()['error']['mensaje']
 
 
-def test_openapi_y_swagger_en_todos():
-    for servicio in PUERTOS:
-        doc = requests.get(f'{base(servicio)}/openapi.json', timeout=10).json()
-        assert doc['openapi'].startswith('3.1')
-        assert any(p.startswith('/api/v1/') for p in doc['paths'])
-        assert requests.get(f'{base(servicio)}/docs', timeout=10).status_code == 200
+@pytest.mark.parametrize('servicio', sorted(PUERTOS))
+def test_openapi_valido_y_swagger(servicio):
+    """El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir."""
+    doc = requests.get(f'{base(servicio)}/openapi.json', timeout=10).json()
+    assert doc['openapi'] == '3.0.3'
+    validate(doc)  # lanza una excepción con el motivo si no cumple la especificación
+    assert any(p.startswith('/api/v1/') for p in doc['paths'])
+    pagina = requests.get(f'{base(servicio)}/docs', timeout=10)
+    assert pagina.status_code == 200 and 'swagger-ui' in pagina.text
+    assert requests.get(f'{base(servicio)}/docs/static/swagger-ui-bundle.js', timeout=10).status_code == 200
