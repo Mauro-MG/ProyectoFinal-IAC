@@ -9,6 +9,7 @@ from uuid import uuid4
 
 import pytest
 from lxml import etree
+from openapi_spec_validator import validate
 from pydantic import Field
 
 from abasto_api import BaseEntrada, ErrorApi, Servicio
@@ -161,7 +162,8 @@ def test_token_revocado_401(cliente):
 
 def test_openapi_documenta_la_ruta_y_sus_errores(cliente):
     doc = cliente.get('/openapi.json').json
-    assert doc['openapi'].startswith('3.1')
+    assert doc['openapi'] == '3.0.3'
+    validate(doc)  # cumple la especificación OpenAPI 3.0 que lee Swagger UI
     operacion = doc['paths']['/api/v1/saludos']['post']
     assert {'201', '401', '403', '409', '422', '429'} <= set(operacion['responses'])
     assert 'application/xml' in operacion['requestBody']['content']

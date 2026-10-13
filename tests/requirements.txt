@@ -5,3 +5,4 @@
 # PyJWT, lxml y requests ya vienen con las bibliotecas.
 pytest==8.3.3
 fakeredis[lua]==2.25.1
+openapi-spec-validator==0.7.1

@@ -7,7 +7,7 @@ dentro de la red; publicado en 8101–8108). Comparten dos bibliotecas del repos
 - `libs/abasto_api`: la clase `Servicio`, que da a todos el mismo comportamiento: `/api/v1`, JWT con
   sesión en Redis y permisos por ruta, validación con Pydantic, JSON o XML según `Accept` (o
   `?formato=xml`), XSD, errores estandarizados, límite de peticiones, `X-Correlation-ID`, bitácora en
-  MongoDB, `/health/*`, OpenAPI 3.1 y Swagger UI.
+  MongoDB, `/health/*`, OpenAPI 3.0.3 y Swagger UI.
 
 | Servicio | Puerto | Responsabilidad |
 | :--- | :--- | :--- |
