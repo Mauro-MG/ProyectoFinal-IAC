@@ -1,0 +1,126 @@
+{% extends "portal.html" %}
+{% block titulo %}Estado de los servicios{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Estado de los servicios</h1>
+        <p>Salud de cada microservicio y de sus bases de datos, y actividad registrada en la bitácora de peticiones
+           (MongoDB). {{ arriba }} de {{ estados|length }} servicios en línea.</p>
+    </div>
+    <form method="get" class="acciones">
+        <select name="horas" data-autoenviar aria-label="Periodo">
+            {% for h, texto in [(1, 'Última hora'), (24, 'Últimas 24 horas'), (168, 'Últimos 7 días')] %}
+            <option value="{{ h }}" {{ 'selected' if horas == h }}>{{ texto }}</option>{% endfor %}
+        </select>
+    </form>
+</div>
+
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Servicio</th><th>Estado</th><th>PostgreSQL</th><th>Redis</th><th>MongoDB</th><th class="num">Respuesta</th><th></th></tr></thead>
+        <tbody>
+        {% for nombre, e in estados.items() %}
+        {% set deps = {} %}{% for d in e.dependencias %}{% set _ = deps.update({d.nombre: d}) %}{% endfor %}
+        <tr>
+            <td><strong>ms-{{ nombre }}</strong>{% if e.version %} <small>v{{ e.version }}</small>{% endif %}</td>
+            <td><span class="etiqueta-estado {{ {'ok': 'ok', 'degradado': 'alerta'}.get(e.estado, 'critico') }}">{{ e.estado|replace('_', ' ') }}</span></td>
+            {% for base in ('postgres', 'redis', 'mongodb') %}
+            <td>{% if base in deps %}<span class="etiqueta-estado {{ 'ok' if deps[base].estado == 'ok' else 'critico' }}">{{ deps[base].estado }}</span>
+                {% if deps[base].latencia_ms is not none %}<small>{{ deps[base].latencia_ms }} ms</small>{% endif %}{% else %}<span class="tenue">—</span>{% endif %}</td>
+            {% endfor %}
+            <td class="num">{{ e.tiempo_ms ~ ' ms' if e.tiempo_ms is defined else '—' }}</td>
+            <td><small><a href="{{ docs[nombre] }}" target="_blank" rel="noopener">Swagger</a></small></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="tarjeta">
+    <h2>Peticiones por servicio</h2>
+    {% if actividad %}
+    <div id="grafica-actividad" class="grafica"></div>
+    <div class="tabla-contenedor">
+        <table>
+            <thead><tr><th>Servicio</th><th class="num">Peticiones</th><th class="num">Hoy (Redis)</th><th class="num">Errores 4xx</th>
+                <th class="num">Errores 5xx</th><th class="num">En XML</th><th class="num">Tiempo prom.</th><th class="num">Tiempo máx.</th><th>Última</th></tr></thead>
+            <tbody>
+            {% for a in actividad %}
+            <tr>
+                <td>ms-{{ a.servicio }}</td>
+                <td class="num">{{ a.peticiones }}</td>
+                <td class="num">{{ a.contador_hoy }}</td>
+                <td class="num">{{ a.errores_cliente }}</td>
+                <td class="num">{{ a.errores_servidor }}</td>
+                <td class="num">{{ a.respuestas_xml }}</td>
+                <td class="num">{{ a.duracion_prom_ms }} ms</td>
+                <td class="num">{{ a.duracion_max_ms }} ms</td>
+                <td class="nowrap"><small>{{ a.ultima|fecha }}</small></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="tenue">Sin actividad registrada en el periodo, o el servicio de seguridad no respondió.</p>
+    {% endif %}
+</div>
+
+<div class="tarjeta">
+    <h2>Rastrear una petición</h2>
+    <p class="tenue">Cada respuesta de los servicios trae el encabezado <code>X-Correlation-ID</code>. Con él se ven
+       todos los pasos que dio la petición entre servicios.</p>
+    <form class="filtros" method="get">
+        <input type="hidden" name="horas" value="{{ horas }}">
+        <div class="campo"><label for="correlation_id">X-Correlation-ID</label>
+            <input type="text" id="correlation_id" name="correlation_id" value="{{ correlation_id }}" maxlength="80"></div>
+        <button class="btn">Buscar</button>
+    </form>
+    {% if rastreo %}
+    <div class="tabla-contenedor">
+        <table>
+            <thead><tr><th>Hora</th><th>Servicio</th><th>Petición</th><th>Status</th><th class="num">Duración</th><th>Rol</th><th>Formato</th></tr></thead>
+            <tbody>
+            {% for p in rastreo %}
+            <tr>
+                <td class="nowrap"><small>{{ p.fecha|fecha }}</small></td>
+                <td>ms-{{ p.servicio }}</td>
+                <td><code>{{ p.metodo }} {{ p.ruta }}</code></td>
+                <td><span class="etiqueta-estado {{ 'ok' if p.status < 400 else ('alerta' if p.status < 500 else 'critico') }}">{{ p.status }}</span>
+                    {% if p.codigo_error %}<small>{{ p.codigo_error }}</small>{% endif %}</td>
+                <td class="num">{{ p.duracion_ms }} ms</td>
+                <td>{{ p.rol or 'público' }}</td>
+                <td>{{ p.formato|upper }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if actividad %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script>
+const actividad = {{ actividad|tojson }};
+Highcharts.chart('grafica-actividad', {
+    title: { text: null }, credits: { enabled: false },
+    xAxis: { categories: actividad.map(a => 'ms-' + a.servicio) },
+    yAxis: [{ title: { text: 'Peticiones' }, allowDecimals: false },
+            { title: { text: 'Tiempo promedio (ms)' }, opposite: true }],
+    plotOptions: { column: { stacking: 'normal' } },
+    tooltip: { shared: true },
+    series: [
+        { type: 'column', name: 'Correctas', color: '#237a4b',
+          data: actividad.map(a => a.peticiones - a.errores_cliente - a.errores_servidor) },
+        { type: 'column', name: 'Errores 4xx', color: '#c27c0e', data: actividad.map(a => a.errores_cliente) },
+        { type: 'column', name: 'Errores 5xx', color: '#b3322a', data: actividad.map(a => a.errores_servidor) },
+        { type: 'spline', name: 'Tiempo promedio', yAxis: 1, color: '#25609e',
+          data: actividad.map(a => a.duracion_prom_ms), tooltip: { valueSuffix: ' ms' } },
+    ],
+});
+</script>
+{% endif %}
+{% endblock %}

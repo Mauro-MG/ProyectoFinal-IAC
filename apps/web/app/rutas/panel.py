@@ -4,11 +4,11 @@ from flask_login import current_user, login_required
 from sqlalchemy import func
 
 from app import app
-from app.extensions import db
-from app.models import (AuditoriaEvento, CatalogoProveedor, Comercio, InventarioComercio, PedidoAbasto, Proveedor,
+from abasto_dominio.extensiones import db
+from abasto_dominio.modelos import (AuditoriaEvento, CatalogoProveedor, Comercio, InventarioComercio, PedidoAbasto, Proveedor,
                         Usuario)
-from app.servicios import analisis, notificaciones
-from app.servicios.parametros import parametro
+from abasto_dominio.servicios import analisis, notificaciones
+from abasto_dominio.servicios.parametros import parametro
 
 PEDIDOS_EN_CURSO = ('ENVIADO', 'ACEPTADO', 'EN_PREPARACION', 'ENVIADO_A_COMERCIO')
 
@@ -31,7 +31,7 @@ def _datos_comerciante():
 
 
 def _datos_proveedor():
-    proveedor = current_user.proveedor
+    proveedor = current_user.proveedor_vinculado
     if not proveedor:
         return {'proveedor': None}
     pedidos = (PedidoAbasto.query.filter(PedidoAbasto.proveedor_id == proveedor.id,

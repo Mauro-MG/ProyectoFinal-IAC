@@ -49,6 +49,32 @@
 </div>
 {% endif %}
 
+{% if datos.desempeno is defined %}
+<div class="tarjeta">
+    <div class="tarjeta-titulo">
+        <h2>{{ 'Desempeño de proveedores' if current_user.tiene_permiso('analisis.ver') else 'Desempeño de tu empresa' }} (90 días)</h2>
+        <small>Calculado con los eventos de cada pedido · Fuente: {{ datos.fuente_desempeno }}</small>
+    </div>
+    {% if datos.desempeno %}
+    {% if datos.desempeno|length > 1 %}<div id="grafica-desempeno" class="grafica"></div>{% endif %}
+    <table class="subtabla">
+        <thead><tr><th>Proveedor</th><th class="num">Pedidos</th><th class="num">Entregados</th><th class="num">Rechazados</th>
+            <th class="num">Monto</th><th class="num">Responde en</th><th class="num">Entrega en</th></tr></thead>
+        <tbody>
+        {% for d in datos.desempeno %}
+        <tr><td>{{ d.proveedor or d.proveedor_id }}</td><td class="num">{{ d.pedidos }}</td><td class="num">{{ d.entregados }}</td>
+            <td class="num">{{ d.rechazados }}</td><td class="num">{{ d.monto_total|moneda }}</td>
+            <td class="num">{{ '%.1f h'|format(d.horas_respuesta_prom) if d.horas_respuesta_prom is not none else '—' }}</td>
+            <td class="num">{{ '%.1f h'|format(d.horas_entrega_prom) if d.horas_entrega_prom is not none else '—' }}</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="tenue">Aún no hay pedidos enviados en el periodo.</p>
+    {% endif %}
+</div>
+{% endif %}
+
 {% if datos.oportunidades is defined %}
 <div class="tarjeta">
     <div class="tarjeta-titulo">
@@ -95,6 +121,26 @@ Highcharts.chart('grafica-pedidos', {
     chart: { type: 'pie' }, title: { text: null },
     tooltip: { pointFormat: '{point.y} pedidos' },
     series: [{ name: 'Pedidos', data: {{ datos.pedidos|tojson }} }],
+});
+</script>
+{% endif %}
+{% if datos.desempeno and datos.desempeno|length > 1 %}
+{% if datos.tendencia is not defined %}<script src="https://code.highcharts.com/highcharts.js"></script>{% endif %}
+<script>
+const desempeno = {{ datos.desempeno|tojson }};
+Highcharts.chart('grafica-desempeno', {
+    title: { text: null }, credits: { enabled: false },
+    xAxis: { categories: desempeno.map(d => d.proveedor || d.proveedor_id) },
+    yAxis: [{ title: { text: 'Pedidos' }, allowDecimals: false }, { title: { text: 'Horas' }, opposite: true }],
+    tooltip: { shared: true },
+    series: [
+        { type: 'column', name: 'Entregados', color: '#237a4b', data: desempeno.map(d => d.entregados) },
+        { type: 'column', name: 'Rechazados', color: '#b3322a', data: desempeno.map(d => d.rechazados) },
+        { type: 'spline', name: 'Horas para responder', yAxis: 1, color: '#25609e',
+          data: desempeno.map(d => d.horas_respuesta_prom), tooltip: { valueSuffix: ' h', valueDecimals: 1 } },
+        { type: 'spline', name: 'Horas para entregar', yAxis: 1, color: '#c27c0e',
+          data: desempeno.map(d => d.horas_entrega_prom), tooltip: { valueSuffix: ' h', valueDecimals: 1 } },
+    ],
 });
 </script>
 {% endif %}

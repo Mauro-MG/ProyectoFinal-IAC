@@ -15,17 +15,19 @@ SELECT setseed(0.2026);
 -- ---------------------------------------------------------------------
 INSERT INTO roles (nombre, descripcion, permisos) VALUES
 ('Administrador General', 'Administra usuarios, roles, catálogos y parámetros del sistema',
- '["usuarios.gestionar","roles.gestionar","config.gestionar","catalogos.gestionar","comercios.ver_todos","comercios.validar","comercios.gestionar","inventario.gestionar","precios.consultar","proveedores.consultar","pedidos.ver_todos","analisis.ver","recomendaciones.ver","reportes.ver","auditoria.ver"]'),
+ '["usuarios.gestionar","roles.gestionar","config.gestionar","sesiones.gestionar","servicios.monitorear","archivos.gestionar","catalogos.gestionar","comercios.ver_todos","comercios.validar","comercios.gestionar","inventario.gestionar","precios.consultar","proveedores.consultar","pedidos.ver_todos","analisis.ver","recomendaciones.ver","reportes.ver","auditoria.ver"]'),
 ('Comerciante Informal', 'Puesto de tianguis, mercado o ambulante. Administra su comercio, inventario y pedidos',
- '["comercios.gestionar","inventario.gestionar","precios.consultar","proveedores.consultar","pedidos.crear","recomendaciones.ver"]'),
+ '["comercios.gestionar","inventario.gestionar","archivos.gestionar","precios.consultar","proveedores.consultar","pedidos.crear","recomendaciones.ver"]'),
 ('Minorista Formal', 'Tienda de abarrotes, minisúper o recaudería establecida',
- '["comercios.gestionar","inventario.gestionar","precios.consultar","proveedores.consultar","pedidos.crear","recomendaciones.ver","reportes.ver"]'),
+ '["comercios.gestionar","inventario.gestionar","importaciones.ejecutar","archivos.gestionar","precios.consultar","proveedores.consultar","pedidos.crear","recomendaciones.ver","reportes.ver"]'),
 ('Proveedor', 'Mayorista o distribuidor. Publica su catálogo y atiende pedidos de abasto',
- '["proveedor.catalogo","pedidos.atender","precios.consultar"]'),
+ '["proveedor.catalogo","proveedor.equipo","pedidos.atender","archivos.gestionar","precios.consultar"]'),
+('Operador de Proveedor', 'Empleado de un proveedor: recibe y atiende pedidos; no cambia precios ni condiciones',
+ '["pedidos.atender","precios.consultar"]'),
 ('Analista de Mercado', 'Consulta precios, cobertura, brechas, tendencias y reportes',
  '["comercios.ver_todos","precios.consultar","proveedores.consultar","analisis.ver","reportes.ver"]'),
 ('Coordinador Municipal', 'Consulta zonas, cobertura e indicadores; valida comercios de su municipio',
- '["comercios.ver_todos","comercios.validar","precios.consultar","analisis.ver","reportes.ver"]'),
+ '["comercios.ver_todos","comercios.validar","archivos.gestionar","precios.consultar","analisis.ver","reportes.ver"]'),
 ('Auditor', 'Consulta la bitácora, el historial de pedidos y las operaciones críticas',
  '["auditoria.ver","pedidos.ver_todos"]');
 
@@ -48,6 +50,7 @@ FROM (VALUES
     ('proveedor2@test.mx',       'Password123!', 'Ernesto', 'Villarreal', 'Proveedor'),
     ('proveedor3@test.mx',       'Password123!', 'Silvia',  'Elizondo',   'Proveedor'),
     ('proveedor4@test.mx',       'Password123!', 'Hugo',    'Leal',       'Proveedor'),
+    ('operador@test.mx',         'Password123!', 'Diego',   'Ibarra',     'Operador de Proveedor'),
     ('analista@test.mx',         'Password123!', 'Carlos',  'López',      'Analista de Mercado'),
     ('coordinador@test.mx',      'Password123!', 'Miguel',  'Torres',     'Coordinador Municipal'),
     ('auditor@test.mx',          'Password123!', 'Ana',     'Sánchez',    'Auditor')
@@ -328,6 +331,10 @@ FROM (VALUES
      'Crédito a 7 días para clientes con más de 3 pedidos entregados.', 'BASICO')
 ) AS p(email, empresa, rfc, descripcion, telefono, direccion, municipio, lat, lon, minimo, entrega, condiciones, plan)
 JOIN usuarios u ON u.email = p.email;
+
+-- El operador trabaja para la Distribuidora Regia
+UPDATE usuarios SET proveedor_id = (SELECT id FROM proveedores WHERE nombre_empresa = 'Distribuidora Regia de Abarrotes')
+WHERE email = 'operador@test.mx';
 
 INSERT INTO proveedor_zonas (proveedor_id, zona_id)
 SELECT pv.id, z.id

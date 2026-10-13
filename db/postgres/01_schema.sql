@@ -234,6 +234,10 @@ CREATE TABLE proveedores (
 CREATE TRIGGER update_proveedores_updated_at BEFORE UPDATE ON proveedores
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+-- Operadores: usuarios que trabajan para un proveedor (atienden pedidos, no fijan precios)
+ALTER TABLE usuarios ADD COLUMN proveedor_id UUID REFERENCES proveedores(id);
+CREATE INDEX idx_usuarios_proveedor ON usuarios (proveedor_id) WHERE proveedor_id IS NOT NULL;
+
 -- Zonas a las que el proveedor entrega
 CREATE TABLE proveedor_zonas (
     proveedor_id UUID NOT NULL REFERENCES proveedores(id) ON DELETE CASCADE,

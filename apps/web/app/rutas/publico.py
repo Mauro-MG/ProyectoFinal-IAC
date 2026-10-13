@@ -3,9 +3,9 @@ from flask import render_template, request
 from sqlalchemy import func
 
 from app import app
-from app.extensions import db
-from app.models import Categoria, Comercio, InventarioComercio, ProductoMaestro, Proveedor, ZonaMunicipal
-from app.servicios.analisis import indicadores_zonas
+from abasto_dominio.extensiones import db
+from abasto_dominio.modelos import Categoria, Comercio, InventarioComercio, ProductoMaestro, Proveedor, ZonaMunicipal
+from abasto_dominio.servicios.analisis import indicadores_zonas
 
 
 def _disponibilidad_publica():

@@ -1,14 +1,16 @@
 """Administración: usuarios, roles/permisos y parámetros del sistema."""
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from redis.exceptions import RedisError
 
+from abasto_dominio import sesiones
 from app import app
-from app.extensions import db
+from abasto_dominio.extensiones import db
 from app.formularios import UsuarioAdminForm
-from app.models import ConfiguracionSistema, Rol, Usuario
+from abasto_dominio.modelos import ConfiguracionSistema, Rol, Usuario
 from app.permisos import PERMISOS, permiso_requerido
-from app.servicios.auditoria import registrar_evento
-from app.servicios.cache import invalidar_analisis
+from abasto_dominio.servicios.auditoria import registrar_evento
+from abasto_dominio.servicios.cache import invalidar_analisis
 
 
 @app.route('/admin/usuarios')
@@ -45,6 +47,14 @@ def usuario_editar(id):
         registrar_evento(current_user.id, 'ACTUALIZACION', 'Usuario', usuario.id, f'Cuenta {usuario.email}',
                          datos_anteriores=antes, datos_nuevos={'rol': usuario.rol.nombre, 'activo': usuario.activo})
         db.session.commit()
+        # Sus tokens llevan el rol y los permisos anteriores: se cierran sus sesiones (web, API y servicios)
+        if antes != {'rol': usuario.rol.nombre, 'activo': usuario.activo}:
+            try:
+                cerradas = sesiones.revocar_todas(usuario.id)
+                flash(f'Usuario actualizado. Se cerraron {cerradas} sesiones abiertas.', 'ok')
+            except RedisError:
+                flash('Usuario actualizado, pero no se pudieron cerrar sus sesiones (Redis no responde).', 'alerta')
+            return redirect(url_for('usuarios_lista'))
         flash('Usuario actualizado.', 'ok')
         return redirect(url_for('usuarios_lista'))
     return render_template('admin/usuario_form.html', form=form, usuario=usuario)

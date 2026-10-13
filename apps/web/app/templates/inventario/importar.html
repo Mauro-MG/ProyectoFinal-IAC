@@ -1,0 +1,83 @@
+{% extends "portal.html" %}
+{% block titulo %}Importar inventario · {{ comercio.nombre_comercio }}{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <div class="migas"><a href="{{ url_for('inventario', comercio_id=comercio.id) }}">Inventario</a></div>
+        <h1>Importar inventario desde CSV</h1>
+        <p>{{ comercio.nombre_comercio }}. Actualiza muchas existencias de una vez: descarga la plantilla con tu
+           inventario actual, cámbiala en Excel y súbela de nuevo. <small>Fuente: {{ fuente }}</small></p>
+    </div>
+    <a class="btn" href="{{ url_for('inventario_plantilla', comercio_id=comercio.id) }}">Descargar plantilla</a>
+</div>
+
+<div class="rejilla rejilla-2">
+    <div class="tarjeta">
+        <h2>Subir archivo</h2>
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="campo"><label for="archivo">Archivo CSV (UTF-8)</label>
+                <input type="file" id="archivo" name="archivo" accept=".csv,text/csv" required></div>
+            <button class="btn btn-primario">Importar</button>
+        </form>
+    </div>
+    <div class="tarjeta">
+        <h2>Formato</h2>
+        <ul class="lista-simple">
+            <li><span><strong>producto</strong> (obligatoria): nombre del catálogo maestro o código de barras</span></li>
+            <li><span><strong>existencia</strong> (obligatoria): número mayor o igual a 0</span></li>
+            <li><span><strong>stock_minimo</strong>, <strong>stock_maximo</strong>, <strong>precio</strong>: opcionales</span></li>
+        </ul>
+        <p class="tenue">Las filas con error no detienen la carga: se aplican las correctas y abajo verás qué corregir.
+           Los cambios de existencia quedan como movimientos de ajuste.</p>
+    </div>
+</div>
+
+{% if resultado %}
+<div class="tarjeta">
+    <h2>Resultado: {{ resultado.nombre_archivo }}</h2>
+    <div class="cifras">
+        <div class="cifra"><div class="valor">{{ resultado.filas_total }}</div><div class="etiqueta">filas leídas</div></div>
+        <div class="cifra ok"><div class="valor">{{ resultado.agregados }}</div><div class="etiqueta">productos agregados</div></div>
+        <div class="cifra"><div class="valor">{{ resultado.actualizados }}</div><div class="etiqueta">actualizados</div></div>
+        <div class="cifra {{ 'critico' if resultado.con_error }}"><div class="valor">{{ resultado.con_error }}</div><div class="etiqueta">con error</div></div>
+    </div>
+    {% if resultado.errores %}
+    <div class="tabla-contenedor">
+        <table>
+            <thead><tr><th class="num">Fila</th><th>Producto</th><th>Error</th></tr></thead>
+            <tbody>
+            {% for e in resultado.errores %}
+            <tr><td class="num">{{ e.fila }}</td><td>{{ e.producto or '—' }}</td><td>{{ e.error }}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="tarjeta">
+    <h2>Importaciones anteriores</h2>
+    <div class="tabla-contenedor">
+        <table>
+            <thead><tr><th>Fecha</th><th>Archivo</th><th class="num">Filas</th><th class="num">Agregados</th>
+                <th class="num">Actualizados</th><th class="num">Con error</th></tr></thead>
+            <tbody>
+            {% for i in historial %}
+            <tr>
+                <td class="nowrap">{{ i.fecha|fecha }}</td>
+                <td>{% if i.archivo_id %}<a href="{{ url_for('archivo_ver', archivo_id=i.archivo_id) }}">{{ i.nombre_archivo }}</a>{% else %}{{ i.nombre_archivo }}{% endif %}</td>
+                <td class="num">{{ i.filas_total }}</td>
+                <td class="num">{{ i.agregados }}</td>
+                <td class="num">{{ i.actualizados }}</td>
+                <td class="num">{{ i.con_error }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="vacio">Aún no hay importaciones.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

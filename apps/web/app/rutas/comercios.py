@@ -3,13 +3,13 @@ from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app import app
-from app.extensions import db
+from abasto_dominio.extensiones import db
 from app.formularios import ComercioForm
-from app.models import Comercio, ZonaMunicipal
+from abasto_dominio.modelos import Comercio, ZonaMunicipal
 from app.permisos import permiso_requerido
-from app.servicios.auditoria import registrar_evento
-from app.servicios.cache import invalidar_analisis
-from app.servicios.geo import zona_para_punto
+from abasto_dominio.servicios.auditoria import registrar_evento
+from abasto_dominio.servicios.cache import invalidar_analisis
+from abasto_dominio.servicios.geo import zona_para_punto
 
 CAMPOS_AUDITADOS = ('nombre_comercio', 'tipo_comercio', 'direccion', 'municipio', 'zona_id', 'latitud', 'longitud')
 
@@ -90,8 +90,12 @@ def comercio_detalle(id):
     comercio = db.get_or_404(Comercio, id)
     if not puede_ver_comercio(comercio):
         abort(403)
+    from app.rutas.archivos import CATEGORIAS_COMERCIO, archivos_de_comercio
+    lista, fuente = archivos_de_comercio(comercio)
     return render_template('comercios/detalle.html', comercio=comercio,
-                           puede_editar=puede_editar_comercio(comercio))
+                           puede_editar=puede_editar_comercio(comercio),
+                           archivos=lista, fuente_archivos=fuente, categorias_archivo=CATEGORIAS_COMERCIO,
+                           fotos=[a for a in lista if (a.get('tipo_mime') or '').startswith('image/')])
 
 
 @app.route('/comercios/<uuid:id>/editar', methods=['GET', 'POST'])

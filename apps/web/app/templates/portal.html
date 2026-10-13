@@ -10,6 +10,7 @@
 <div class="usuario-barra">
     <span class="nombre">{{ current_user.nombre_completo }}</span>
     <span class="rol">{{ current_user.rol.nombre }}</span>
+    <a class="campana" href="{{ url_for('notificaciones') }}" title="Notificaciones">Avisos{% if avisos_sin_leer %}<span class="globo">{{ avisos_sin_leer if avisos_sin_leer < 100 else '99+' }}</span>{% endif %}</a>
     <a href="{{ url_for('logout') }}">Salir</a>
 </div>
 {% endblock %}
@@ -33,11 +34,13 @@
         <div class="grupo">Mi empresa</div>
         {{ opcion('mi_catalogo', 'Catálogo mayorista') }}
         {{ opcion('mi_empresa', 'Datos y zonas de entrega') }}
+        {% if p('proveedor.equipo') %}{{ opcion('mi_equipo', 'Equipo', 'mi_equipo') }}{% endif %}
         {% endif %}
 
         {% if p('precios.consultar') or p('analisis.ver') or p('reportes.ver') or p('pedidos.atender') %}
         <div class="grupo">Análisis</div>
         {% if p('precios.consultar') %}{{ opcion('comparacion', 'Comparación de precios') }}{% endif %}
+        {% if p('comercios.validar') %}{{ opcion('precios_revision', 'Revisión de precios') }}{% endif %}
         {% if p('analisis.ver') %}
             {{ opcion('cobertura', 'Cobertura territorial') }}
             {{ opcion('brechas', 'Brechas de surtido') }}
@@ -46,7 +49,7 @@
         {% if p('reportes.ver') or p('pedidos.atender') %}{{ opcion('reportes', 'Reportes', 'export') }}{% endif %}
         {% endif %}
 
-        {% if p('catalogos.gestionar') or p('usuarios.gestionar') or p('auditoria.ver') %}
+        {% if p('catalogos.gestionar') or p('usuarios.gestionar') or p('auditoria.ver') or p('sesiones.gestionar') or p('servicios.monitorear') %}
         <div class="grupo">Administración</div>
         {% if p('catalogos.gestionar') %}
             {{ opcion('productos_lista', 'Catálogo maestro', 'producto') }}
@@ -57,6 +60,8 @@
         {% if p('roles.gestionar') %}{{ opcion('roles', 'Roles y permisos') }}{% endif %}
         {% if p('config.gestionar') %}{{ opcion('configuracion', 'Parámetros') }}{% endif %}
         {% if p('auditoria.ver') %}{{ opcion('auditoria_lista', 'Auditoría', 'auditoria') }}{% endif %}
+        {% if p('sesiones.gestionar') %}{{ opcion('sesiones_lista', 'Sesiones abiertas', 'sesion') }}{% endif %}
+        {% if p('servicios.monitorear') %}{{ opcion('servicios_estado', 'Estado de los servicios') }}{% endif %}
         {% endif %}
 
         <div class="grupo">Público</div>

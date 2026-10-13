@@ -1,0 +1,49 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import campo %}
+{% block titulo %}Equipo · {{ proveedor.nombre_empresa }}{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Equipo</h1>
+        <p>Personas de {{ proveedor.nombre_empresa }} que atienden pedidos. Un operador ve y atiende los pedidos de la
+           empresa (aceptar, preparar, despachar) y recibe sus avisos, pero no cambia precios, catálogo ni datos de la empresa.</p>
+    </div>
+</div>
+
+<div class="rejilla rejilla-2">
+    <div class="tabla-contenedor">
+        <table>
+            <thead><tr><th>Nombre</th><th>Correo</th><th>Último acceso</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+            {% for o in operadores %}
+            <tr>
+                <td>{{ o.nombre_completo }}{% if o.telefono %}<br><small>{{ o.telefono }}</small>{% endif %}</td>
+                <td>{{ o.email }}</td>
+                <td class="nowrap"><small>{{ o.ultimo_acceso|fecha }}</small></td>
+                <td><span class="etiqueta-estado {{ 'ok' if o.activo else 'neutro' }}">{{ 'Activo' if o.activo else 'Dado de baja' }}</span></td>
+                <td><form class="en-linea" method="post" action="{{ url_for('mi_equipo_estado', id=o.id) }}"
+                          {% if o.activo %}data-confirmar="{{ o.nombre }} ya no podrá entrar y se cerrarán sus sesiones. ¿Continuar?"{% endif %}>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn-enlace">{{ 'Dar de baja' if o.activo else 'Reactivar' }}</button></form></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="vacio">Aún no tienes operadores.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="tarjeta">
+        <h2>Agregar operador</h2>
+        <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+            {{ campo(form.nombre) }}
+            {{ campo(form.apellido_paterno) }}
+            {{ campo(form.email) }}
+            {{ campo(form.telefono) }}
+            {{ campo(form.password, ayuda='Compártela con la persona; puede cambiarla con «¿Olvidaste tu contraseña?».') }}
+            <button class="btn btn-primario">Agregar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

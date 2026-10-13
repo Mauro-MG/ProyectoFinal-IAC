@@ -9,9 +9,16 @@
     <div>
         <h1>Cobertura territorial</h1>
         <p>¿Qué zonas tienen menor disponibilidad de canasta básica? El índice de acceso es el promedio de la cobertura
-           de los {{ zonas[0].canasta_total if zonas else 0 }} productos de canasta básica en cada zona.</p>
+           de los {{ zonas[0].canasta_total if zonas else 0 }} productos de canasta básica en cada zona.
+           <small>Fuente: {{ fuente }}</small></p>
     </div>
-    <a class="btn" href="{{ url_for('brechas', canasta=1) }}">Ver brechas por producto</a>
+    <div class="acciones">
+        <form class="en-linea" method="post" action="{{ url_for('cobertura_corte') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn" title="Guarda el índice actual de cada zona en el histórico (MongoDB)">Guardar corte</button>
+        </form>
+        <a class="btn" href="{{ url_for('brechas', canasta=1) }}">Ver brechas por producto</a>
+    </div>
 </div>
 
 <form class="filtros" method="get">
@@ -64,6 +71,15 @@
 <div class="tarjeta">
     <h2>Índice de acceso por zona</h2>
     <div id="grafica-zonas" class="grafica"></div>
+</div>
+
+<div class="tarjeta">
+    <h2>Evolución del índice de acceso (últimos 90 días)</h2>
+    {% if evolucion %}
+    <div id="grafica-evolucion" class="grafica"></div>
+    {% else %}
+    <p class="tenue">Aún no hay cortes guardados. Usa «Guardar corte» para empezar el histórico.</p>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -136,5 +152,19 @@ Highcharts.chart('grafica-zonas', {
     tooltip: { valueSuffix: ' %' },
     series: [{ name: 'Índice de acceso', data: ordenadas.map(z => ({ y: z.indice_acceso, color: colorIndice(z.indice_acceso) })) }],
 });
+
+// Evolución por zona: una serie por zona con los cortes guardados en MongoDB
+const evolucion = {{ evolucion|tojson }};
+if (evolucion.length) {
+    const porZona = {};
+    evolucion.forEach(e => (porZona[e.zona] = porZona[e.zona] || []).push([Date.parse(e.dia), e.indice_acceso]));
+    Highcharts.chart('grafica-evolucion', {
+        chart: { type: 'line' }, title: { text: null }, credits: { enabled: false },
+        xAxis: { type: 'datetime' }, yAxis: { min: 0, max: 100, title: { text: 'Índice de acceso (%)' } },
+        tooltip: { valueSuffix: ' %', xDateFormat: '%d/%m/%Y' },
+        plotOptions: { line: { marker: { enabled: true, radius: 3 } } },
+        series: Object.entries(porZona).map(([name, data]) => ({ name, data })),
+    });
+}
 </script>
 {% endblock %}

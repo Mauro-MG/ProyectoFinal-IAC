@@ -1,11 +1,12 @@
 """Filtros de Jinja y variables disponibles en todas las plantillas."""
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from flask import request, url_for
 
 from app import app
-from app.models.comercio import TIPOS_COMERCIO
-from app.models.pedido import ESTADOS_PEDIDO
+from abasto_dominio.modelos.comercio import TIPOS_COMERCIO
+from abasto_dominio.modelos.pedido import ESTADOS_PEDIDO
 
 # Clase CSS de la etiqueta según el estado
 COLOR_ESTADO = {
@@ -36,10 +37,24 @@ def cantidad(valor):
     return f'{valor:g}'
 
 
+HORA_MONTERREY = timezone(timedelta(hours=-6))  # sin horario de verano desde 2022
+
+
 @app.template_filter('fecha')
 def fecha(valor, con_hora=True):
+    """
+    Acepta datetime o texto ISO 8601 (lo que regresan los microservicios en
+    JSON). Las fechas con zona (MongoDB guarda en UTC) se muestran en hora local.
+    """
     if not valor:
         return '—'
+    if isinstance(valor, str):
+        try:
+            valor = datetime.fromisoformat(valor.replace('Z', '+00:00'))
+        except ValueError:
+            return valor
+    if getattr(valor, 'tzinfo', None):  # date no tiene zona; datetime de MongoDB sí
+        valor = valor.astimezone(HORA_MONTERREY)
     return valor.strftime('%d/%m/%Y %H:%M' if con_hora else '%d/%m/%Y')
 
 

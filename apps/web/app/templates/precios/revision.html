@@ -1,0 +1,45 @@
+{% extends "portal.html" %}
+{% block titulo %}Revisión de precios{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Revisión de precios atípicos</h1>
+        <p>Precios capturados fuera del rango de 10 % a 150 % del promedio de su zona en los últimos 7 días. No entran a
+           la comparación de precios hasta que los valides (por ejemplo, una oferta real) o los descartes (error de captura).
+           <small>Fuente: ms-precios</small></p>
+    </div>
+</div>
+
+{% if not disponible %}
+<div class="mensaje error">El servicio de precios no respondió; intenta más tarde.</div>
+{% endif %}
+
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Producto</th><th>Comercio</th><th class="num">Precio anterior</th><th class="num">Precio capturado</th>
+            <th class="num">Cambio</th><th>Capturado</th><th style="min-width: 260px">Decisión</th></tr></thead>
+        <tbody>
+        {% for p in pendientes %}
+        <tr>
+            <td>{{ p.producto }}</td>
+            <td><a href="{{ url_for('comercio_detalle', id=p.comercio_id) }}">{{ p.comercio }}</a></td>
+            <td class="num">{{ p.precio_anterior|moneda }}</td>
+            <td class="num"><strong>{{ p.precio|moneda }}</strong></td>
+            <td class="num">{% if p.precio_anterior %}{{ '%+.0f'|format((p.precio / p.precio_anterior - 1) * 100) }} %{% else %}—{% endif %}</td>
+            <td class="nowrap"><small>{{ p.fecha|fecha }}<br>{{ p.metodo_captura|lower }}</small></td>
+            <td>
+                <form method="post" action="{{ url_for('precio_revisar', id=p.id) }}" class="acciones">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="text" name="comentario" placeholder="Comentario (opcional)" maxlength="300" aria-label="Comentario">
+                    <button class="btn btn-primario" name="decision" value="VALIDAR">Validar</button>
+                    <button class="btn btn-peligro" name="decision" value="DESCARTAR">Descartar</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="vacio">No hay precios pendientes de revisión.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

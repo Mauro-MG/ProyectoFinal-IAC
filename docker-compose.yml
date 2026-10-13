@@ -1,14 +1,44 @@
-# AbastoRed - Equipo 01. Entorno de desarrollo local.
-# Uso: cp .env.example .env && docker compose up --build
+# AbastoRed - Equipo 01
+# Arquitectura completa en contenedores: sistema web, 8 microservicios,
+# PostgreSQL + PostGIS, MongoDB y Redis en una red privada.
+#
+#   cp .env.example .env
+#   docker compose up --build -d        levantar
+#   docker compose ps                   estado y salud de cada contenedor
+#   docker compose down                 detener (conserva los datos)
+#   docker compose down -v              detener y borrar los datos (recarga la carga inicial)
+#
+# Puertos publicados en el equipo:
+#   5000 web · 8101 seguridad · 8102 comercios · 8103 catálogo · 8104 inventario
+#   8105 precios · 8106 pedidos · 8107 análisis · 8108 notificaciones
+#   Swagger de cada servicio: http://localhost:81xx/docs
+
+x-microservicio: &microservicio
+  env_file: .env
+  restart: unless-stopped
+  depends_on:
+    abastored-postgres:
+      condition: service_healthy
+    abastored-mongo:
+      condition: service_healthy
+    abastored-redis:
+      condition: service_healthy
+  networks:
+    - abastored-network
 
 services:
+  # ------------------------------------------------------------------ sistema web
   abastored-web:
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/web/Dockerfile
     container_name: abastored-web
     ports:
       - "5000:5000"
+    env_file: .env
+    environment:
+      NOTIFICACIONES_VIA_SERVICIO: "true"
+      ANALISIS_VIA_SERVICIO: "true"
     depends_on:
       abastored-postgres:
         condition: service_healthy
@@ -18,6 +48,7 @@ services:
         condition: service_healthy
     volumes:
       - ./apps/web:/app
+      - ./libs:/libs
     networks:
       - abastored-network
     healthcheck:
@@ -25,9 +56,59 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    env_file:
-      - .env
 
+  # ------------------------------------------------------------------ microservicios
+  ms-seguridad:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/seguridad/Dockerfile}
+    container_name: ms-seguridad
+    ports: ["8101:8000"]
+
+  ms-comercios:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/comercios/Dockerfile}
+    container_name: ms-comercios
+    ports: ["8102:8000"]
+
+  ms-catalogo:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/catalogo/Dockerfile}
+    container_name: ms-catalogo
+    ports: ["8103:8000"]
+
+  ms-inventario:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/inventario/Dockerfile}
+    container_name: ms-inventario
+    ports: ["8104:8000"]
+
+  ms-precios:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/precios/Dockerfile}
+    container_name: ms-precios
+    ports: ["8105:8000"]
+
+  ms-pedidos:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/pedidos/Dockerfile}
+    container_name: ms-pedidos
+    ports: ["8106:8000"]
+
+  ms-analisis:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/analisis/Dockerfile}
+    container_name: ms-analisis
+    ports: ["8107:8000"]
+
+  ms-notificaciones:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/notificaciones/Dockerfile}
+    container_name: ms-notificaciones
+    ports: ["8108:8000"]
+    environment:
+      NOTIFICACIONES_VIA_SERVICIO: "false"   # este servicio escribe directo en MongoDB
+
+  # ------------------------------------------------------------------ datos
   abastored-postgres:
     image: postgis/postgis:16-3.4-alpine
     container_name: abastored-postgres
