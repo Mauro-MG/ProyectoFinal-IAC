@@ -81,17 +81,26 @@ def oferta_a_dict(o):
             'existencia_disponible': o.existencia_disponible, 'actualizado': o.updated_at}
 
 
+def _empresa_id():
+    """Empresa del usuario: la del token o, si la registró después de iniciar sesión (su token aún no la
+    trae), la que tiene a su nombre."""
+    if g.claims.get('proveedor_id'):
+        return g.claims['proveedor_id']
+    propia = Proveedor.query.filter_by(usuario_id=UUID(g.claims['sub'])).first()
+    return str(propia.id) if propia else None
+
+
 def _proveedor(id, editar=False):
     proveedor = db.session.get(Proveedor, id)
     if not proveedor or not proveedor.activo:
         raise no_encontrado('El proveedor')
-    if editar and str(proveedor.id) != g.claims.get('proveedor_id') and not tiene('catalogos.gestionar'):
+    if editar and str(proveedor.id) != _empresa_id() and not tiene('catalogos.gestionar'):
         raise prohibido('Sólo el propio proveedor o el administrador pueden cambiar estos datos.')
     return proveedor
 
 
 def _mi_proveedor():
-    empresa_id = g.claims.get('proveedor_id')
+    empresa_id = _empresa_id()
     proveedor = db.session.get(Proveedor, UUID(empresa_id)) if empresa_id else None
     if not proveedor:
         raise ErrorApi(409, 'sin_empresa', 'Tu cuenta aún no tiene datos de empresa proveedora.')
@@ -176,6 +185,11 @@ def cambiar_condiciones(id, datos):
     cambios = datos.model_dump(exclude_none=True)
     if not cambios:
         raise ErrorApi(422, 'sin_cambios', 'Indica al menos un campo a cambiar.')
+    if 'rfc' in cambios and cambios['rfc'] != proveedor.rfc:
+        if Proveedor.query.filter(Proveedor.rfc == cambios['rfc'], Proveedor.id != proveedor.id).first():
+            raise ErrorApi(409, 'rfc_duplicado', 'Ya hay un proveedor registrado con ese RFC.')
+        if proveedor.estado_verificacion == 'VERIFICADO':
+            cambios['estado_verificacion'] = 'PENDIENTE'  # el coordinador debe revisar el RFC nuevo
     antes = {k: getattr(proveedor, k) for k in cambios}
     for campo, valor in cambios.items():
         setattr(proveedor, campo, valor)
@@ -349,7 +363,7 @@ def _mi_oferta(id):
     oferta = db.session.get(CatalogoProveedor, id)
     if not oferta or not oferta.activo:
         raise no_encontrado('La oferta')
-    if str(oferta.proveedor_id) != g.claims.get('proveedor_id') and not tiene('catalogos.gestionar'):
+    if str(oferta.proveedor_id) != _empresa_id() and not tiene('catalogos.gestionar'):
         raise prohibido('La oferta es de otro proveedor.')
     return oferta
 

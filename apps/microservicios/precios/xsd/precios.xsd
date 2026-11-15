@@ -215,6 +215,7 @@
             <xs:enumeration value="MANUAL"/>
             <xs:enumeration value="MOVIL"/>
             <xs:enumeration value="ESCRITORIO"/>
+            <xs:enumeration value="IMPORTACION"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>

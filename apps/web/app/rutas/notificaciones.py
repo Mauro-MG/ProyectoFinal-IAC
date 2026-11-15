@@ -1,4 +1,9 @@
-"""Notificaciones internas en el web, servidas por ms-notificaciones."""
+"""
+Notificaciones internas en el web, servidas por ms-notificaciones.
+
+Si el servicio no responde, la lista y el contador se leen directo de MongoDB
+(solo lectura); marcar o eliminar sí requiere al servicio.
+"""
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from pymongo.errors import PyMongoError
@@ -60,7 +65,7 @@ def notificacion_abrir(id):
     try:
         llamar('notificaciones', 'PATCH', f'/notificaciones/{id}', json={'leida': True})
     except ServicioNoDisponible:
-        directo.marcar_leida(id, current_user.id)
+        pass  # se abre la pantalla igual; el aviso queda sin leer hasta que el servicio responda
     if not destino.startswith('/') or destino.startswith('//'):
         destino = url_for('notificaciones')
     return redirect(destino)
@@ -73,7 +78,7 @@ def notificaciones_marcar_todas():
         respuesta = llamar('notificaciones', 'POST', '/notificaciones/marcar-todas')
         flash(respuesta.datos.get('mensaje', 'Listo.'), 'ok')
     except ServicioNoDisponible:
-        flash(f'{directo.marcar_todas(current_user.id)} notificaciones marcadas como leídas.', 'ok')
+        flash('El servicio de notificaciones no está disponible; intenta en un momento.', 'error')
     return redirect(url_for('notificaciones'))
 
 
@@ -85,5 +90,5 @@ def notificacion_eliminar(id):
         if not respuesta.ok:
             flash(respuesta.mensaje_error, 'error')
     except ServicioNoDisponible:
-        directo.eliminar(id, current_user.id)
+        flash('El servicio de notificaciones no está disponible; intenta en un momento.', 'error')
     return redirect(request.referrer or url_for('notificaciones'))

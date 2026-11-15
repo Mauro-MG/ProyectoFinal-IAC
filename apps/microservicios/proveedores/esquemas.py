@@ -37,7 +37,13 @@ class ProveedorEntrada(BaseEntrada):
 
 
 class CondicionesEntrada(BaseEntrada):
-    """Condiciones comerciales y capacidad de surtido (sólo los campos enviados cambian)."""
+    """Datos de la empresa, condiciones comerciales y capacidad de surtido (sólo los campos enviados cambian).
+    Cambiar el RFC de un proveedor verificado lo regresa a PENDIENTE."""
+    nombre_empresa: str | None = Field(None, min_length=3, max_length=255)
+    rfc: str | None = Field(None, pattern=r'^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$')
+    municipio: str | None = Field(None, max_length=100)
+    latitud: Decimal | None = Field(None, ge=-90, le=90)
+    longitud: Decimal | None = Field(None, ge=-180, le=180)
     descripcion: str | None = Field(None, max_length=1000)
     telefono_contacto: str | None = Field(None, max_length=20)
     email_contacto: str | None = Field(None, max_length=255)

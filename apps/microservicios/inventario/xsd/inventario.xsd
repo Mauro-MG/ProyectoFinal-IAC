@@ -413,6 +413,7 @@
       </xs:element>
       <xs:element name="proveedores" type="xs:integer" minOccurs="0"/>
       <xs:element name="precio_mayoreo_min" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="aviso" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="ReservaEntrada">

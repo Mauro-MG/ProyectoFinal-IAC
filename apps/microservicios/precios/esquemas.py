@@ -10,7 +10,7 @@ from abasto_api.modelos_comunes import Paginacion, Salida
 
 class PrecioEntrada(BaseEntrada):
     precio: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
-    metodo_captura: Literal['MANUAL', 'MOVIL', 'ESCRITORIO'] = 'MANUAL'
+    metodo_captura: Literal['MANUAL', 'MOVIL', 'ESCRITORIO', 'IMPORTACION'] = 'MANUAL'
 
 
 class HistorialConsulta(BaseConsulta):

@@ -57,8 +57,9 @@ def _bloquear(inventario):
             .one())
 
 
-def agregar_al_catalogo(comercio, producto, usuario, existencia=0, stock_minimo=0,
-                        stock_maximo=None, precio=None):
+def agregar_al_catalogo(comercio, producto, usuario, existencia=0, stock_minimo=0, stock_maximo=None):
+    """Agrega el producto al catálogo del comercio. El precio inicial no se fija aquí: lo fija ms-precios
+    (dueño de precios_comercio) con PUT /inventario/{id}/precio una vez confirmado el renglón."""
     existente = InventarioComercio.query.filter_by(comercio_id=comercio.id, producto_id=producto.id).first()
     if existente and existente.activo:
         raise ReglaNegocioError(f'{producto.nombre} ya está en el catálogo de {comercio.nombre_comercio}.')
@@ -78,8 +79,6 @@ def agregar_al_catalogo(comercio, producto, usuario, existencia=0, stock_minimo=
 
     if existencia and existencia > 0:
         registrar_movimiento(inventario, 'ENTRADA', existencia, usuario, motivo='Existencia inicial')
-    if precio:
-        actualizar_precio(inventario, precio, usuario)
     invalidar_analisis()
     return inventario
 

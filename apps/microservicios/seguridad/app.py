@@ -23,11 +23,13 @@ from sqlalchemy import or_
 from abasto_api import ErrorApi, Servicio, no_encontrado, paginar, usuario_actual
 from abasto_dominio import extensiones, sesiones
 from abasto_dominio.extensiones import db
-from abasto_dominio.modelos import Rol, Usuario
+from abasto_dominio.modelos import Proveedor, Rol, Usuario
 from abasto_dominio.permisos import PERMISOS
 from abasto_dominio.servicios.auditoria import registrar_evento
+from abasto_dominio.servicios.notificaciones import notificar
 
-from esquemas import (CONTRATOS_XML, CambioPasswordEntrada, LoginEntrada, PermisosEntrada, RecuperacionEntrada,
+from esquemas import (CONTRATOS_XML, CambioPasswordEntrada, LoginEntrada, OperadorCambio, OperadorEntrada,
+                      PermisosEntrada, RecuperacionEntrada,
                       RegistroEntrada, RenovarEntrada, RestablecerEntrada, SesionesConsulta, UsuarioCambio,
                       UsuariosConsulta, ValidarEntrada)
 
@@ -174,7 +176,8 @@ def recuperacion(datos):
     if usuario:
         token = secrets.token_urlsafe(32)
         extensiones.redis_client.setex(f'recuperacion:{token}', TTL_RECUPERACION, str(usuario.id))
-        app.logger.info('Recuperación de acceso para %s: token %s (válido 30 min)', usuario.email, token)
+        app.logger.info('Recuperación de acceso para %s: token %s (válido 30 min; en el web: /restablecer/%s)',
+                        usuario.email, token, token)
         registrar_evento(usuario.id, 'ACTUALIZACION', 'Usuario', usuario.id, 'Solicitud de recuperación de acceso')
         db.session.commit()
     return {'mensaje': 'Si el correo está registrado, recibirás las instrucciones. El enlace dura 30 minutos.'}
@@ -304,6 +307,75 @@ def cambiar_usuario(id, datos):
     if datos.activo is False or datos.rol_id is not None:
         sesiones.revocar_todas(usuario.id)  # los permisos del token cambiaron: debe volver a entrar
     return usuario_a_dict(usuario)
+
+
+# ---------------------------------------------------------------- equipo del proveedor (operadores)
+
+def _mi_empresa():
+    empresa = Proveedor.query.filter_by(usuario_id=UUID(g.claims['sub'])).first()
+    if not empresa:
+        raise ErrorApi(409, 'sin_empresa', 'Primero registra los datos de tu empresa en ms-proveedores.')
+    return empresa
+
+
+def _mi_operador(id):
+    operador = db.session.get(Usuario, id)
+    if not operador or operador.proveedor_id != _mi_empresa().id:
+        raise no_encontrado('El operador')
+    return operador
+
+
+@srv.ruta('/operadores', 'GET', resumen='Operadores de mi empresa', etiqueta='Equipo del proveedor',
+          permisos=['proveedor.equipo'], raiz_xml='operadores')
+def listar_operadores():
+    empresa = _mi_empresa()
+    operadores = (Usuario.query.filter_by(proveedor_id=empresa.id)
+                  .order_by(Usuario.activo.desc(), Usuario.nombre).all())
+    return {'items': [usuario_a_dict(u) for u in operadores],
+            'paginacion': {'pagina': 1, 'por_pagina': len(operadores), 'total': len(operadores), 'paginas': 1}}
+
+
+@srv.ruta('/operadores', 'POST', resumen='Dar de alta un operador', etiqueta='Equipo del proveedor',
+          permisos=['proveedor.equipo'], cuerpo=OperadorEntrada, status=201, raiz_xml='usuario',
+          entrada_xml='operador_entrada', limite=10,
+          ejemplo_entrada={'email': 'bodega@mayoreo.mx', 'password': 'Temporal2026', 'nombre': 'Luis',
+                           'apellido_paterno': 'Garza', 'telefono': '8187654321'}, errores=(400, 409, 422))
+def crear_operador(datos):
+    """El operador ve y atiende los pedidos de la empresa, pero no cambia precios, catálogo ni datos de la empresa."""
+    empresa = _mi_empresa()
+    email = str(datos.email).lower()
+    if Usuario.query.filter(db.func.lower(Usuario.email) == email).first():
+        raise ErrorApi(409, 'correo_registrado', 'Ya existe una cuenta con ese correo.')
+    operador = Usuario(email=email, nombre=datos.nombre, apellido_paterno=datos.apellido_paterno,
+                       telefono=datos.telefono, proveedor_id=empresa.id,
+                       rol=Rol.query.filter_by(nombre='Operador de Proveedor').one())
+    operador.set_password(datos.password)
+    db.session.add(operador)
+    db.session.flush()
+    registrar_evento(UUID(g.claims['sub']), 'CREACION', 'Usuario', operador.id,
+                     f'Operador {email} agregado a {empresa.nombre_empresa}', datos_nuevos={'email': email})
+    db.session.commit()
+    notificar(operador.id, 'sistema', f'Bienvenido al equipo de {empresa.nombre_empresa}',
+              'Desde «Pedidos recibidos» puedes aceptar, preparar y despachar los pedidos de la empresa.',
+              url='/pedidos', origen='seguridad')
+    return usuario_a_dict(operador)
+
+
+@srv.ruta('/operadores/<uuid:id>', 'PATCH', resumen='Quitar o devolver el acceso a un operador',
+          etiqueta='Equipo del proveedor', permisos=['proveedor.equipo'], cuerpo=OperadorCambio, raiz_xml='usuario',
+          entrada_xml='operador_cambio', ejemplo_entrada={'activo': False})
+def cambiar_operador(id, datos):
+    operador = _mi_operador(id)
+    if operador.activo == datos.activo:
+        raise ErrorApi(409, 'sin_cambio', 'El operador ya está ' + ('activo.' if datos.activo else 'dado de baja.'))
+    operador.activo = datos.activo
+    registrar_evento(UUID(g.claims['sub']), 'CAMBIO_ESTADO', 'Usuario', operador.id,
+                     f'Operador {operador.email} {"reactivado" if datos.activo else "dado de baja"}',
+                     datos_anteriores={'activo': not datos.activo}, datos_nuevos={'activo': datos.activo})
+    db.session.commit()
+    if not datos.activo:
+        sesiones.revocar_todas(operador.id)  # deja de poder entrar al web y a la API de inmediato
+    return usuario_a_dict(operador)
 
 
 @srv.ruta('/roles', 'GET', resumen='Roles y permisos', etiqueta='Usuarios',

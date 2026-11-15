@@ -120,6 +120,7 @@ class RenglonSalida(Salida):
     movimientos: list[MovimientoSalida] | None = None
     proveedores: int | None = Field(None, description='Sólo en faltantes: proveedores que lo surten en la zona')
     precio_mayoreo_min: float | None = None
+    aviso: str | None = Field(None, description='Al agregar: motivo si ms-precios no aceptó el precio inicial')
 
 
 class ResumenInventario(Salida):

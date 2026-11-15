@@ -1,28 +1,34 @@
-"""Catálogos maestros: productos, categorías y zonas."""
-from flask import flash, redirect, render_template, request, url_for
-from flask_login import current_user, login_required
+"""
+Catálogos maestros: productos y categorías (ms-catalogo) y zonas (ms-geolocalizacion).
+
+Las listas se leen de la base; las altas y cambios los hace el servicio dueño.
+"""
+from flask import redirect, render_template, request, url_for
+from flask_login import login_required
 
 from app import app
 from abasto_dominio.extensiones import db
 from app.formularios import CategoriaForm, ProductoForm, ZonaForm
+from app.microservicios import escribir
 from abasto_dominio.modelos import Categoria, ProductoMaestro, ZonaMunicipal
 from app.permisos import permiso_requerido
-from abasto_dominio.servicios.auditoria import registrar_evento
-from abasto_dominio.servicios.cache import invalidar_analisis
-
-
-def _campos(objeto, nombres):
-    return {n: getattr(objeto, n) for n in nombres}
 
 
 # ---------------------------------------------------------------- productos
 
-CAMPOS_PRODUCTO = ('nombre', 'categoria_id', 'unidad_medida', 'codigo_barras', 'es_canasta_basica')
-
-
 def _categorias(form):
     form.categoria_id.choices = [(c.id, c.nombre) for c in
                                  Categoria.query.filter_by(activa=True).order_by(Categoria.orden)]
+
+
+def _producto_json(form, actual=None):
+    """Cuerpo para ms-catalogo. El PUT reemplaza el producto completo: los campos que esta pantalla no
+    maneja (marca, clave estándar) se mandan con su valor actual para no borrarlos."""
+    return {'nombre': form.nombre.data.strip(), 'categoria_id': form.categoria_id.data,
+            'unidad_medida': form.unidad_medida.data, 'codigo_barras': (form.codigo_barras.data or '').strip() or None,
+            'es_canasta_basica': form.es_canasta_basica.data, 'descripcion': form.descripcion.data or None,
+            'marca_id': actual.marca_id if actual else None,
+            'clave_estandar': actual.clave_estandar if actual else None}
 
 
 @app.route('/catalogo/productos')
@@ -48,18 +54,8 @@ def producto_nuevo():
     form = ProductoForm()
     _categorias(form)
     if form.validate_on_submit():
-        if ProductoMaestro.query.filter_by(nombre=form.nombre.data, unidad_medida=form.unidad_medida.data).first():
-            flash('Ya existe un producto con ese nombre y unidad.', 'error')
-        else:
-            producto = ProductoMaestro()
-            form.populate_obj(producto)
-            db.session.add(producto)
-            db.session.flush()
-            registrar_evento(current_user.id, 'CREACION', 'ProductoMaestro', producto.id,
-                             f'Alta de {producto.nombre} en el catálogo maestro',
-                             datos_nuevos=_campos(producto, CAMPOS_PRODUCTO))
-            db.session.commit()
-            flash('Producto agregado al catálogo maestro.', 'ok')
+        if escribir('catalogo', 'POST', '/productos', json=_producto_json(form),
+                    exito='Producto agregado al catálogo maestro.') is not None:
             return redirect(url_for('productos_lista'))
     return render_template('catalogo/producto_form.html', form=form, titulo='Nuevo producto')
 
@@ -72,15 +68,9 @@ def producto_editar(id):
     form = ProductoForm(obj=producto)
     _categorias(form)
     if form.validate_on_submit():
-        antes = _campos(producto, CAMPOS_PRODUCTO)
-        form.populate_obj(producto)
-        registrar_evento(current_user.id, 'ACTUALIZACION', 'ProductoMaestro', producto.id,
-                         f'Edición de {producto.nombre}', datos_anteriores=antes,
-                         datos_nuevos=_campos(producto, CAMPOS_PRODUCTO))
-        db.session.commit()
-        invalidar_analisis()
-        flash('Producto actualizado.', 'ok')
-        return redirect(url_for('productos_lista'))
+        if escribir('catalogo', 'PUT', f'/productos/{id}', json=_producto_json(form, producto),
+                    exito='Producto actualizado.') is not None:
+            return redirect(url_for('productos_lista'))
     return render_template('catalogo/producto_form.html', form=form, titulo=f'Editar {producto.nombre}')
 
 
@@ -89,12 +79,7 @@ def producto_editar(id):
 @permiso_requerido('catalogos.gestionar')
 def producto_desactivar(id):
     producto = db.get_or_404(ProductoMaestro, id)
-    producto.activo = False
-    registrar_evento(current_user.id, 'ELIMINACION', 'ProductoMaestro', producto.id,
-                     f'Baja lógica de {producto.nombre}')
-    db.session.commit()
-    invalidar_analisis()
-    flash(f'{producto.nombre} ya no aparecerá en el catálogo.', 'ok')
+    escribir('catalogo', 'DELETE', f'/productos/{id}', exito=f'{producto.nombre} ya no aparecerá en el catálogo.')
     return redirect(url_for('productos_lista'))
 
 
@@ -106,16 +91,10 @@ def producto_desactivar(id):
 def categorias():
     form = CategoriaForm()
     if form.validate_on_submit():
-        if Categoria.query.filter(db.func.lower(Categoria.nombre) == form.nombre.data.strip().lower()).first():
-            flash('Esa categoría ya existe.', 'error')
-        else:
-            categoria = Categoria(nombre=form.nombre.data.strip(), descripcion=form.descripcion.data,
-                                  orden=(db.session.query(db.func.max(Categoria.orden)).scalar() or 0) + 1)
-            db.session.add(categoria)
-            db.session.flush()
-            registrar_evento(current_user.id, 'CREACION', 'Categoria', categoria.id, f'Alta de categoría {categoria.nombre}')
-            db.session.commit()
-            flash('Categoría agregada.', 'ok')
+        orden = (db.session.query(db.func.max(Categoria.orden)).scalar() or 0) + 1
+        if escribir('catalogo', 'POST', '/categorias', exito='Categoría agregada.',
+                    json={'nombre': form.nombre.data.strip(), 'descripcion': form.descripcion.data or None,
+                          'orden': min(orden, 999)}) is not None:
             return redirect(url_for('categorias'))
 
     conteo = dict(db.session.query(ProductoMaestro.categoria_id, db.func.count(ProductoMaestro.id))
@@ -129,17 +108,11 @@ def categorias():
 @permiso_requerido('catalogos.gestionar')
 def categoria_estado(id):
     categoria = db.get_or_404(Categoria, id)
-    categoria.activa = not categoria.activa
-    registrar_evento(current_user.id, 'ACTUALIZACION', 'Categoria', categoria.id,
-                     f'Categoría {categoria.nombre} {"activada" if categoria.activa else "desactivada"}')
-    db.session.commit()
+    escribir('catalogo', 'PATCH', f'/categorias/{id}', json={'activa': not categoria.activa})
     return redirect(url_for('categorias'))
 
 
-# ---------------------------------------------------------------- zonas
-
-CAMPOS_ZONA = ('nombre', 'municipio', 'latitud_centro', 'longitud_centro', 'radio_km', 'poblacion', 'activa')
-
+# ---------------------------------------------------------------- zonas (ms-geolocalizacion)
 
 @app.route('/catalogo/zonas')
 @login_required
@@ -157,17 +130,17 @@ def zona_form(id=None):
     zona = db.get_or_404(ZonaMunicipal, id) if id else None
     form = ZonaForm(obj=zona)
     if form.validate_on_submit():
-        antes = _campos(zona, CAMPOS_ZONA) if zona else None
-        if not zona:
-            zona = ZonaMunicipal()
-            db.session.add(zona)
-        form.populate_obj(zona)
-        db.session.flush()
-        registrar_evento(current_user.id, 'ACTUALIZACION' if antes else 'CREACION', 'ZonaMunicipal', zona.id,
-                         f'Zona {zona.nombre} ({zona.municipio})', datos_anteriores=antes,
-                         datos_nuevos=_campos(zona, CAMPOS_ZONA))
-        db.session.commit()
-        invalidar_analisis()
-        flash('Zona guardada.', 'ok')
-        return redirect(url_for('zonas_lista'))
+        datos = {'nombre': form.nombre.data.strip(), 'latitud_centro': form.latitud_centro.data,
+                 'longitud_centro': form.longitud_centro.data, 'radio_km': form.radio_km.data,
+                 'poblacion': form.poblacion.data}
+        if zona:
+            # El municipio y el estado no cambian en una zona existente (identifican sus datos históricos)
+            guardado = escribir('geolocalizacion', 'PATCH', f'/zonas/{id}', json={**datos, 'activa': form.activa.data},
+                                exito='Zona guardada.')
+        else:
+            guardado = escribir('geolocalizacion', 'POST', '/zonas', exito='Zona guardada.',
+                                json={**datos, 'municipio': form.municipio.data.strip(),
+                                      'estado': form.estado.data.strip()})
+        if guardado is not None:
+            return redirect(url_for('zonas_lista'))
     return render_template('catalogo/zona_form.html', form=form, zona=zona)

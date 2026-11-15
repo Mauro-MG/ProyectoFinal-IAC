@@ -32,7 +32,7 @@ from abasto_dominio.modelos import (Categoria, Marca, ProductoMaestro, UnidadMed
 from abasto_dominio.servicios.auditoria import registrar_evento
 from abasto_dominio.servicios.cache import invalidar_analisis
 
-from esquemas import (CONTRATOS_XML, CategoriaEntrada, EquivalenciaEntrada, MarcaEntrada, ProductoEntrada,
+from esquemas import (CONTRATOS_XML, CategoriaCambio, CategoriaEntrada, EquivalenciaEntrada, MarcaEntrada, ProductoEntrada,
                       ProductosConsulta, VarianteEntrada)
 
 srv = Servicio('catalogo', 'Catálogo',
@@ -304,7 +304,7 @@ def quitar_equivalente(id, equivalente_id):
 # ---------------------------------------------------------------- categorías, marcas y unidades
 
 def categoria_a_dict(c, productos=0):
-    return {'id': c.id, 'nombre': c.nombre, 'descripcion': c.descripcion, 'productos': productos}
+    return {'id': c.id, 'nombre': c.nombre, 'descripcion': c.descripcion, 'productos': productos, 'activa': c.activa}
 
 
 @srv.ruta('/categorias', 'GET', resumen='Categorías', etiqueta='Clasificación', publico=True, raiz_xml='categorias')
@@ -328,6 +328,30 @@ def crear_categoria(datos):
     db.session.commit()
     _invalidar_cache()
     return categoria_a_dict(categoria)
+
+
+@srv.ruta('/categorias/<int:id>', 'PATCH', resumen='Cambiar, activar o desactivar una categoría',
+          etiqueta='Clasificación', permisos=GESTION, cuerpo=CategoriaCambio, raiz_xml='categoria',
+          entrada_xml='categoria_cambio', ejemplo_entrada={'activa': False})
+def cambiar_categoria(id, datos):
+    categoria = db.session.get(Categoria, id)
+    if not categoria:
+        raise no_encontrado('La categoría')
+    cambios = datos.model_dump(exclude_none=True)
+    if not cambios:
+        raise ErrorApi(422, 'sin_cambios', 'Indica al menos un campo a cambiar.')
+    if 'nombre' in cambios and Categoria.query.filter(func.lower(Categoria.nombre) == cambios['nombre'].lower(),
+                                                      Categoria.id != id).first():
+        raise ErrorApi(409, 'categoria_duplicada', 'Ya existe esa categoría.')
+    antes = {k: getattr(categoria, k) for k in cambios}
+    for campo, valor in cambios.items():
+        setattr(categoria, campo, valor)
+    registrar_evento(UUID(g.claims['sub']), 'ACTUALIZACION', 'Categoria', categoria.id,
+                     f'Categoría {categoria.nombre}', datos_anteriores=antes, datos_nuevos=cambios)
+    db.session.commit()
+    _invalidar_cache()
+    conteo = ProductoMaestro.query.filter_by(categoria_id=id, activo=True).count()
+    return categoria_a_dict(categoria, conteo)
 
 
 @srv.ruta('/marcas', 'GET', resumen='Marcas', etiqueta='Clasificación', publico=True, raiz_xml='marcas')

@@ -69,11 +69,14 @@ certutil -user -addstore Root infra\certs\abastored.crt
 | Archivo | Para qué |
 | :--- | :--- |
 | `.env` | Configuración sin secretos (copia de `.env.example`). `ENTORNO=produccion` hace que el arranque falle si falta un secreto o es de ejemplo. |
-| `secrets/*.txt` | Contraseñas y llaves; Docker las monta en `/run/secrets` sólo en los contenedores que las usan. Nunca van a git. |
+| `secrets/*.txt` | Contraseñas y llaves; Docker las monta en `/run/secrets` sólo en los contenedores que las usan. Nunca van a git. Incluye un usuario de PostgreSQL por servicio (`pg_ms_<servicio>.txt`) y el de solo lectura del web (`pg_abastored_web.txt`). |
 | `docker-compose.dev.yml` | Sólo desarrollo: publica web, servicios y bases en `127.0.0.1` (`docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d`). |
 
-Cada servicio publica `/health`, `/openapi.json`, `/docs` (Swagger) y `/xsd` (contrato XML). Qué servicio es
-dueño de cada tabla y cómo se coordinan las operaciones que cruzan servicios: `docs/propiedad_de_datos.md`.
+Cada servicio publica `/health`, `/openapi.json`, `/docs` (Swagger) y `/xsd` (contrato XML).
+
+- Qué servicio es dueño de cada tabla, cómo lo impone PostgreSQL y cómo se coordinan las operaciones que cruzan
+  servicios: `docs/propiedad_de_datos.md`.
+- Qué servicio llama cada pantalla del web (el web solo lee la base; escribe por las APIs): `docs/web_y_apis.md`.
 Para detener: `docker compose stop` (conserva datos) o `docker compose down -v` (borra los volúmenes
 y vuelve a cargar los scripts de `db/`).
 
@@ -104,6 +107,9 @@ python tests/evidencias/generar.py   # 5 casos por endpoint: docs/evidencias/ y 
   saga sobre el inventario y su traza en ms-auditoria, lote offline con duplicados y conflicto, entrega con QR,
   cotización consolidada hasta pedido, documentos con validación del tipo real, búsqueda y demanda, reportes e
   importación con errores por fila.
+- `tests/integracion/test_web_por_apis.py` recorre el web con formularios reales y comprueba en ms-auditoria que
+  cada cambio lo hizo el servicio dueño. `tests/integracion/test_propiedad_datos.py` le pregunta a PostgreSQL
+  quién puede escribir cada tabla e intenta escrituras prohibidas.
 - La colección de Postman (`docs/postman/AbastoRed_Avance2.postman_collection.json`) se ejecuta empezando
   por la carpeta «00 · Sesiones». Como el certificado es autofirmado, en Postman se agrega
   `infra/certs/abastored.crt` en *Settings → Certificates → CA certificates*.

@@ -192,13 +192,13 @@ def resumen(q):
 # ---------------------------------------------------------------- registro externo y conciliación
 
 @srv.ruta('/eventos', 'POST', resumen='Registrar un evento de un cliente o sistema externo', etiqueta='Registro',
-          permisos=['sincronizacion.enviar', 'integraciones.ejecutar', 'auditoria.registrar'], cuerpo=EventoEntrada,
-          status=201, raiz_xml='evento', entrada_xml='evento_entrada',
+          cuerpo=EventoEntrada, status=201, limite=60, raiz_xml='evento', entrada_xml='evento_entrada',
           ejemplo_entrada={'tipo_evento': 'LECTURA', 'entidad': 'ReporteInventario', 'descripcion':
                            'Exportó el inventario a Excel desde la app de escritorio', 'origen': 'escritorio'})
 def registrar(datos):
     """Para operaciones sensibles que ocurren fuera de los servicios (p. ej. una exportación hecha sin conexión en
-    la app de escritorio). El usuario es siempre el del token: no se puede registrar a nombre de otro."""
+    la app de escritorio, o una exportación del web). Basta un token válido porque el usuario del evento es siempre
+    el del token: no se puede registrar a nombre de otro. Límite: 60 por minuto por usuario."""
     claims = g.claims
     documento = {
         'id_postgres': None, 'servicio': datos.origen if claims.get('tipo') == 'acceso' else claims.get('origen'),

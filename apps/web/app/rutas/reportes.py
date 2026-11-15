@@ -15,7 +15,6 @@ from abasto_dominio.modelos.pedido import ESTADOS_PEDIDO
 from abasto_dominio.modelos import (Comercio, InventarioComercio, PedidoAbasto, ProductoMaestro, Proveedor,
                                     ZonaMunicipal)
 from abasto_dominio.servicios import analisis, eventos
-from abasto_dominio.servicios.auditoria import registrar_evento
 from abasto_dominio.servicios.precios import tendencia_semanal
 
 
@@ -141,6 +140,11 @@ def exportar(tipo):
     else:
         abort(404)
 
-    registrar_evento(current_user.id, 'LECTURA', 'Reporte', tipo, f'Exportación CSV: {tipo}')
-    db.session.commit()
+    # La bitácora centralizada es de ms-auditoria; si no responde, la descarga no se bloquea
+    try:
+        llamar('auditoria', 'POST', '/eventos', json={'tipo_evento': 'LECTURA', 'entidad': 'Reporte',
+                                                     'entidad_id': tipo, 'origen': 'web',
+                                                     'descripcion': f'Exportación CSV: {tipo}'})
+    except ServicioNoDisponible:
+        app.logger.warning('ms-auditoria no registró la exportación %s de %s', tipo, current_user.email)
     return respuesta

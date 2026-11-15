@@ -14,26 +14,19 @@
 #   publica  gateway, web y microservicios
 #   datos    (interna, sin acceso desde fuera de Docker) bases de datos, web y microservicios
 # Secretos: archivos de secrets/ montados en /run/secrets; no viajan en variables de entorno.
+#   Cada servicio entra a PostgreSQL con su propio usuario (ms_<servicio>, db/postgres/05_roles.sql) y
+#   solo recibe SU contraseña (pg_ms_<servicio>); el web usa abastored_web, de solo lectura. La contraseña
+#   del superusuario solo la tiene el contenedor de PostgreSQL.
 # Desarrollo: docker-compose.dev.yml publica además los puertos en 127.0.0.1 (sólo este equipo).
 
 x-secretos-entorno: &secretos-entorno
   SECRET_KEY_FILE: /run/secrets/secret_key
   JWT_SECRET_KEY_FILE: /run/secrets/jwt_secret_key
-  POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
   MONGO_PASSWORD_FILE: /run/secrets/mongo_password
   REDIS_PASSWORD_FILE: /run/secrets/redis_password
 
-x-secretos-app: &secretos-app
-  - secret_key
-  - jwt_secret_key
-  - postgres_password
-  - mongo_password
-  - redis_password
-
 x-microservicio: &microservicio
   env_file: .env
-  environment: *secretos-entorno
-  secrets: *secretos-app
   restart: unless-stopped
   depends_on:
     abastored-postgres:
@@ -69,9 +62,11 @@ services:
     env_file: .env
     environment:
       <<: *secretos-entorno
+      POSTGRES_USER: abastored_web                    # solo lectura: escribe por las APIs
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_abastored_web
       NOTIFICACIONES_VIA_SERVICIO: "true"
       ANALISIS_VIA_SERVICIO: "true"
-    secrets: *secretos-app
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_abastored_web]
     depends_on:
       abastored-postgres:
         condition: service_healthy
@@ -91,36 +86,71 @@ services:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/seguridad/Dockerfile}
     container_name: ms-seguridad
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_seguridad
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_seguridad
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_seguridad]
 
   ms-comercios:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/comercios/Dockerfile}
     container_name: ms-comercios
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_comercios
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_comercios
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_comercios]
 
   ms-catalogo:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/catalogo/Dockerfile}
     container_name: ms-catalogo
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_catalogo
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_catalogo
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_catalogo]
 
   ms-inventario:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/inventario/Dockerfile}
     container_name: ms-inventario
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_inventario
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_inventario
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_inventario]
 
   ms-precios:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/precios/Dockerfile}
     container_name: ms-precios
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_precios
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_precios
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_precios]
 
   ms-pedidos:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/pedidos/Dockerfile}
     container_name: ms-pedidos
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_pedidos
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_pedidos
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_pedidos]
 
   ms-analisis:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/analisis/Dockerfile}
     container_name: ms-analisis
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_analisis
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_analisis
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_analisis]
 
   ms-notificaciones:
     <<: *microservicio
@@ -128,87 +158,170 @@ services:
     container_name: ms-notificaciones
     environment:
       <<: *secretos-entorno
+      POSTGRES_USER: ms_notificaciones
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_notificaciones
       NOTIFICACIONES_VIA_SERVICIO: "false"   # este servicio escribe directo en MongoDB
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_notificaciones]
 
   ms-proveedores:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/proveedores/Dockerfile}
     container_name: ms-proveedores
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_proveedores
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_proveedores
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_proveedores]
 
   ms-abastecimiento:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/abastecimiento/Dockerfile}
     container_name: ms-abastecimiento
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_abastecimiento
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_abastecimiento
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_abastecimiento]
 
   ms-disponibilidad:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/disponibilidad/Dockerfile}
     container_name: ms-disponibilidad
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_disponibilidad
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_disponibilidad
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_disponibilidad]
 
   ms-geolocalizacion:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/geolocalizacion/Dockerfile}
     container_name: ms-geolocalizacion
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_geolocalizacion
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_geolocalizacion
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_geolocalizacion]
 
   ms-sincronizacion:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/sincronizacion/Dockerfile}
     container_name: ms-sincronizacion
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_sincronizacion
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_sincronizacion
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_sincronizacion]
 
   ms-documentos:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/documentos/Dockerfile}
     container_name: ms-documentos
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_documentos
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_documentos
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_documentos]
 
   ms-reportes:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/reportes/Dockerfile}
     container_name: ms-reportes
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_reportes
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_reportes
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_reportes]
 
   ms-recomendaciones:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/recomendaciones/Dockerfile}
     container_name: ms-recomendaciones
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_recomendaciones
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_recomendaciones
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_recomendaciones]
 
   ms-demanda:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/demanda/Dockerfile}
     container_name: ms-demanda
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_demanda
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_demanda
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_demanda]
 
   ms-ventas:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/ventas/Dockerfile}
     container_name: ms-ventas
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_ventas
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_ventas
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_ventas]
 
   ms-entregas:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/entregas/Dockerfile}
     container_name: ms-entregas
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_entregas
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_entregas
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_entregas]
 
   ms-auditoria:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/auditoria/Dockerfile}
     container_name: ms-auditoria
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_auditoria
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_auditoria
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_auditoria]
 
   ms-integraciones:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/integraciones/Dockerfile}
     container_name: ms-integraciones
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_integraciones
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_integraciones
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_integraciones]
 
   ms-configuracion:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/configuracion/Dockerfile}
     container_name: ms-configuracion
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_configuracion
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_configuracion
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_configuracion]
 
   ms-monitoreo:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/monitoreo/Dockerfile}
     container_name: ms-monitoreo
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_monitoreo
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_monitoreo
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_monitoreo]
 
   ms-busqueda:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/busqueda/Dockerfile}
     container_name: ms-busqueda
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_busqueda
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_busqueda
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_busqueda]
 
   # ------------------------------------------------------------------ pruebas (bajo demanda)
   # docker compose --profile pruebas run --rm pruebas   → reporte en docs/pruebas/ (no hay que instalar Python)
@@ -231,7 +344,34 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       POSTGRES_DB: ${POSTGRES_DB}
-    secrets: [postgres_password]
+    # Su superusuario y, para 06_contrasenas.sh, la contraseña de cada usuario de servicio
+    secrets:
+      - postgres_password
+      - pg_ms_seguridad
+      - pg_ms_comercios
+      - pg_ms_catalogo
+      - pg_ms_inventario
+      - pg_ms_precios
+      - pg_ms_pedidos
+      - pg_ms_analisis
+      - pg_ms_notificaciones
+      - pg_ms_proveedores
+      - pg_ms_abastecimiento
+      - pg_ms_disponibilidad
+      - pg_ms_geolocalizacion
+      - pg_ms_sincronizacion
+      - pg_ms_documentos
+      - pg_ms_reportes
+      - pg_ms_recomendaciones
+      - pg_ms_demanda
+      - pg_ms_ventas
+      - pg_ms_entregas
+      - pg_ms_auditoria
+      - pg_ms_integraciones
+      - pg_ms_configuracion
+      - pg_ms_monitoreo
+      - pg_ms_busqueda
+      - pg_abastored_web
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./db/postgres:/docker-entrypoint-initdb.d
@@ -283,6 +423,32 @@ secrets:
   postgres_password: {file: ./secrets/postgres_password.txt}
   mongo_password:    {file: ./secrets/mongo_password.txt}
   redis_password:    {file: ./secrets/redis_password.txt}
+  # Usuarios de PostgreSQL por servicio (scripts/preparar_entorno.py los genera)
+  pg_ms_seguridad:        {file: ./secrets/pg_ms_seguridad.txt}
+  pg_ms_comercios:        {file: ./secrets/pg_ms_comercios.txt}
+  pg_ms_catalogo:         {file: ./secrets/pg_ms_catalogo.txt}
+  pg_ms_inventario:       {file: ./secrets/pg_ms_inventario.txt}
+  pg_ms_precios:          {file: ./secrets/pg_ms_precios.txt}
+  pg_ms_pedidos:          {file: ./secrets/pg_ms_pedidos.txt}
+  pg_ms_analisis:         {file: ./secrets/pg_ms_analisis.txt}
+  pg_ms_notificaciones:   {file: ./secrets/pg_ms_notificaciones.txt}
+  pg_ms_proveedores:      {file: ./secrets/pg_ms_proveedores.txt}
+  pg_ms_abastecimiento:   {file: ./secrets/pg_ms_abastecimiento.txt}
+  pg_ms_disponibilidad:   {file: ./secrets/pg_ms_disponibilidad.txt}
+  pg_ms_geolocalizacion:  {file: ./secrets/pg_ms_geolocalizacion.txt}
+  pg_ms_sincronizacion:   {file: ./secrets/pg_ms_sincronizacion.txt}
+  pg_ms_documentos:       {file: ./secrets/pg_ms_documentos.txt}
+  pg_ms_reportes:         {file: ./secrets/pg_ms_reportes.txt}
+  pg_ms_recomendaciones:  {file: ./secrets/pg_ms_recomendaciones.txt}
+  pg_ms_demanda:          {file: ./secrets/pg_ms_demanda.txt}
+  pg_ms_ventas:           {file: ./secrets/pg_ms_ventas.txt}
+  pg_ms_entregas:         {file: ./secrets/pg_ms_entregas.txt}
+  pg_ms_auditoria:        {file: ./secrets/pg_ms_auditoria.txt}
+  pg_ms_integraciones:    {file: ./secrets/pg_ms_integraciones.txt}
+  pg_ms_configuracion:    {file: ./secrets/pg_ms_configuracion.txt}
+  pg_ms_monitoreo:        {file: ./secrets/pg_ms_monitoreo.txt}
+  pg_ms_busqueda:         {file: ./secrets/pg_ms_busqueda.txt}
+  pg_abastored_web:       {file: ./secrets/pg_abastored_web.txt}
 
 networks:
   publica:

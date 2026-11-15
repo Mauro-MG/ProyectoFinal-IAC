@@ -7,8 +7,27 @@ rastrear en `ms-auditoria → GET /trazas/{correlation_id}`.
 
 Varios servicios sí **leen** tablas de otros, con consultas de solo lectura. Por ejemplo,
 ms-disponibilidad, ms-busqueda, ms-reportes y ms-analisis son servicios de consulta. Esta lectura
-compartida está permitida y se documenta en la columna «Lo leen». En la fase 3 cada servicio usará su
-propio usuario de PostgreSQL con permiso de escritura **solo** en sus tablas (`db/postgres/05_roles.sql`).
+compartida está permitida y se documenta en la columna «Lo leen».
+
+## Cómo lo hace cumplir la base de datos
+
+La regla no depende solo de que el código la respete: **PostgreSQL la impone**.
+
+- **Un usuario por servicio.** Cada servicio entra con su propio usuario, `ms_<servicio>`, creado en
+  `db/postgres/05_roles.sql`. Su permiso de escritura (`INSERT`, `UPDATE`, `DELETE`) cubre **solo** las
+  tablas de la tabla de abajo; en las demás solo tiene `SELECT`. Si intenta escribir en una tabla
+  ajena, la base responde `permission denied for table …`.
+- **Contraseñas.** Cada contenedor recibe únicamente la contraseña de su usuario, por un secreto de
+  Docker (`secrets/pg_ms_<servicio>.txt`, generado por `scripts/preparar_entorno.py`). La del
+  superusuario solo la tiene el contenedor de PostgreSQL, que la usa para crear el esquema y los
+  usuarios. `db/postgres/06_contrasenas.sh` asigna las contraseñas al inicializar la base.
+- **El web** entra como `abastored_web` y solo tiene `SELECT`. Todo cambio lo manda a la API del dueño
+  (ver [`web_y_apis.md`](web_y_apis.md)).
+- **La auditoría** (`auditoria_eventos`) es de solo inserción para todos.
+
+`tests/integracion/test_propiedad_datos.py` le pregunta a PostgreSQL quién puede escribir cada tabla y
+compara la respuesta con esta página. También intenta escrituras prohibidas y comprueba que se
+rechacen.
 
 ## PostgreSQL
 
@@ -37,10 +56,9 @@ propio usuario de PostgreSQL con permiso de escritura **solo** en sus tablas (`d
 2. **`inventario_comercio.precio_venta`.** ms-precios cambia el precio vigente del renglón, que es la
    única columna de esa tabla que no escribe ms-inventario. El precio pertenece al dominio de precios,
    que guarda su historial y la validación de precios atípicos (RN-001), y vive en el renglón para no
-   duplicarlo. La fase 3 lo restringe por columna: `GRANT UPDATE (precio_venta) ON inventario_comercio TO ms_precios`.
-3. **El sistema web** todavía tiene operaciones que escriben con la biblioteca de dominio. La fase 3
-   las cambia para que pasen por las APIs, y el web queda con un usuario de solo lectura. Ver
-   `docs/web_y_apis.md`.
+   duplicarlo. El permiso es solo para esa columna: `GRANT UPDATE (precio_venta) ON inventario_comercio TO ms_precios`.
+   Cuando ms-inventario recibe un precio (al agregar un producto o al importar un CSV), no lo escribe
+   él: lo manda a `PUT /inventario/{id}/precio` de ms-precios.
 
 ## MongoDB
 
@@ -55,6 +73,15 @@ propio usuario de PostgreSQL con permiso de escritura **solo** en sus tablas (`d
 | `reportes.files` / `reportes.chunks` (GridFS), `reportes_programados` | ms-reportes |
 | `eventos_auditoria` | ms-auditoria (cada servicio agrega su copia al confirmar su transacción) |
 | `bitacora_peticiones` | **excepción**: `abasto_api` inserta una línea por petición en cada servicio; ms-monitoreo y ms-auditoria la consultan |
+
+En MongoDB la regla la respeta el código, pero todavía no la impone la base: todos los servicios usan el
+mismo usuario. Crear un usuario de MongoDB por servicio, con permiso solo sobre sus colecciones, sería el
+equivalente a `05_roles.sql`. Hoy hay dos escrituras que no son del dueño:
+
+- ms-inventario guarda en GridFS el CSV de cada importación, como evidencia; el bucket `archivos` es de
+  ms-documentos.
+- Si ms-notificaciones no responde, `notificar()` escribe el aviso directo en `notificaciones` para que
+  no se pierda.
 | `alertas_infraestructura` | ms-monitoreo |
 | `sincronizacion_lotes`, `sincronizacion_operaciones` | ms-sincronizacion |
 | `demanda_busquedas` | ms-demanda |
@@ -75,6 +102,7 @@ No hay transacciones distribuidas. Cada operación que cruza servicios usa tres 
 | :--- | :--- | :--- | :--- |
 | Registrar venta | ms-ventas → ms-inventario (salidas) | `venta:{id}`; `id_cliente` de la app | Sin existencia: 409 y no se guarda la venta. Si falla al guardar: entradas `venta-anulada:{id}` |
 | Devolución | ms-ventas → ms-inventario (entradas) | `devolucion:{venta}:{n}` | 409/503 y la venta no cambia |
+| Precio inicial o importado | ms-inventario → ms-precios (`PUT /inventario/{id}/precio`) | — | El renglón queda sin precio y la respuesta lo indica (`aviso`, o error en la fila importada) |
 | Despachar pedido | ms-pedidos → ms-proveedores (`/salidas`) | `pedido:{id}` | El pedido no cambia de estado |
 | Recibir pedido | ms-entregas → ms-pedidos → ms-inventario (entradas) | `pedido:{id}` | La entrega y el pedido no cambian |
 | Salida a ruta | ms-entregas → ms-pedidos (`preparar`, `despachar`) | — | La entrega no cambia |

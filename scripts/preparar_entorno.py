@@ -18,12 +18,17 @@ import sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(RAIZ / 'libs' / 'abasto_dominio'))
+from abasto_dominio.registro_servicios import NOMBRES  # noqa: E402
 SECRETOS = (
     'secret_key',          # firma de la sesión de Flask (web)
     'jwt_secret_key',      # firma de los JWT (web y microservicios)
     'postgres_password',   # superusuario de PostgreSQL (sólo inicialización y migraciones)
     'mongo_password',      # usuario raíz de MongoDB
     'redis_password',      # contraseña de Redis
+    # Un usuario de PostgreSQL por servicio y uno de solo lectura para el web (db/postgres/05_roles.sql)
+    *(f'pg_ms_{nombre}' for nombre in NOMBRES),
+    'pg_abastored_web',
 )
 
 
@@ -50,8 +55,8 @@ def main():
         nuevos += 1
     print(f'secrets/: {nuevos} secretos nuevos, {len(SECRETOS) - nuevos} ya existían')
     if nuevos and nuevos < len(SECRETOS):
-        print('Aviso: si cambiaste la contraseña de una base de datos ya inicializada, corre '
-              '«docker compose down -v» para que se vuelva a crear con la nueva.')
+        print('Aviso: los usuarios y contraseñas de PostgreSQL se crean al inicializar la base. Si agregaste o '
+              'cambiaste alguno, corre «docker compose down -v» para que se vuelva a crear con ellos.')
     return 0
 
 

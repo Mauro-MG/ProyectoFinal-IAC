@@ -6,6 +6,7 @@
   </xs:annotation>
   <!-- Elementos raíz: uno por petición o respuesta -->
   <xs:element name="categoria" type="CategoriaSalida"/>
+  <xs:element name="categoria_cambio" type="CategoriaCambio"/>
   <xs:element name="categoria_entrada" type="CategoriaEntrada"/>
   <xs:element name="categorias" type="CategoriasSalida"/>
   <xs:element name="equivalencia_entrada" type="EquivalenciaEntrada"/>
@@ -22,6 +23,37 @@
   <xs:element name="variante" type="VarianteSalida"/>
   <xs:element name="variante_entrada" type="VarianteEntrada"/>
   <!-- Tipos -->
+  <xs:complexType name="CategoriaCambio">
+    <xs:annotation>
+      <xs:documentation>Sólo cambian los campos enviados.</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="nombre" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="descripcion" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="500"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="orden" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="999"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="activa" type="xs:boolean" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
   <xs:complexType name="CategoriaEntrada">
     <xs:all>
       <xs:element name="nombre" minOccurs="1">
@@ -55,6 +87,7 @@
       <xs:element name="nombre" type="xs:string" minOccurs="1"/>
       <xs:element name="descripcion" type="xs:string" minOccurs="0"/>
       <xs:element name="productos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="activa" type="xs:boolean" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="CategoriasSalida">

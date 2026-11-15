@@ -23,6 +23,7 @@ from uuid import UUID
 from flask import g, request
 
 from abasto_api import ErrorApi, Servicio, no_encontrado, paginar, prohibido, tiene, usuario_actual
+from abasto_api.clientes import llamar
 from abasto_dominio.extensiones import db
 from abasto_dominio.modelos import (Categoria, Comercio, InventarioComercio, MovimientoInventario, ProductoMaestro,
                                     ReservaInventario, TransferenciaInventario)
@@ -106,21 +107,41 @@ def listar_inventario(comercio_id, q):
     return resultado
 
 
+def fijar_precio(inventario_id, precio, metodo_captura='MANUAL'):
+    """El precio y su historial son de ms-precios (valida atípicos, RN-001). Regresa None si quedó fijado
+    (o ya tenía ese precio) o el motivo por el que no se fijó."""
+    try:
+        respuesta = llamar('precios', 'PUT', f'/api/v1/inventario/{inventario_id}/precio', token=g.token, timeout=10,
+                           json={'precio': str(precio), 'metodo_captura': metodo_captura})
+    except ErrorApi as error:
+        return error.mensaje
+    if respuesta.status_code in (200, 409):   # 409: ya tenía ese precio
+        return None
+    try:
+        return respuesta.json()['error']['mensaje']
+    except (ValueError, KeyError, TypeError):
+        return f'ms-precios respondió {respuesta.status_code}.'
+
+
 @srv.ruta('/comercios/<uuid:comercio_id>/inventario', 'POST', resumen='Agregar producto al catálogo del comercio',
           etiqueta='Inventario', permisos=['inventario.gestionar'], cuerpo=RenglonEntrada, status=201,
           raiz_xml='renglon', entrada_xml='renglon_entrada',
           ejemplo_entrada={'producto_id': 19, 'existencia': 12, 'stock_minimo': 6, 'stock_maximo': 36,
                            'precio_venta': 28.5})
 def agregar_producto(comercio_id, datos):
-    """La existencia inicial queda como movimiento de ENTRADA y el precio entra al historial (RN-009, RN-001)."""
+    """La existencia inicial queda como movimiento de ENTRADA (RN-009). Si viene `precio_venta`, se fija con
+    ms-precios (historial y validación de atípicos, RN-001) después de guardar el renglón; si ms-precios no lo
+    acepta, el renglón queda sin precio y la respuesta lo indica en `aviso`."""
     comercio = _comercio(comercio_id)
     producto = db.session.get(ProductoMaestro, datos.producto_id)
     if not producto or not producto.activo:
         raise ErrorApi(422, 'producto_inexistente', 'El producto no existe en el catálogo maestro.')
     renglon = agregar_al_catalogo(comercio, producto, usuario_actual(), datos.existencia, datos.stock_minimo,
-                                  datos.stock_maximo, datos.precio_venta)
+                                  datos.stock_maximo)
     db.session.commit()
-    return renglon_a_dict(renglon)
+    aviso = fijar_precio(renglon.id, datos.precio_venta) if datos.precio_venta else None
+    db.session.refresh(renglon)
+    return {**renglon_a_dict(renglon), 'aviso': f'El precio no se guardó: {aviso}' if aviso else None}
 
 
 @srv.ruta('/inventario/<int:id>', 'GET', resumen='Renglón con sus últimos movimientos', etiqueta='Inventario',
@@ -218,7 +239,9 @@ def importar(comercio_id):
         raise ErrorApi(400, 'archivo_requerido', 'Envía el CSV en el campo "archivo" (multipart/form-data).')
     if not archivo.filename.lower().endswith('.csv'):
         raise ErrorApi(422, 'tipo_invalido', 'El archivo debe ser .csv.')
-    resultado = importaciones.importar_inventario(comercio, archivo.read(), archivo.filename, usuario_actual())
+    resultado = importaciones.importar_inventario(
+        comercio, archivo.read(), archivo.filename, usuario_actual(),
+        fijar_precio=lambda inventario_id, precio: fijar_precio(inventario_id, precio, 'IMPORTACION'))
     db.session.commit()
     return resultado
 

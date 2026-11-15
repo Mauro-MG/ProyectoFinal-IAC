@@ -35,6 +35,19 @@ class RegistroEntrada(BaseEntrada):
     origen: Literal['web', 'movil', 'escritorio', 'api'] = 'api'
 
 
+class OperadorEntrada(BaseEntrada):
+    """Empleado de la empresa proveedora; entra con la contraseña temporal que le da el dueño."""
+    email: EmailStr
+    password: Password
+    nombre: str = Field(min_length=2, max_length=100)
+    apellido_paterno: str = Field(min_length=2, max_length=100)
+    telefono: str | None = Field(None, pattern=r'^\d{10}$')
+
+
+class OperadorCambio(BaseEntrada):
+    activo: bool = Field(description='false le quita el acceso y cierra sus sesiones')
+
+
 class RecuperacionEntrada(BaseEntrada):
     email: EmailStr
 
@@ -166,5 +179,6 @@ CONTRATOS_XML = {
     'tokens': TokensSalida, 'usuario': UsuarioSalida, 'usuarios': UsuariosSalida, 'sesion': SesionSalida,
     'validacion': ValidacionSalida, 'sesiones': SesionesSalida, 'roles': RolesSalida, 'rol': RolSalida,
     'registro': RegistroEntrada, 'recuperacion': RecuperacionEntrada, 'restablecer': RestablecerEntrada,
-    'cambio_password': CambioPasswordEntrada,
+    'cambio_password': CambioPasswordEntrada, 'operador_entrada': OperadorEntrada, 'operador_cambio': OperadorCambio,
+    'operadores': UsuariosSalida,
 }

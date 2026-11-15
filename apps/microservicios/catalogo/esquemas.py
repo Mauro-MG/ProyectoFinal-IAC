@@ -39,6 +39,14 @@ class CategoriaEntrada(BaseEntrada):
     orden: int = Field(0, ge=0, le=999)
 
 
+class CategoriaCambio(BaseEntrada):
+    """Sólo cambian los campos enviados."""
+    nombre: str | None = Field(None, min_length=3, max_length=100)
+    descripcion: str | None = Field(None, max_length=500)
+    orden: int | None = Field(None, ge=0, le=999)
+    activa: bool | None = Field(None, description='false la oculta de las listas; sus productos se conservan')
+
+
 class VarianteEntrada(BaseEntrada):
     nombre: str = Field(min_length=2, max_length=100, description='"Bolsa 500 g", "Caja con 12"')
     codigo_barras: str | None = Field(None, pattern=r'^\d{8,14}$')
@@ -114,6 +122,7 @@ class CategoriaSalida(Salida):
     nombre: str
     descripcion: str | None = None
     productos: int
+    activa: bool = True
 
 
 class CategoriasSalida(Salida):
@@ -122,6 +131,7 @@ class CategoriasSalida(Salida):
 
 CONTRATOS_XML = {
     'producto_entrada': ProductoEntrada, 'marca_entrada': MarcaEntrada, 'categoria_entrada': CategoriaEntrada,
+    'categoria_cambio': CategoriaCambio,
     'variante_entrada': VarianteEntrada, 'equivalencia_entrada': EquivalenciaEntrada,
     'producto': ProductoSalida, 'productos': ProductosSalida, 'categorias': CategoriasSalida,
     'categoria': CategoriaSalida, 'marcas': MarcasSalida, 'marca': MarcaSalida, 'unidades': UnidadesSalida,

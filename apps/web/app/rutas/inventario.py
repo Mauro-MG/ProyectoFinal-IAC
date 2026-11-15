@@ -3,6 +3,9 @@ Catálogo del comercio e inventario.
 
 Catálogo maestro (producto genérico) -> catálogo del comercio (lo que sí vende,
 con su existencia, stock mínimo/máximo y precio).
+
+Las pantallas leen de la base; los renglones y movimientos los escribe
+ms-inventario y el precio ms-precios.
 """
 import csv
 import io
@@ -12,15 +15,12 @@ from flask import Response, abort, flash, redirect, render_template, request, ur
 from flask_login import current_user, login_required
 
 from app import app
-from app.microservicios import ServicioNoDisponible, llamar
+from app.microservicios import ServicioNoDisponible, escribir, llamar
 from abasto_dominio.extensiones import db
 from app.formularios import InventarioForm, MovimientoForm
 from abasto_dominio.modelos import Categoria, Comercio, InventarioComercio, PrecioComercio, ProductoMaestro
 from app.permisos import permiso_requerido
-from abasto_dominio.servicios import ReglaNegocioError, analisis
-from abasto_dominio.servicios.auditoria import registrar_evento
-from abasto_dominio.servicios.inventario import (actualizar_precio, agregar_al_catalogo, quitar_del_catalogo,
-                                      registrar_movimiento)
+from abasto_dominio.servicios import analisis
 
 
 def comercios_del_usuario():
@@ -100,26 +100,37 @@ def inventario_agregar(comercio_id):
         if not seleccion:
             flash('Marca al menos un producto.', 'alerta')
             return redirect(request.url)
-        agregados, errores = 0, []
+        # Primero se revisan todas las cantidades: si alguna está mal no se manda ninguna
+        renglones, errores = [], []
         for producto in (p for p in disponibles if p.id in seleccion):
             try:
-                existencia = _decimal(request.form.get(f'existencia_{producto.id}')) or 0
-                minimo = _decimal(request.form.get(f'minimo_{producto.id}')) or 0
-                maximo = _decimal(request.form.get(f'maximo_{producto.id}'))
-                precio = _decimal(request.form.get(f'precio_{producto.id}'))
-                agregar_al_catalogo(comercio, producto, current_user, existencia, minimo, maximo, precio)
-                agregados += 1
+                renglones.append((producto, {
+                    'producto_id': producto.id,
+                    'existencia': _decimal(request.form.get(f'existencia_{producto.id}')) or 0,
+                    'stock_minimo': _decimal(request.form.get(f'minimo_{producto.id}')) or 0,
+                    'stock_maximo': _decimal(request.form.get(f'maximo_{producto.id}')),
+                    'precio_venta': _decimal(request.form.get(f'precio_{producto.id}')) or None}))
             except (ValueError, InvalidOperation):
                 errores.append(f'{producto.nombre}: revisa que las cantidades sean números positivos')
-            except ReglaNegocioError as e:
-                errores.append(str(e))
+        agregados = 0
+        if not errores:
+            # ms-inventario agrega cada renglón (existencia inicial como ENTRADA) y pide el precio a ms-precios
+            for producto, cuerpo in renglones:
+                renglon = escribir('inventario', 'POST', f'/comercios/{comercio.id}/inventario', json=cuerpo)
+                if renglon is None:
+                    errores.append(f'{producto.nombre}: no se agregó')
+                else:
+                    if renglon.get('aviso'):
+                        flash(f"{producto.nombre}: {renglon['aviso']}", 'alerta')
+                    agregados += 1
+                    seleccion.remove(producto.id)
         if errores:
-            db.session.rollback()
             for error in errores:
                 flash(error, 'error')
+            if agregados:
+                flash(f'{agregados} producto(s) sí se agregaron.', 'ok')
             return render_template('inventario/agregar.html', comercio=comercio, productos=disponibles,
                                    seleccion=set(seleccion), datos=request.form)
-        db.session.commit()
         flash(f'{agregados} producto(s) agregados al catálogo de {comercio.nombre_comercio}.', 'ok')
         return redirect(url_for('inventario', comercio_id=comercio.id))
 
@@ -150,14 +161,12 @@ def inventario_movimiento(id):
     if not form.validate_on_submit():
         flash('Captura una cantidad válida.', 'error')
         return redirect(url_for('inventario_item', id=id))
-    try:
-        registrar_movimiento(renglon, form.tipo.data, form.cantidad.data, current_user, motivo=form.motivo.data or None)
-        db.session.commit()
-        flash(f'Movimiento registrado. Existencia actual: {renglon.existencia.normalize():f} '
-              f'{renglon.producto.unidad_medida}.', 'ok')
-    except ReglaNegocioError as e:
-        db.session.rollback()
-        flash(str(e), 'error')
+    movimiento = escribir('inventario', 'POST', f'/inventario/{id}/movimientos',
+                          json={'tipo': form.tipo.data, 'cantidad': form.cantidad.data,
+                                'motivo': form.motivo.data or None})
+    if movimiento is not None:
+        existencia = Decimal(str(movimiento['existencia_nueva'])).normalize()
+        flash(f'Movimiento registrado. Existencia actual: {existencia:f} {renglon.producto.unidad_medida}.', 'ok')
     volver = request.form.get('volver', '')
     if volver.startswith('/') and not volver.startswith('//'):
         return redirect(volver)
@@ -175,26 +184,21 @@ def inventario_editar(id):
             flash(errores[0], 'error')
         return redirect(url_for('inventario_item', id=id))
 
-    antes = {'stock_minimo': renglon.stock_minimo, 'stock_maximo': renglon.stock_maximo}
-    renglon.stock_minimo = form.stock_minimo.data
-    renglon.stock_maximo = form.stock_maximo.data
-    if antes != {'stock_minimo': renglon.stock_minimo, 'stock_maximo': renglon.stock_maximo}:
-        registrar_evento(current_user.id, 'ACTUALIZACION', 'InventarioComercio', renglon.id,
-                         f'Límites de stock de {renglon.producto.nombre}', datos_anteriores=antes,
-                         datos_nuevos={'stock_minimo': renglon.stock_minimo, 'stock_maximo': renglon.stock_maximo})
-    try:
-        resultado = actualizar_precio(renglon, form.precio_venta.data, current_user) if form.precio_venta.data else None
-        db.session.commit()
-    except ReglaNegocioError as e:
-        db.session.rollback()
-        flash(str(e), 'error')
-        return redirect(url_for('inventario_item', id=id))
-
-    if resultado == 'PENDIENTE_VALIDACION':
-        flash('Guardado. El precio quedó pendiente de validación porque está muy lejos del promedio de tu zona.',
-              'alerta')
-    else:
-        flash('Cambios guardados.', 'ok')
+    # Los límites son de ms-inventario y el precio de ms-precios (historial y validación de atípicos, RN-001)
+    limites = {'stock_minimo': form.stock_minimo.data, 'stock_maximo': form.stock_maximo.data}
+    if limites != {'stock_minimo': renglon.stock_minimo, 'stock_maximo': renglon.stock_maximo}:
+        if escribir('inventario', 'PATCH', f'/inventario/{id}', json=limites) is None:
+            return redirect(url_for('inventario_item', id=id))
+    precio = form.precio_venta.data
+    if precio and precio != renglon.precio_venta:
+        cambio = escribir('precios', 'PUT', f'/inventario/{id}/precio', json={'precio': precio})
+        if cambio is None:
+            return redirect(url_for('inventario_item', id=id))
+        if cambio['estado_validacion'] == 'PENDIENTE_VALIDACION':
+            flash('Guardado. El precio quedó pendiente de validación porque está muy lejos del promedio de tu zona.',
+                  'alerta')
+            return redirect(url_for('inventario_item', id=id))
+    flash('Cambios guardados.', 'ok')
     return redirect(url_for('inventario_item', id=id))
 
 
@@ -203,9 +207,8 @@ def inventario_editar(id):
 @permiso_requerido('inventario.gestionar')
 def inventario_quitar(id):
     renglon = _renglon_propio(id)
-    quitar_del_catalogo(renglon, current_user)
-    db.session.commit()
-    flash(f'{renglon.producto.nombre} se quitó de tu catálogo. El historial se conserva.', 'ok')
+    escribir('inventario', 'DELETE', f'/inventario/{id}',
+             exito=f'{renglon.producto.nombre} se quitó de tu catálogo. El historial se conserva.')
     return redirect(url_for('inventario', comercio_id=renglon.comercio_id))
 
 

@@ -45,9 +45,48 @@
   </xs:complexType>
   <xs:complexType name="CondicionesEntrada">
     <xs:annotation>
-      <xs:documentation>Condiciones comerciales y capacidad de surtido (sólo los campos enviados cambian).</xs:documentation>
+      <xs:documentation>Datos de la empresa, condiciones comerciales y capacidad de surtido (sólo los campos enviados cambian).
+Cambiar el RFC de un proveedor verificado lo regresa a PENDIENTE.</xs:documentation>
     </xs:annotation>
     <xs:all>
+      <xs:element name="nombre_empresa" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+            <xs:maxLength value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="rfc" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[A-ZÑ&amp;]{3,4}\d{6}[A-Z0-9]{3}"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="municipio" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="latitud" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="-90.0"/>
+            <xs:maxInclusive value="90.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="longitud" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="-180.0"/>
+            <xs:maxInclusive value="180.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
       <xs:element name="descripcion" minOccurs="0">
         <xs:simpleType>
           <xs:restriction base="xs:string">

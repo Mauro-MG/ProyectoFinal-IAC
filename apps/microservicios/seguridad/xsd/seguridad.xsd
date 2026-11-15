@@ -8,6 +8,9 @@
   <xs:element name="cambio_password" type="CambioPasswordEntrada"/>
   <xs:element name="error" type="ErrorSalida"/>
   <xs:element name="login" type="LoginEntrada"/>
+  <xs:element name="operador_cambio" type="OperadorCambio"/>
+  <xs:element name="operador_entrada" type="OperadorEntrada"/>
+  <xs:element name="operadores" type="UsuariosSalida"/>
   <xs:element name="permisos_entrada" type="PermisosEntrada"/>
   <xs:element name="recuperacion" type="RecuperacionEntrada"/>
   <xs:element name="registro" type="RegistroEntrada"/>
@@ -106,6 +109,50 @@
             <xs:enumeration value="movil"/>
             <xs:enumeration value="escritorio"/>
             <xs:enumeration value="api"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="OperadorCambio">
+    <xs:all>
+      <xs:element name="activo" type="xs:boolean" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="OperadorEntrada">
+    <xs:annotation>
+      <xs:documentation>Empleado de la empresa proveedora; entra con la contraseña temporal que le da el dueño.</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="email" type="xs:string" minOccurs="1"/>
+      <xs:element name="password" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="8"/>
+            <xs:maxLength value="128"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="nombre" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="2"/>
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="apellido_paterno" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="2"/>
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="telefono" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="\d{10}"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
