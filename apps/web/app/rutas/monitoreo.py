@@ -2,7 +2,7 @@
 Administración técnica: sesiones abiertas (Redis, vía ms-seguridad) y estado
 de los microservicios (health checks y actividad registrada en MongoDB).
 """
-from flask import current_app, flash, redirect, render_template, request, session, url_for
+from flask import flash, redirect, render_template, request, session, url_for
 from flask_login import login_required
 
 from app import app
@@ -71,24 +71,27 @@ def servicios_estado():
     estados = salud_todos()
     actividad = []
     try:
-        respuesta = llamar('seguridad', 'GET', '/actividad', params={'horas': horas})
-        actividad = respuesta.datos.get('servicios', []) if respuesta.ok else []
+        # Métricas de ms-monitoreo (agregación de bitacora_peticiones + contadores del día en Redis)
+        respuesta = llamar('monitoreo', 'GET', '/metricas', params={'horas': horas})
+        actividad = [{**m, 'duracion_prom_ms': m['latencia_prom_ms'], 'duracion_max_ms': m['latencia_max_ms'],
+                      'contador_hoy': m['peticiones_hoy']}
+                     for m in (respuesta.datos.get('servicios', []) if respuesta.ok else [])]
     except ServicioNoDisponible:
         pass
 
     rastreo, correlation_id = None, (request.args.get('correlation_id') or '').strip()
     if correlation_id:
         try:
-            respuesta = llamar('seguridad', 'GET', f'/actividad/peticiones/{correlation_id}')
+            # Traza completa de ms-auditoria: peticiones a cada servicio y los cambios de datos que hicieron
+            respuesta = llamar('auditoria', 'GET', f'/trazas/{correlation_id}')
             if respuesta.ok:
                 rastreo = respuesta.datos['pasos']
             else:
                 flash(respuesta.mensaje_error, 'alerta')
         except ServicioNoDisponible:
-            flash('El servicio de seguridad no está disponible.', 'error')
-    # Swagger de cada servicio en el puerto que publica docker-compose (8101 a 8108, mismo orden que SERVICIOS)
-    base = current_app.config['MS_DOCS_HOST']
-    docs = {s: f'{base}:{8101 + i}/docs' for i, s in enumerate(SERVICIOS)}
+            flash('El servicio de auditoría no está disponible.', 'error')
+    # Swagger de cada servicio a través del gateway (misma dirección que el web)
+    docs = {s: f'/ms/{s}/docs' for s in SERVICIOS}
     return render_template('admin/servicios.html', estados=estados, actividad=actividad, horas=horas,
                            rastreo=rastreo, correlation_id=correlation_id, docs=docs,
                            arriba=sum(1 for e in estados.values() if e.get('estado') == 'ok'))

@@ -23,9 +23,10 @@ CATEGORIAS_COMERCIO = {k: gridfs.CATEGORIAS[k] for k in ('foto_comercio', 'evide
 def archivos_de_comercio(comercio):
     """(lista, fuente) para la ficha del comercio."""
     try:
-        respuesta = llamar('comercios', 'GET', f'/comercios/{comercio.id}/archivos', params={'por_pagina': 50})
+        respuesta = llamar('documentos', 'GET', '/documentos',
+                           params={'entidad': 'comercio', 'entidad_id': str(comercio.id), 'por_pagina': 50})
         if respuesta.ok:
-            return respuesta.datos['archivos'], 'ms-comercios'
+            return respuesta.datos['documentos'], 'ms-documentos'
     except ServicioNoDisponible:
         pass
     try:
@@ -45,14 +46,20 @@ def comercio_subir_archivo(id):
     if not archivo or not archivo.filename:
         flash('Selecciona un archivo.', 'error')
         return redirect(url_for('comercio_detalle', id=id))
+    categoria = request.form.get('categoria', 'foto_comercio')
     try:
+        # ms-documentos guarda el archivo; si es la foto principal, ms-comercios (dueño de la tabla) la fija
         respuesta = llamar(
-            'comercios', 'POST', f'/comercios/{id}/archivos',
+            'documentos', 'POST', '/documentos',
             files={'archivo': (archivo.filename, archivo.stream, archivo.mimetype)},
-            data={'categoria': request.form.get('categoria', 'foto_comercio'),
-                  'descripcion': request.form.get('descripcion', '').strip()})
+            data={'categoria': categoria, 'entidad': 'comercio', 'entidad_id': str(id),
+                  'descripcion': request.form.get('descripcion', '').strip()}, timeout=15)
+        if respuesta.ok and categoria == 'foto_comercio':
+            foto = llamar('comercios', 'PUT', f'/comercios/{id}/foto', json={'documento_id': respuesta.datos['id']})
+            if not foto.ok:
+                flash(f'El archivo se guardó pero no se pudo fijar como foto: {foto.mensaje_error}', 'alerta')
     except ServicioNoDisponible:
-        flash('El servicio de archivos no está disponible; intenta más tarde.', 'error')
+        flash('El servicio de documentos no está disponible; intenta más tarde.', 'error')
         return redirect(url_for('comercio_detalle', id=id))
     if respuesta.ok:
         flash(f"Archivo «{respuesta.datos['nombre']}» guardado.", 'ok')
@@ -65,7 +72,7 @@ def comercio_subir_archivo(id):
 @login_required
 def archivo_ver(archivo_id):
     try:
-        respuesta = llamar('comercios', 'GET', f'/archivos/{archivo_id}')
+        respuesta = llamar('documentos', 'GET', f'/documentos/{archivo_id}/contenido')
         if respuesta.status in (403, 404):
             abort(respuesta.status)
         if respuesta.ok:
@@ -91,7 +98,7 @@ def archivo_ver(archivo_id):
 @permiso_requerido('archivos.gestionar')
 def archivo_eliminar(archivo_id):
     try:
-        respuesta = llamar('comercios', 'DELETE', f'/archivos/{archivo_id}')
+        respuesta = llamar('documentos', 'DELETE', f'/documentos/{archivo_id}')
         flash('Archivo eliminado.' if respuesta.ok else respuesta.mensaje_error, 'ok' if respuesta.ok else 'error')
     except ServicioNoDisponible:
         flash('El servicio de archivos no está disponible; intenta más tarde.', 'error')

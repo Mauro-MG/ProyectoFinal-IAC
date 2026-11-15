@@ -5,13 +5,14 @@
     <xs:documentation>Contratos XML v1 de ms-seguridad (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
   </xs:annotation>
   <!-- Elementos raíz: uno por petición o respuesta -->
-  <xs:element name="actividad" type="ActividadSalida"/>
-  <xs:element name="auditoria" type="AuditoriaSalida"/>
+  <xs:element name="cambio_password" type="CambioPasswordEntrada"/>
   <xs:element name="error" type="ErrorSalida"/>
   <xs:element name="login" type="LoginEntrada"/>
   <xs:element name="permisos_entrada" type="PermisosEntrada"/>
-  <xs:element name="rastreo" type="RastreoSalida"/>
+  <xs:element name="recuperacion" type="RecuperacionEntrada"/>
+  <xs:element name="registro" type="RegistroEntrada"/>
   <xs:element name="renovar" type="RenovarEntrada"/>
+  <xs:element name="restablecer" type="RestablecerEntrada"/>
   <xs:element name="resultado" type="Resultado"/>
   <xs:element name="rol" type="RolSalida"/>
   <xs:element name="roles" type="RolesSalida"/>
@@ -25,40 +26,23 @@
   <xs:element name="validacion" type="ValidacionSalida"/>
   <xs:element name="validar" type="ValidarEntrada"/>
   <!-- Tipos -->
-  <xs:complexType name="ActividadSalida">
+  <xs:complexType name="CambioPasswordEntrada">
     <xs:all>
-      <xs:element name="horas" type="xs:integer" minOccurs="1"/>
-      <xs:element name="servicios" minOccurs="1">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="servicio" maxOccurs="unbounded" type="ActividadServicio" minOccurs="0"/>
-          </xs:sequence>
-        </xs:complexType>
+      <xs:element name="password_actual" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="128"/>
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
-    </xs:all>
-  </xs:complexType>
-  <xs:complexType name="ActividadServicio">
-    <xs:all>
-      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
-      <xs:element name="peticiones" type="xs:integer" minOccurs="1"/>
-      <xs:element name="errores_cliente" type="xs:integer" minOccurs="1"/>
-      <xs:element name="errores_servidor" type="xs:integer" minOccurs="1"/>
-      <xs:element name="respuestas_xml" type="xs:integer" minOccurs="1"/>
-      <xs:element name="duracion_prom_ms" type="xs:decimal" minOccurs="1"/>
-      <xs:element name="duracion_max_ms" type="xs:decimal" minOccurs="1"/>
-      <xs:element name="ultima" type="xs:dateTime" minOccurs="1"/>
-      <xs:element name="contador_hoy" type="xs:integer" minOccurs="1"/>
-    </xs:all>
-  </xs:complexType>
-  <xs:complexType name="AuditoriaSalida">
-    <xs:all>
-      <xs:element name="paginacion" type="Paginacion" minOccurs="1"/>
-      <xs:element name="items" minOccurs="1">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="item" maxOccurs="unbounded" type="EventoAuditoria" minOccurs="0"/>
-          </xs:sequence>
-        </xs:complexType>
+      <xs:element name="password_nueva" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="8"/>
+            <xs:maxLength value="128"/>
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
     </xs:all>
   </xs:complexType>
@@ -102,32 +86,6 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-    </xs:all>
-  </xs:complexType>
-  <xs:complexType name="EventoAuditoria">
-    <xs:all>
-      <xs:element name="id" type="xs:integer" minOccurs="1"/>
-      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
-      <xs:element name="usuario_id" type="xs:string" minOccurs="0"/>
-      <xs:element name="tipo_evento" type="xs:string" minOccurs="1"/>
-      <xs:element name="entidad" type="xs:string" minOccurs="1"/>
-      <xs:element name="entidad_id" type="xs:string" minOccurs="0"/>
-      <xs:element name="descripcion" type="xs:string" minOccurs="0"/>
-      <xs:element name="datos_anteriores" minOccurs="0">
-        <xs:complexType mixed="true">
-          <xs:sequence>
-            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="datos_nuevos" minOccurs="0">
-        <xs:complexType mixed="true">
-          <xs:sequence>
-            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="ip" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="LoginEntrada">
@@ -205,21 +163,63 @@
       </xs:element>
     </xs:all>
   </xs:complexType>
-  <xs:complexType name="RastreoSalida">
+  <xs:complexType name="RecuperacionEntrada">
     <xs:all>
-      <xs:element name="correlation_id" type="xs:string" minOccurs="1"/>
-      <xs:element name="pasos" minOccurs="1">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="paso" maxOccurs="unbounded" minOccurs="0">
-              <xs:complexType mixed="true">
-                <xs:sequence>
-                  <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
+      <xs:element name="email" type="xs:string" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="RegistroEntrada">
+    <xs:all>
+      <xs:element name="email" type="xs:string" minOccurs="1"/>
+      <xs:element name="password" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="8"/>
+            <xs:maxLength value="128"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="nombre" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="2"/>
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="apellido_paterno" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="2"/>
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="telefono" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="\d{10}"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="perfil" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Comerciante Informal"/>
+            <xs:enumeration value="Minorista Formal"/>
+            <xs:enumeration value="Proveedor"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="origen" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="web"/>
+            <xs:enumeration value="movil"/>
+            <xs:enumeration value="escritorio"/>
+            <xs:enumeration value="api"/>
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
     </xs:all>
   </xs:complexType>
@@ -230,6 +230,26 @@
           <xs:restriction base="xs:string">
             <xs:minLength value="20"/>
             <xs:maxLength value="200"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="RestablecerEntrada">
+    <xs:all>
+      <xs:element name="token" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="20"/>
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="password" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="8"/>
+            <xs:maxLength value="128"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>

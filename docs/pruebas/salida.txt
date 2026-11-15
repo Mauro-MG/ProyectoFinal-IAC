@@ -1,0 +1,645 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.9, pytest-8.3.3, pluggy-1.7.0 -- C:\Integracion\ProyectoFinal-IAC\.venv\Scripts\python.exe
+rootdir: C:\Integracion\ProyectoFinal-IAC
+collecting ... collected 272 items
+
+tests/unitarias/test_contratos.py::test_estan_los_24_servicios PASSED    [  0%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[abastecimiento] PASSED [  0%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[analisis] PASSED [  1%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[auditoria] PASSED [  1%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[busqueda] PASSED [  1%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[catalogo] PASSED [  2%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[comercios] PASSED [  2%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[configuracion] PASSED [  2%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[demanda] PASSED [  3%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[disponibilidad] PASSED [  3%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[documentos] PASSED [  4%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[entregas] PASSED [  4%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[geolocalizacion] PASSED [  4%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[integraciones] PASSED [  5%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[inventario] PASSED [  5%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[monitoreo] PASSED [  5%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[notificaciones] PASSED [  6%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[pedidos] PASSED [  6%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[precios] PASSED [  6%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[proveedores] PASSED [  7%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[recomendaciones] PASSED [  7%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[reportes] PASSED [  8%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[seguridad] PASSED [  8%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[sincronizacion] PASSED [  8%]
+tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[ventas] PASSED [  9%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[abastecimiento] PASSED [  9%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[analisis] PASSED [  9%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[auditoria] PASSED [ 10%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[busqueda] PASSED [ 10%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[catalogo] PASSED [ 11%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[comercios] PASSED [ 11%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[configuracion] PASSED [ 11%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[demanda] PASSED [ 12%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[disponibilidad] PASSED [ 12%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[documentos] PASSED [ 12%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[entregas] PASSED [ 13%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[geolocalizacion] PASSED [ 13%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[integraciones] PASSED [ 13%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[inventario] PASSED [ 14%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[monitoreo] PASSED [ 14%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[notificaciones] PASSED [ 15%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[pedidos] PASSED [ 15%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[precios] PASSED [ 15%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[proveedores] PASSED [ 16%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[recomendaciones] PASSED [ 16%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[reportes] PASSED [ 16%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[seguridad] PASSED [ 17%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[sincronizacion] PASSED [ 17%]
+tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[ventas] PASSED [ 18%]
+tests/unitarias/test_contratos.py::test_error_estandar_valida_en_todos_los_servicios PASSED [ 18%]
+tests/unitarias/test_contratos.py::test_pedido_entrada_valida_y_rechaza_cantidad_negativa PASSED [ 18%]
+tests/unitarias/test_contratos.py::test_movimiento_entrada_rechaza_tipo_desconocido PASSED [ 19%]
+tests/unitarias/test_formatos.py::test_a_xml_usa_espacio_de_nombres_y_singulares PASSED [ 19%]
+tests/unitarias/test_formatos.py::test_a_xml_omite_nulos_y_convierte_tipos PASSED [ 19%]
+tests/unitarias/test_formatos.py::test_a_xml_escapa_texto PASSED         [ 20%]
+tests/unitarias/test_formatos.py::test_responder_lista_con_el_nombre_de_la_raiz_conserva_el_contenedor PASSED [ 20%]
+tests/unitarias/test_formatos.py::test_compatible_json PASSED            [ 20%]
+tests/unitarias/test_formatos.py::test_horas_en_json_y_xml PASSED        [ 21%]
+tests/unitarias/test_formatos.py::test_leer_xml_respeta_listas_declaradas PASSED [ 21%]
+tests/unitarias/test_formatos.py::test_leer_xml_rechaza_raiz_equivocada PASSED [ 22%]
+tests/unitarias/test_formatos.py::test_leer_xml_rechaza_xml_mal_formado PASSED [ 22%]
+tests/unitarias/test_formatos.py::test_leer_xml_no_resuelve_entidades_externas PASSED [ 22%]
+tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[BORRADOR-comercio0-proveedor0] PASSED [ 23%]
+tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[ENVIADO-comercio1-proveedor1] PASSED [ 23%]
+tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[ACEPTADO-comercio2-proveedor2] PASSED [ 23%]
+tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[EN_PREPARACION-comercio3-proveedor3] PASSED [ 24%]
+tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[ENVIADO_A_COMERCIO-comercio4-proveedor4] PASSED [ 24%]
+tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[ENTREGADO-comercio5-proveedor5] PASSED [ 25%]
+tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[CANCELADO-comercio6-proveedor6] PASSED [ 25%]
+tests/unitarias/test_reglas_negocio.py::test_flujo_feliz_recorre_todos_los_estados PASSED [ 25%]
+tests/unitarias/test_reglas_negocio.py::test_numero_acepta_formatos_de_excel[12-esperado0] PASSED [ 26%]
+tests/unitarias/test_reglas_negocio.py::test_numero_acepta_formatos_de_excel[ 3.50 -esperado1] PASSED [ 26%]
+tests/unitarias/test_reglas_negocio.py::test_numero_acepta_formatos_de_excel[$1,250.00-esperado2] PASSED [ 26%]
+tests/unitarias/test_reglas_negocio.py::test_numero_acepta_formatos_de_excel[-None] PASSED [ 27%]
+tests/unitarias/test_reglas_negocio.py::test_numero_acepta_formatos_de_excel[None-None] PASSED [ 27%]
+tests/unitarias/test_reglas_negocio.py::test_numero_rechaza_valores_invalidos[-4-negativo] PASSED [ 27%]
+tests/unitarias/test_reglas_negocio.py::test_numero_rechaza_valores_invalidos[doce-no es un n\xfamero] PASSED [ 28%]
+tests/unitarias/test_reglas_negocio.py::test_numero_obligatorio PASSED   [ 28%]
+tests/unitarias/test_reglas_negocio.py::test_distancia_monterrey_san_nicolas PASSED [ 29%]
+tests/unitarias/test_reglas_negocio.py::test_zona_para_punto_elige_el_centro_mas_cercano PASSED [ 29%]
+tests/unitarias/test_reglas_negocio.py::test_bloqueo_impide_la_segunda_ejecucion PASSED [ 29%]
+tests/unitarias/test_reglas_negocio.py::test_bloqueo_se_libera_aunque_falle_la_operacion PASSED [ 30%]
+tests/unitarias/test_reglas_negocio.py::test_bloqueo_ajeno_no_se_borra PASSED [ 30%]
+tests/unitarias/test_servicio.py::test_exito_json_201 PASSED             [ 30%]
+tests/unitarias/test_servicio.py::test_exito_xml_entrada_y_salida PASSED [ 31%]
+tests/unitarias/test_servicio.py::test_formato_por_parametro PASSED      [ 31%]
+tests/unitarias/test_servicio.py::test_sin_token_401 PASSED              [ 31%]
+tests/unitarias/test_servicio.py::test_sin_permiso_403 PASSED            [ 32%]
+tests/unitarias/test_servicio.py::test_validacion_422_con_detalle_por_campo PASSED [ 32%]
+tests/unitarias/test_servicio.py::test_campos_desconocidos_se_rechazan PASSED [ 33%]
+tests/unitarias/test_servicio.py::test_json_mal_formado_400 PASSED       [ 33%]
+tests/unitarias/test_servicio.py::test_tipo_no_soportado_415 PASSED      [ 33%]
+tests/unitarias/test_servicio.py::test_regla_de_negocio_409 PASSED       [ 34%]
+tests/unitarias/test_servicio.py::test_no_encontrado_404_en_xml PASSED   [ 34%]
+tests/unitarias/test_servicio.py::test_ruta_inexistente_responde_error_estandar PASSED [ 34%]
+tests/unitarias/test_servicio.py::test_limite_de_peticiones_429 PASSED   [ 35%]
+tests/unitarias/test_servicio.py::test_correlation_id_se_propaga PASSED  [ 35%]
+tests/unitarias/test_servicio.py::test_token_revocado_401 PASSED         [ 36%]
+tests/unitarias/test_servicio.py::test_openapi_documenta_la_ruta_y_sus_errores PASSED [ 36%]
+tests/unitarias/test_servicio.py::test_health_live PASSED                [ 36%]
+tests/unitarias/test_sesiones.py::test_emitir_registra_sesion_y_refresh PASSED [ 37%]
+tests/unitarias/test_sesiones.py::test_operador_lleva_proveedor_en_el_token PASSED [ 37%]
+tests/unitarias/test_sesiones.py::test_revocar_invalida_el_token PASSED  [ 37%]
+tests/unitarias/test_sesiones.py::test_sesion_borrada_en_redis_ya_no_sirve PASSED [ 38%]
+tests/unitarias/test_sesiones.py::test_token_expirado PASSED             [ 38%]
+tests/unitarias/test_sesiones.py::test_token_mal_formado[no-es-un-jwt] PASSED [ 38%]
+tests/unitarias/test_sesiones.py::test_token_mal_formado[a.b.c] PASSED   [ 39%]
+tests/unitarias/test_sesiones.py::test_token_firmado_con_otro_secreto PASSED [ 39%]
+tests/unitarias/test_sesiones.py::test_refresh_se_rota_y_no_se_reutiliza PASSED [ 40%]
+tests/unitarias/test_sesiones.py::test_cerrar_sesion_tambien_anula_el_refresh PASSED [ 40%]
+tests/unitarias/test_sesiones.py::test_revocar_todas_las_sesiones_de_un_usuario PASSED [ 40%]
+tests/unitarias/test_sesiones.py::test_token_de_servicio_es_corto_y_tiene_permisos_acotados PASSED [ 41%]
+tests/unitarias/test_sesiones.py::test_bloqueo_tras_cinco_intentos_fallidos PASSED [ 41%]
+tests/unitarias/test_sesiones.py::test_sin_redis_responde_503 PASSED     [ 41%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[seguridad] PASSED [ 42%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[geolocalizacion] PASSED [ 42%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[catalogo] PASSED [ 43%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[disponibilidad] PASSED [ 43%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[precios] PASSED [ 43%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[pedidos] PASSED [ 44%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[analisis] PASSED [ 44%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[notificaciones] PASSED [ 44%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[proveedores] PASSED [ 45%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[configuracion] PASSED [ 45%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[busqueda] PASSED [ 45%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[auditoria] PASSED [ 46%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[monitoreo] PASSED [ 46%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[demanda] PASSED [ 47%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[reportes] PASSED [ 47%]
+tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[sincronizacion] PASSED [ 47%]
+tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[seguridad] PASSED [ 48%]
+tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[geolocalizacion] PASSED [ 48%]
+tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[catalogo] PASSED [ 48%]
+tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[disponibilidad] PASSED [ 49%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[abastecimiento] PASSED [ 49%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[analisis] PASSED [ 50%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[auditoria] PASSED [ 50%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[busqueda] PASSED [ 50%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[catalogo] PASSED [ 51%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[comercios] PASSED [ 51%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[configuracion] PASSED [ 51%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[demanda] PASSED [ 52%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[disponibilidad] PASSED [ 52%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[documentos] PASSED [ 52%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[entregas] PASSED [ 53%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[geolocalizacion] PASSED [ 53%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[integraciones] PASSED [ 54%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[inventario] PASSED [ 54%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[monitoreo] PASSED [ 54%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[notificaciones] PASSED [ 55%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[pedidos] PASSED [ 55%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[precios] PASSED [ 55%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[proveedores] PASSED [ 56%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[recomendaciones] PASSED [ 56%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[reportes] PASSED [ 56%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[seguridad] PASSED [ 57%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[sincronizacion] PASSED [ 57%]
+tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[ventas] PASSED [ 58%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[abastecimiento] PASSED [ 58%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[analisis] PASSED [ 58%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[auditoria] PASSED [ 59%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[busqueda] PASSED [ 59%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[catalogo] PASSED [ 59%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[comercios] PASSED [ 60%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[configuracion] PASSED [ 60%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[demanda] PASSED [ 61%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[disponibilidad] PASSED [ 61%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[documentos] PASSED [ 61%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[entregas] PASSED [ 62%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[geolocalizacion] PASSED [ 62%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[integraciones] PASSED [ 62%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[inventario] PASSED [ 63%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[monitoreo] PASSED [ 63%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[notificaciones] PASSED [ 63%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[pedidos] PASSED [ 64%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[precios] PASSED [ 64%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[proveedores] PASSED [ 65%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[recomendaciones] PASSED [ 65%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[reportes] PASSED [ 65%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[seguridad] PASSED [ 66%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[sincronizacion] PASSED [ 66%]
+tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[ventas] PASSED [ 66%]
+tests/integracion/test_contratos_xml.py::test_detalle_de_comercio_en_json_y_xml PASSED [ 67%]
+tests/integracion/test_contratos_xml.py::test_xml_que_no_cumple_el_xsd_es_400 PASSED [ 67%]
+tests/integracion/test_contratos_xml.py::test_xml_con_raiz_equivocada_es_400 PASSED [ 68%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[abastecimiento] PASSED [ 68%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[analisis] PASSED [ 68%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[auditoria] PASSED [ 69%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[busqueda] PASSED [ 69%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[catalogo] PASSED [ 69%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[comercios] PASSED [ 70%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[configuracion] PASSED [ 70%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[demanda] PASSED [ 70%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[disponibilidad] PASSED [ 71%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[documentos] PASSED [ 71%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[entregas] PASSED [ 72%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[geolocalizacion] PASSED [ 72%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[integraciones] PASSED [ 72%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[inventario] PASSED [ 73%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[monitoreo] PASSED [ 73%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[notificaciones] PASSED [ 73%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[pedidos] PASSED [ 74%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[precios] PASSED [ 74%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[proveedores] PASSED [ 75%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[recomendaciones] PASSED [ 75%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[reportes] PASSED [ 75%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[seguridad] PASSED [ 76%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[sincronizacion] PASSED [ 76%]
+tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[ventas] PASSED [ 76%]
+tests/integracion/test_proceso_abasto.py::test_01_comercio_e_inventario PASSED [ 77%]
+tests/integracion/test_proceso_abasto.py::test_02_venta_deja_stock_bajo_y_avisa PASSED [ 77%]
+tests/integracion/test_proceso_abasto.py::test_03_vender_mas_de_lo_que_hay_es_error_de_negocio PASSED [ 77%]
+tests/integracion/test_proceso_abasto.py::test_04_aparece_en_faltantes PASSED [ 78%]
+tests/integracion/test_proceso_abasto.py::test_05_crear_pedido_en_xml PASSED [ 78%]
+tests/integracion/test_proceso_abasto.py::test_06_mismo_pedido_en_json PASSED [ 79%]
+tests/integracion/test_proceso_abasto.py::test_07_enviar_avisa_al_equipo_del_proveedor PASSED [ 79%]
+tests/integracion/test_proceso_abasto.py::test_08_operador_acepta_y_prepara PASSED [ 79%]
+tests/integracion/test_proceso_abasto.py::test_09_accion_fuera_de_orden_es_409 PASSED [ 80%]
+tests/integracion/test_proceso_abasto.py::test_10_dueno_despacha PASSED  [ 80%]
+tests/integracion/test_proceso_abasto.py::test_11_proveedor_no_puede_recibir PASSED [ 80%]
+tests/integracion/test_proceso_abasto.py::test_12_minorista_recibe_y_sube_el_inventario PASSED [ 81%]
+tests/integracion/test_proceso_abasto.py::test_13_historial_postgres_y_eventos_mongodb PASSED [ 81%]
+tests/integracion/test_proceso_abasto.py::test_14_estadisticas_por_agregacion PASSED [ 81%]
+tests/integracion/test_proceso_abasto.py::test_15_rastreo_por_correlation_id PASSED [ 82%]
+tests/integracion/test_redis_mongodb.py::test_cache_de_disponibilidad_se_invalida_al_mover_inventario PASSED [ 82%]
+tests/integracion/test_redis_mongodb.py::test_cache_de_zonas PASSED      [ 83%]
+tests/integracion/test_redis_mongodb.py::test_snapshot_diario_de_precios_es_idempotente PASSED [ 83%]
+tests/integracion/test_redis_mongodb.py::test_ejecucion_de_analisis_y_evolucion PASSED [ 83%]
+tests/integracion/test_redis_mongodb.py::test_resumen_de_notificaciones_por_agregacion PASSED [ 84%]
+tests/integracion/test_redis_mongodb.py::test_marcar_leida_actualiza_el_contador_de_redis PASSED [ 84%]
+tests/integracion/test_redis_mongodb.py::test_notificacion_ajena_no_se_ve PASSED [ 84%]
+tests/integracion/test_redis_mongodb.py::test_actividad_de_servicios_desde_la_bitacora PASSED [ 85%]
+tests/integracion/test_resiliencia.py::test_aviso_no_se_pierde_con_notificaciones_caido PASSED [ 85%]
+tests/integracion/test_resiliencia.py::test_salud_reporta_dependencia_caida PASSED [ 86%]
+tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[seguridad-/auth/sesion] PASSED [ 86%]
+tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[comercios-/comercios] PASSED [ 86%]
+tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[inventario-/comercios/00000000-0000-0000-0000-000000000000/inventario] PASSED [ 87%]
+tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[precios-/precios] PASSED [ 87%]
+tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[pedidos-/pedidos] PASSED [ 87%]
+tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[analisis-/analisis/zonas] PASSED [ 88%]
+tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[notificaciones-/notificaciones] PASSED [ 88%]
+tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[proveedores-/mi-catalogo] PASSED [ 88%]
+tests/integracion/test_seguridad.py::test_token_basura_401 PASSED        [ 89%]
+tests/integracion/test_seguridad.py::test_token_firmado_por_otro_401 PASSED [ 89%]
+tests/integracion/test_seguridad.py::test_token_expirado_401 PASSED      [ 90%]
+tests/integracion/test_seguridad.py::test_token_bien_firmado_sin_sesion_en_redis_401 PASSED [ 90%]
+tests/integracion/test_seguridad.py::test_logout_revoca_el_token_en_todos_los_servicios PASSED [ 90%]
+tests/integracion/test_seguridad.py::test_refresh_rota_y_el_anterior_deja_de_servir PASSED [ 91%]
+tests/integracion/test_seguridad.py::test_credenciales_incorrectas_401 PASSED [ 91%]
+tests/integracion/test_seguridad.py::test_rol_sin_permiso_403 PASSED     [ 91%]
+tests/integracion/test_seguridad.py::test_recurso_de_otro_usuario_403 PASSED [ 92%]
+tests/integracion/test_seguridad.py::test_administrador_cierra_las_sesiones_de_un_usuario PASSED [ 92%]
+tests/integracion/test_seguridad.py::test_limite_de_peticiones_429 PASSED [ 93%]
+tests/integracion/test_seguridad.py::test_gateway_limita_rafagas_por_ip PASSED [ 93%]
+tests/integracion/test_seguridad.py::test_solo_el_gateway_esta_expuesto PASSED [ 93%]
+tests/integracion/test_seguridad.py::test_health_es_publico_y_reporta_dependencias PASSED [ 94%]
+tests/integracion/test_servicios_nuevos.py::test_monitoreo_ve_los_24_servicios_arriba PASSED [ 94%]
+tests/integracion/test_servicios_nuevos.py::test_monitoreo_bases_y_metricas PASSED [ 94%]
+tests/integracion/test_servicios_nuevos.py::test_venta_descuenta_inventario_y_se_rastrea PASSED [ 95%]
+tests/integracion/test_servicios_nuevos.py::test_venta_sin_existencia_no_se_registra PASSED [ 95%]
+tests/integracion/test_servicios_nuevos.py::test_reserva_impide_vender_lo_apartado PASSED [ 95%]
+tests/integracion/test_servicios_nuevos.py::test_lote_offline_con_duplicados_y_conflicto PASSED [ 96%]
+tests/integracion/test_servicios_nuevos.py::test_documento_valida_tipo_real_y_control_de_acceso PASSED [ 96%]
+tests/integracion/test_servicios_nuevos.py::test_geocodificacion_y_cercanos PASSED [ 97%]
+tests/integracion/test_servicios_nuevos.py::test_busqueda_unificada_y_demanda_no_satisfecha PASSED [ 97%]
+tests/integracion/test_servicios_nuevos.py::test_estimacion_de_demanda PASSED [ 97%]
+tests/integracion/test_servicios_nuevos.py::test_configuracion_valida_rango_y_publica_parametros PASSED [ 98%]
+tests/integracion/test_servicios_nuevos.py::test_reporte_excel_del_inventario PASSED [ 98%]
+tests/integracion/test_servicios_nuevos.py::test_importacion_simulada_reporta_errores_por_fila PASSED [ 98%]
+tests/integracion/test_servicios_nuevos.py::test_cotizacion_consolidada_hasta_pedido PASSED [ 99%]
+tests/integracion/test_servicios_nuevos.py::test_proveedor_no_verificado_no_aparece_a_comercios PASSED [ 99%]
+tests/integracion/test_servicios_nuevos.py::test_entrega_con_qr_mueve_existencias_en_los_servicios_duenos PASSED [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\requests\__init__.py:113
+  C:\Integracion\ProyectoFinal-IAC\.venv\Lib\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (2.8.0) or chardet (7.7.0)/charset_normalizer (3.5.2) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=================================== PASSES ====================================
+_____________________________ test_exito_json_201 _____________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 201, "codigo_error": null, "duracion_ms": 0.7, "usuario_id": "7374144c-daa0-47ce-b6ed-44520230e4f0", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "618142f865e54aeb83ff68a32544b271", "fecha": "2026-11-15T03:16:21.493721+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 201, "codigo_error": null, "duracion_ms": 0.7, "usuario_id": "7374144c-daa0-47ce-b6ed-44520230e4f0", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "618142f865e54aeb83ff68a32544b271", "fecha": "2026-11-15T03:16:21.493721+00:00"}
+_______________________ test_exito_xml_entrada_y_salida _______________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 201, "codigo_error": null, "duracion_ms": 1.0, "usuario_id": "3facfdd4-8cd8-451f-b506-3f1eebc12dd7", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "xml", "correlation_id": "25d24d6216344eb5b48f15abdd0a80da", "fecha": "2026-11-15T03:16:21.497717+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 201, "codigo_error": null, "duracion_ms": 1.0, "usuario_id": "3facfdd4-8cd8-451f-b506-3f1eebc12dd7", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "xml", "correlation_id": "25d24d6216344eb5b48f15abdd0a80da", "fecha": "2026-11-15T03:16:21.497717+00:00"}
+_________________________ test_formato_por_parametro __________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "GET", "ruta": "/api/v1/publico/7", "endpoint": "publico", "status": 200, "codigo_error": null, "duracion_ms": 0.4, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "xml", "correlation_id": "b11dd857bf3b48508c028cb4105e4072", "fecha": "2026-11-15T03:16:21.500785+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "GET", "ruta": "/api/v1/publico/7", "endpoint": "publico", "status": 200, "codigo_error": null, "duracion_ms": 0.4, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "xml", "correlation_id": "b11dd857bf3b48508c028cb4105e4072", "fecha": "2026-11-15T03:16:21.500785+00:00"}
+_____________________________ test_sin_token_401 ______________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 401, "codigo_error": "token_requerido", "duracion_ms": 0.2, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "json", "correlation_id": "7e3a693d94e04e6aa3f36e77b24f6a56", "fecha": "2026-11-15T03:16:21.503786+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 401, "codigo_error": "token_requerido", "duracion_ms": 0.2, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "json", "correlation_id": "7e3a693d94e04e6aa3f36e77b24f6a56", "fecha": "2026-11-15T03:16:21.503786+00:00"}
+____________________________ test_sin_permiso_403 _____________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 403, "codigo_error": "sin_permiso", "duracion_ms": 0.4, "usuario_id": "56cd071b-e26f-49a3-b816-98f5f01239d2", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "0ce39a18060b4c78ba1f7c249a3fdb52", "fecha": "2026-11-15T03:16:21.506785+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 403, "codigo_error": "sin_permiso", "duracion_ms": 0.4, "usuario_id": "56cd071b-e26f-49a3-b816-98f5f01239d2", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "0ce39a18060b4c78ba1f7c249a3fdb52", "fecha": "2026-11-15T03:16:21.506785+00:00"}
+__________________ test_validacion_422_con_detalle_por_campo __________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 422, "codigo_error": "datos_invalidos", "duracion_ms": 0.5, "usuario_id": "a6a1a496-babf-4052-ae8d-4153bd512a78", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "74a200f3d43e44fe957c956c092e5874", "fecha": "2026-11-15T03:16:21.509787+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 422, "codigo_error": "datos_invalidos", "duracion_ms": 0.5, "usuario_id": "a6a1a496-babf-4052-ae8d-4153bd512a78", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "74a200f3d43e44fe957c956c092e5874", "fecha": "2026-11-15T03:16:21.509787+00:00"}
+____________________ test_campos_desconocidos_se_rechazan _____________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 422, "codigo_error": "datos_invalidos", "duracion_ms": 0.5, "usuario_id": "2824ab03-a362-4d60-90ee-f7d13d2a30a3", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "59a9d93876d74cfe9007c34908365cb2", "fecha": "2026-11-15T03:16:21.512790+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 422, "codigo_error": "datos_invalidos", "duracion_ms": 0.5, "usuario_id": "2824ab03-a362-4d60-90ee-f7d13d2a30a3", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "59a9d93876d74cfe9007c34908365cb2", "fecha": "2026-11-15T03:16:21.512790+00:00"}
+__________________________ test_json_mal_formado_400 __________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 400, "codigo_error": "json_invalido", "duracion_ms": 0.4, "usuario_id": "97cfd7f7-9f1d-4580-8da6-c7a745952004", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "595cd138376a41a9a33e052e5f2c6253", "fecha": "2026-11-15T03:16:21.515793+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 400, "codigo_error": "json_invalido", "duracion_ms": 0.4, "usuario_id": "97cfd7f7-9f1d-4580-8da6-c7a745952004", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "595cd138376a41a9a33e052e5f2c6253", "fecha": "2026-11-15T03:16:21.515793+00:00"}
+_________________________ test_tipo_no_soportado_415 __________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 415, "codigo_error": "tipo_no_soportado", "duracion_ms": 0.5, "usuario_id": "bfa84ad8-3831-4b0d-8a81-42abc1cb5782", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "ee930aec70704ccdb3441c23deeebcc9", "fecha": "2026-11-15T03:16:21.519796+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 415, "codigo_error": "tipo_no_soportado", "duracion_ms": 0.5, "usuario_id": "bfa84ad8-3831-4b0d-8a81-42abc1cb5782", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "ee930aec70704ccdb3441c23deeebcc9", "fecha": "2026-11-15T03:16:21.519796+00:00"}
+__________________________ test_regla_de_negocio_409 __________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 409, "codigo_error": "regla_negocio", "duracion_ms": 0.5, "usuario_id": "f9fe67a0-fb8a-4712-8707-afc0fe9a0810", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "d081e45f5d6f44d887e12c9369ce6d1d", "fecha": "2026-11-15T03:16:21.523538+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 409, "codigo_error": "regla_negocio", "duracion_ms": 0.5, "usuario_id": "f9fe67a0-fb8a-4712-8707-afc0fe9a0810", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "d081e45f5d6f44d887e12c9369ce6d1d", "fecha": "2026-11-15T03:16:21.523538+00:00"}
+________________________ test_no_encontrado_404_en_xml ________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "GET", "ruta": "/api/v1/publico/404", "endpoint": "publico", "status": 404, "codigo_error": "no_encontrado", "duracion_ms": 0.5, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "xml", "correlation_id": "fd445c9f704c4c67952c4b28af4b3aa7", "fecha": "2026-11-15T03:16:21.526689+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "GET", "ruta": "/api/v1/publico/404", "endpoint": "publico", "status": 404, "codigo_error": "no_encontrado", "duracion_ms": 0.5, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "xml", "correlation_id": "fd445c9f704c4c67952c4b28af4b3aa7", "fecha": "2026-11-15T03:16:21.526689+00:00"}
+________________ test_ruta_inexistente_responde_error_estandar ________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "GET", "ruta": "/api/v1/no-existe", "endpoint": null, "status": 404, "codigo_error": "no_encontrado", "duracion_ms": 0.1, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "json", "correlation_id": "507639a56a2e4bdb854c126bc26838b6", "fecha": "2026-11-15T03:16:21.529310+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "GET", "ruta": "/api/v1/no-existe", "endpoint": null, "status": 404, "codigo_error": "no_encontrado", "duracion_ms": 0.1, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "json", "correlation_id": "507639a56a2e4bdb854c126bc26838b6", "fecha": "2026-11-15T03:16:21.529310+00:00"}
+________________________ test_limite_de_peticiones_429 ________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 201, "codigo_error": null, "duracion_ms": 0.4, "usuario_id": "bc17e7ef-cba7-4394-b47d-bf6ed7338af8", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "297c564084914db9ab0df99d25ea85b5", "fecha": "2026-11-15T03:16:21.532439+00:00"}
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 201, "codigo_error": null, "duracion_ms": 0.4, "usuario_id": "bc17e7ef-cba7-4394-b47d-bf6ed7338af8", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "c70a268c575b4113bada7be040b40354", "fecha": "2026-11-15T03:16:21.532962+00:00"}
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 201, "codigo_error": null, "duracion_ms": 0.4, "usuario_id": "bc17e7ef-cba7-4394-b47d-bf6ed7338af8", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "06eee953b6744671b04833f52d0ee794", "fecha": "2026-11-15T03:16:21.534968+00:00"}
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 429, "codigo_error": "limite_excedido", "duracion_ms": 0.4, "usuario_id": "bc17e7ef-cba7-4394-b47d-bf6ed7338af8", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "c676cff2ba9e4f5da7a9edf026fdb83f", "fecha": "2026-11-15T03:16:21.535972+00:00"}
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 429, "codigo_error": "limite_excedido", "duracion_ms": 0.3, "usuario_id": "bc17e7ef-cba7-4394-b47d-bf6ed7338af8", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "098be39a5ad0478aa47d28e08e6e3e0d", "fecha": "2026-11-15T03:16:21.536969+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 201, "codigo_error": null, "duracion_ms": 0.4, "usuario_id": "bc17e7ef-cba7-4394-b47d-bf6ed7338af8", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "297c564084914db9ab0df99d25ea85b5", "fecha": "2026-11-15T03:16:21.532439+00:00"}
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 201, "codigo_error": null, "duracion_ms": 0.4, "usuario_id": "bc17e7ef-cba7-4394-b47d-bf6ed7338af8", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "c70a268c575b4113bada7be040b40354", "fecha": "2026-11-15T03:16:21.532962+00:00"}
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 201, "codigo_error": null, "duracion_ms": 0.4, "usuario_id": "bc17e7ef-cba7-4394-b47d-bf6ed7338af8", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "06eee953b6744671b04833f52d0ee794", "fecha": "2026-11-15T03:16:21.534968+00:00"}
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 429, "codigo_error": "limite_excedido", "duracion_ms": 0.4, "usuario_id": "bc17e7ef-cba7-4394-b47d-bf6ed7338af8", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "c676cff2ba9e4f5da7a9edf026fdb83f", "fecha": "2026-11-15T03:16:21.535972+00:00"}
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 429, "codigo_error": "limite_excedido", "duracion_ms": 0.3, "usuario_id": "bc17e7ef-cba7-4394-b47d-bf6ed7338af8", "rol": "Rol de prueba", "ip": "127.0.0.1", "formato": "json", "correlation_id": "098be39a5ad0478aa47d28e08e6e3e0d", "fecha": "2026-11-15T03:16:21.536969+00:00"}
+_______________________ test_correlation_id_se_propaga ________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "GET", "ruta": "/api/v1/publico/1", "endpoint": "publico", "status": 200, "codigo_error": null, "duracion_ms": 0.3, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "json", "correlation_id": "prueba-123", "fecha": "2026-11-15T03:16:21.539971+00:00"}
+{"servicio": "demo", "metodo": "GET", "ruta": "/api/v1/publico/1", "endpoint": "publico", "status": 200, "codigo_error": null, "duracion_ms": 0.2, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "json", "correlation_id": "15019a71506049dd9e2e30c0d8d9f281", "fecha": "2026-11-15T03:16:21.539971+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "GET", "ruta": "/api/v1/publico/1", "endpoint": "publico", "status": 200, "codigo_error": null, "duracion_ms": 0.3, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "json", "correlation_id": "prueba-123", "fecha": "2026-11-15T03:16:21.539971+00:00"}
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "GET", "ruta": "/api/v1/publico/1", "endpoint": "publico", "status": 200, "codigo_error": null, "duracion_ms": 0.2, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "json", "correlation_id": "15019a71506049dd9e2e30c0d8d9f281", "fecha": "2026-11-15T03:16:21.539971+00:00"}
+___________________________ test_token_revocado_401 ___________________________
+---------------------------- Captured stdout call -----------------------------
+{"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 401, "codigo_error": "token_revocado", "duracion_ms": 0.2, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "json", "correlation_id": "c1282c51f29e41f9a7b4e26b05461852", "fecha": "2026-11-15T03:16:21.542972+00:00"}
+------------------------------ Captured log call ------------------------------
+INFO     ms-demo:servicio.py:142 {"servicio": "demo", "metodo": "POST", "ruta": "/api/v1/saludos", "endpoint": "saludar", "status": 401, "codigo_error": "token_revocado", "duracion_ms": 0.2, "usuario_id": null, "rol": null, "ip": "127.0.0.1", "formato": "json", "correlation_id": "c1282c51f29e41f9a7b4e26b05461852", "fecha": "2026-11-15T03:16:21.542972+00:00"}
+- generated xml file: C:\Integracion\ProyectoFinal-IAC\reportes\pruebas_20261114-211616\junit.xml -
+=========================== short test summary info ===========================
+PASSED tests/unitarias/test_contratos.py::test_estan_los_24_servicios
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[abastecimiento]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[analisis]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[auditoria]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[busqueda]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[catalogo]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[comercios]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[configuracion]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[demanda]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[disponibilidad]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[documentos]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[entregas]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[geolocalizacion]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[integraciones]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[inventario]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[monitoreo]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[notificaciones]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[pedidos]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[precios]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[proveedores]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[recomendaciones]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[reportes]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[seguridad]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[sincronizacion]
+PASSED tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[ventas]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[abastecimiento]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[analisis]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[auditoria]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[busqueda]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[catalogo]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[comercios]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[configuracion]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[demanda]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[disponibilidad]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[documentos]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[entregas]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[geolocalizacion]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[integraciones]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[inventario]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[monitoreo]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[notificaciones]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[pedidos]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[precios]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[proveedores]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[recomendaciones]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[reportes]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[seguridad]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[sincronizacion]
+PASSED tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[ventas]
+PASSED tests/unitarias/test_contratos.py::test_error_estandar_valida_en_todos_los_servicios
+PASSED tests/unitarias/test_contratos.py::test_pedido_entrada_valida_y_rechaza_cantidad_negativa
+PASSED tests/unitarias/test_contratos.py::test_movimiento_entrada_rechaza_tipo_desconocido
+PASSED tests/unitarias/test_formatos.py::test_a_xml_usa_espacio_de_nombres_y_singulares
+PASSED tests/unitarias/test_formatos.py::test_a_xml_omite_nulos_y_convierte_tipos
+PASSED tests/unitarias/test_formatos.py::test_a_xml_escapa_texto
+PASSED tests/unitarias/test_formatos.py::test_responder_lista_con_el_nombre_de_la_raiz_conserva_el_contenedor
+PASSED tests/unitarias/test_formatos.py::test_compatible_json
+PASSED tests/unitarias/test_formatos.py::test_horas_en_json_y_xml
+PASSED tests/unitarias/test_formatos.py::test_leer_xml_respeta_listas_declaradas
+PASSED tests/unitarias/test_formatos.py::test_leer_xml_rechaza_raiz_equivocada
+PASSED tests/unitarias/test_formatos.py::test_leer_xml_rechaza_xml_mal_formado
+PASSED tests/unitarias/test_formatos.py::test_leer_xml_no_resuelve_entidades_externas
+PASSED tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[BORRADOR-comercio0-proveedor0]
+PASSED tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[ENVIADO-comercio1-proveedor1]
+PASSED tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[ACEPTADO-comercio2-proveedor2]
+PASSED tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[EN_PREPARACION-comercio3-proveedor3]
+PASSED tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[ENVIADO_A_COMERCIO-comercio4-proveedor4]
+PASSED tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[ENTREGADO-comercio5-proveedor5]
+PASSED tests/unitarias/test_reglas_negocio.py::test_acciones_por_estado_y_lado[CANCELADO-comercio6-proveedor6]
+PASSED tests/unitarias/test_reglas_negocio.py::test_flujo_feliz_recorre_todos_los_estados
+PASSED tests/unitarias/test_reglas_negocio.py::test_numero_acepta_formatos_de_excel[12-esperado0]
+PASSED tests/unitarias/test_reglas_negocio.py::test_numero_acepta_formatos_de_excel[ 3.50 -esperado1]
+PASSED tests/unitarias/test_reglas_negocio.py::test_numero_acepta_formatos_de_excel[$1,250.00-esperado2]
+PASSED tests/unitarias/test_reglas_negocio.py::test_numero_acepta_formatos_de_excel[-None]
+PASSED tests/unitarias/test_reglas_negocio.py::test_numero_acepta_formatos_de_excel[None-None]
+PASSED tests/unitarias/test_reglas_negocio.py::test_numero_rechaza_valores_invalidos[-4-negativo]
+PASSED tests/unitarias/test_reglas_negocio.py::test_numero_rechaza_valores_invalidos[doce-no es un n\xfamero]
+PASSED tests/unitarias/test_reglas_negocio.py::test_numero_obligatorio
+PASSED tests/unitarias/test_reglas_negocio.py::test_distancia_monterrey_san_nicolas
+PASSED tests/unitarias/test_reglas_negocio.py::test_zona_para_punto_elige_el_centro_mas_cercano
+PASSED tests/unitarias/test_reglas_negocio.py::test_bloqueo_impide_la_segunda_ejecucion
+PASSED tests/unitarias/test_reglas_negocio.py::test_bloqueo_se_libera_aunque_falle_la_operacion
+PASSED tests/unitarias/test_reglas_negocio.py::test_bloqueo_ajeno_no_se_borra
+PASSED tests/unitarias/test_servicio.py::test_exito_json_201
+PASSED tests/unitarias/test_servicio.py::test_exito_xml_entrada_y_salida
+PASSED tests/unitarias/test_servicio.py::test_formato_por_parametro
+PASSED tests/unitarias/test_servicio.py::test_sin_token_401
+PASSED tests/unitarias/test_servicio.py::test_sin_permiso_403
+PASSED tests/unitarias/test_servicio.py::test_validacion_422_con_detalle_por_campo
+PASSED tests/unitarias/test_servicio.py::test_campos_desconocidos_se_rechazan
+PASSED tests/unitarias/test_servicio.py::test_json_mal_formado_400
+PASSED tests/unitarias/test_servicio.py::test_tipo_no_soportado_415
+PASSED tests/unitarias/test_servicio.py::test_regla_de_negocio_409
+PASSED tests/unitarias/test_servicio.py::test_no_encontrado_404_en_xml
+PASSED tests/unitarias/test_servicio.py::test_ruta_inexistente_responde_error_estandar
+PASSED tests/unitarias/test_servicio.py::test_limite_de_peticiones_429
+PASSED tests/unitarias/test_servicio.py::test_correlation_id_se_propaga
+PASSED tests/unitarias/test_servicio.py::test_token_revocado_401
+PASSED tests/unitarias/test_servicio.py::test_openapi_documenta_la_ruta_y_sus_errores
+PASSED tests/unitarias/test_servicio.py::test_health_live
+PASSED tests/unitarias/test_sesiones.py::test_emitir_registra_sesion_y_refresh
+PASSED tests/unitarias/test_sesiones.py::test_operador_lleva_proveedor_en_el_token
+PASSED tests/unitarias/test_sesiones.py::test_revocar_invalida_el_token
+PASSED tests/unitarias/test_sesiones.py::test_sesion_borrada_en_redis_ya_no_sirve
+PASSED tests/unitarias/test_sesiones.py::test_token_expirado
+PASSED tests/unitarias/test_sesiones.py::test_token_mal_formado[no-es-un-jwt]
+PASSED tests/unitarias/test_sesiones.py::test_token_mal_formado[a.b.c]
+PASSED tests/unitarias/test_sesiones.py::test_token_firmado_con_otro_secreto
+PASSED tests/unitarias/test_sesiones.py::test_refresh_se_rota_y_no_se_reutiliza
+PASSED tests/unitarias/test_sesiones.py::test_cerrar_sesion_tambien_anula_el_refresh
+PASSED tests/unitarias/test_sesiones.py::test_revocar_todas_las_sesiones_de_un_usuario
+PASSED tests/unitarias/test_sesiones.py::test_token_de_servicio_es_corto_y_tiene_permisos_acotados
+PASSED tests/unitarias/test_sesiones.py::test_bloqueo_tras_cinco_intentos_fallidos
+PASSED tests/unitarias/test_sesiones.py::test_sin_redis_responde_503
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[seguridad]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[geolocalizacion]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[catalogo]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[disponibilidad]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[precios]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[pedidos]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[analisis]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[notificaciones]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[proveedores]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[configuracion]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[busqueda]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[auditoria]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[monitoreo]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[demanda]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[reportes]
+PASSED tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[sincronizacion]
+PASSED tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[seguridad]
+PASSED tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[geolocalizacion]
+PASSED tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[catalogo]
+PASSED tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[disponibilidad]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[abastecimiento]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[analisis]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[auditoria]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[busqueda]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[catalogo]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[comercios]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[configuracion]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[demanda]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[disponibilidad]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[documentos]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[entregas]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[geolocalizacion]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[integraciones]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[inventario]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[monitoreo]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[notificaciones]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[pedidos]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[precios]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[proveedores]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[recomendaciones]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[reportes]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[seguridad]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[sincronizacion]
+PASSED tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[ventas]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[abastecimiento]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[analisis]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[auditoria]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[busqueda]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[catalogo]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[comercios]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[configuracion]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[demanda]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[disponibilidad]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[documentos]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[entregas]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[geolocalizacion]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[integraciones]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[inventario]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[monitoreo]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[notificaciones]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[pedidos]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[precios]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[proveedores]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[recomendaciones]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[reportes]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[seguridad]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[sincronizacion]
+PASSED tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[ventas]
+PASSED tests/integracion/test_contratos_xml.py::test_detalle_de_comercio_en_json_y_xml
+PASSED tests/integracion/test_contratos_xml.py::test_xml_que_no_cumple_el_xsd_es_400
+PASSED tests/integracion/test_contratos_xml.py::test_xml_con_raiz_equivocada_es_400
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[abastecimiento]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[analisis]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[auditoria]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[busqueda]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[catalogo]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[comercios]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[configuracion]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[demanda]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[disponibilidad]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[documentos]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[entregas]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[geolocalizacion]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[integraciones]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[inventario]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[monitoreo]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[notificaciones]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[pedidos]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[precios]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[proveedores]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[recomendaciones]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[reportes]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[seguridad]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[sincronizacion]
+PASSED tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[ventas]
+PASSED tests/integracion/test_proceso_abasto.py::test_01_comercio_e_inventario
+PASSED tests/integracion/test_proceso_abasto.py::test_02_venta_deja_stock_bajo_y_avisa
+PASSED tests/integracion/test_proceso_abasto.py::test_03_vender_mas_de_lo_que_hay_es_error_de_negocio
+PASSED tests/integracion/test_proceso_abasto.py::test_04_aparece_en_faltantes
+PASSED tests/integracion/test_proceso_abasto.py::test_05_crear_pedido_en_xml
+PASSED tests/integracion/test_proceso_abasto.py::test_06_mismo_pedido_en_json
+PASSED tests/integracion/test_proceso_abasto.py::test_07_enviar_avisa_al_equipo_del_proveedor
+PASSED tests/integracion/test_proceso_abasto.py::test_08_operador_acepta_y_prepara
+PASSED tests/integracion/test_proceso_abasto.py::test_09_accion_fuera_de_orden_es_409
+PASSED tests/integracion/test_proceso_abasto.py::test_10_dueno_despacha
+PASSED tests/integracion/test_proceso_abasto.py::test_11_proveedor_no_puede_recibir
+PASSED tests/integracion/test_proceso_abasto.py::test_12_minorista_recibe_y_sube_el_inventario
+PASSED tests/integracion/test_proceso_abasto.py::test_13_historial_postgres_y_eventos_mongodb
+PASSED tests/integracion/test_proceso_abasto.py::test_14_estadisticas_por_agregacion
+PASSED tests/integracion/test_proceso_abasto.py::test_15_rastreo_por_correlation_id
+PASSED tests/integracion/test_redis_mongodb.py::test_cache_de_disponibilidad_se_invalida_al_mover_inventario
+PASSED tests/integracion/test_redis_mongodb.py::test_cache_de_zonas
+PASSED tests/integracion/test_redis_mongodb.py::test_snapshot_diario_de_precios_es_idempotente
+PASSED tests/integracion/test_redis_mongodb.py::test_ejecucion_de_analisis_y_evolucion
+PASSED tests/integracion/test_redis_mongodb.py::test_resumen_de_notificaciones_por_agregacion
+PASSED tests/integracion/test_redis_mongodb.py::test_marcar_leida_actualiza_el_contador_de_redis
+PASSED tests/integracion/test_redis_mongodb.py::test_notificacion_ajena_no_se_ve
+PASSED tests/integracion/test_redis_mongodb.py::test_actividad_de_servicios_desde_la_bitacora
+PASSED tests/integracion/test_resiliencia.py::test_aviso_no_se_pierde_con_notificaciones_caido
+PASSED tests/integracion/test_resiliencia.py::test_salud_reporta_dependencia_caida
+PASSED tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[seguridad-/auth/sesion]
+PASSED tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[comercios-/comercios]
+PASSED tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[inventario-/comercios/00000000-0000-0000-0000-000000000000/inventario]
+PASSED tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[precios-/precios]
+PASSED tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[pedidos-/pedidos]
+PASSED tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[analisis-/analisis/zonas]
+PASSED tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[notificaciones-/notificaciones]
+PASSED tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[proveedores-/mi-catalogo]
+PASSED tests/integracion/test_seguridad.py::test_token_basura_401
+PASSED tests/integracion/test_seguridad.py::test_token_firmado_por_otro_401
+PASSED tests/integracion/test_seguridad.py::test_token_expirado_401
+PASSED tests/integracion/test_seguridad.py::test_token_bien_firmado_sin_sesion_en_redis_401
+PASSED tests/integracion/test_seguridad.py::test_logout_revoca_el_token_en_todos_los_servicios
+PASSED tests/integracion/test_seguridad.py::test_refresh_rota_y_el_anterior_deja_de_servir
+PASSED tests/integracion/test_seguridad.py::test_credenciales_incorrectas_401
+PASSED tests/integracion/test_seguridad.py::test_rol_sin_permiso_403
+PASSED tests/integracion/test_seguridad.py::test_recurso_de_otro_usuario_403
+PASSED tests/integracion/test_seguridad.py::test_administrador_cierra_las_sesiones_de_un_usuario
+PASSED tests/integracion/test_seguridad.py::test_limite_de_peticiones_429
+PASSED tests/integracion/test_seguridad.py::test_gateway_limita_rafagas_por_ip
+PASSED tests/integracion/test_seguridad.py::test_solo_el_gateway_esta_expuesto
+PASSED tests/integracion/test_seguridad.py::test_health_es_publico_y_reporta_dependencias
+PASSED tests/integracion/test_servicios_nuevos.py::test_monitoreo_ve_los_24_servicios_arriba
+PASSED tests/integracion/test_servicios_nuevos.py::test_monitoreo_bases_y_metricas
+PASSED tests/integracion/test_servicios_nuevos.py::test_venta_descuenta_inventario_y_se_rastrea
+PASSED tests/integracion/test_servicios_nuevos.py::test_venta_sin_existencia_no_se_registra
+PASSED tests/integracion/test_servicios_nuevos.py::test_reserva_impide_vender_lo_apartado
+PASSED tests/integracion/test_servicios_nuevos.py::test_lote_offline_con_duplicados_y_conflicto
+PASSED tests/integracion/test_servicios_nuevos.py::test_documento_valida_tipo_real_y_control_de_acceso
+PASSED tests/integracion/test_servicios_nuevos.py::test_geocodificacion_y_cercanos
+PASSED tests/integracion/test_servicios_nuevos.py::test_busqueda_unificada_y_demanda_no_satisfecha
+PASSED tests/integracion/test_servicios_nuevos.py::test_estimacion_de_demanda
+PASSED tests/integracion/test_servicios_nuevos.py::test_configuracion_valida_rango_y_publica_parametros
+PASSED tests/integracion/test_servicios_nuevos.py::test_reporte_excel_del_inventario
+PASSED tests/integracion/test_servicios_nuevos.py::test_importacion_simulada_reporta_errores_por_fila
+PASSED tests/integracion/test_servicios_nuevos.py::test_cotizacion_consolidada_hasta_pedido
+PASSED tests/integracion/test_servicios_nuevos.py::test_proveedor_no_verificado_no_aparece_a_comercios
+PASSED tests/integracion/test_servicios_nuevos.py::test_entrega_con_qr_mueve_existencias_en_los_servicios_duenos
+======================= 272 passed, 1 warning in 56.03s =======================

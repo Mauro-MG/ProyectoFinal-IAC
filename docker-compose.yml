@@ -1,20 +1,39 @@
 # AbastoRed - Equipo 01
-# Arquitectura completa en contenedores: sistema web, 8 microservicios,
-# PostgreSQL + PostGIS, MongoDB y Redis en una red privada.
+# Sistema web, 24 microservicios, PostgreSQL + PostGIS, MongoDB y Redis detrás de un gateway HTTPS.
 #
-#   cp .env.example .env
-#   docker compose up --build -d        levantar
-#   docker compose ps                   estado y salud de cada contenedor
-#   docker compose down                 detener (conserva los datos)
-#   docker compose down -v              detener y borrar los datos (recarga la carga inicial)
+#   python scripts/preparar_entorno.py   (una vez) crea .env y los secretos en secrets/
+#   docker compose up --build -d         levantar
+#   docker compose ps                    estado y salud de cada contenedor
+#   docker compose down                  detener (conserva los datos)
+#   docker compose down -v               detener y borrar los datos (recarga la carga inicial)
 #
-# Puertos publicados en el equipo:
-#   5000 web · 8101 seguridad · 8102 comercios · 8103 catálogo · 8104 inventario
-#   8105 precios · 8106 pedidos · 8107 análisis · 8108 notificaciones
-#   Swagger de cada servicio: http://localhost:81xx/docs
+# Superficie de entrada: SÓLO el gateway publica puertos (80 redirige a 443).
+#   https://localhost/                       sistema web
+#   https://localhost/ms/<servicio>/docs     Swagger de cada microservicio
+# Redes:
+#   publica  gateway, web y microservicios
+#   datos    (interna, sin acceso desde fuera de Docker) bases de datos, web y microservicios
+# Secretos: archivos de secrets/ montados en /run/secrets; no viajan en variables de entorno.
+# Desarrollo: docker-compose.dev.yml publica además los puertos en 127.0.0.1 (sólo este equipo).
+
+x-secretos-entorno: &secretos-entorno
+  SECRET_KEY_FILE: /run/secrets/secret_key
+  JWT_SECRET_KEY_FILE: /run/secrets/jwt_secret_key
+  POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+  MONGO_PASSWORD_FILE: /run/secrets/mongo_password
+  REDIS_PASSWORD_FILE: /run/secrets/redis_password
+
+x-secretos-app: &secretos-app
+  - secret_key
+  - jwt_secret_key
+  - postgres_password
+  - mongo_password
+  - redis_password
 
 x-microservicio: &microservicio
   env_file: .env
+  environment: *secretos-entorno
+  secrets: *secretos-app
   restart: unless-stopped
   depends_on:
     abastored-postgres:
@@ -23,22 +42,36 @@ x-microservicio: &microservicio
       condition: service_healthy
     abastored-redis:
       condition: service_healthy
-  networks:
-    - abastored-network
+  networks: [publica, datos]
 
 services:
+  # ------------------------------------------------------------------ entrada única
+  gateway:
+    build: {context: infra/gateway}
+    container_name: abastored-gateway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/certs:/etc/nginx/certs        # certificado autofirmado generado al primer arranque
+    depends_on:
+      - abastored-web          # los servicios se resuelven por DNS en cada petición: si uno falta, los demás siguen
+    networks: [publica]
+
   # ------------------------------------------------------------------ sistema web
   abastored-web:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
     container_name: abastored-web
-    ports:
-      - "5000:5000"
+    restart: unless-stopped
     env_file: .env
     environment:
+      <<: *secretos-entorno
       NOTIFICACIONES_VIA_SERVICIO: "true"
       ANALISIS_VIA_SERVICIO: "true"
+    secrets: *secretos-app
     depends_on:
       abastored-postgres:
         condition: service_healthy
@@ -46,83 +79,163 @@ services:
         condition: service_healthy
       abastored-redis:
         condition: service_healthy
-    volumes:
-      - ./apps/web:/app
-      - ./libs:/libs
-    networks:
-      - abastored-network
+    networks: [publica, datos]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
 
-  # ------------------------------------------------------------------ microservicios
+  # ------------------------------------------------------------------ microservicios (24, puertos de desarrollo 8101-8124)
   ms-seguridad:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/seguridad/Dockerfile}
     container_name: ms-seguridad
-    ports: ["8101:8000"]
 
   ms-comercios:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/comercios/Dockerfile}
     container_name: ms-comercios
-    ports: ["8102:8000"]
 
   ms-catalogo:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/catalogo/Dockerfile}
     container_name: ms-catalogo
-    ports: ["8103:8000"]
 
   ms-inventario:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/inventario/Dockerfile}
     container_name: ms-inventario
-    ports: ["8104:8000"]
 
   ms-precios:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/precios/Dockerfile}
     container_name: ms-precios
-    ports: ["8105:8000"]
 
   ms-pedidos:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/pedidos/Dockerfile}
     container_name: ms-pedidos
-    ports: ["8106:8000"]
 
   ms-analisis:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/analisis/Dockerfile}
     container_name: ms-analisis
-    ports: ["8107:8000"]
 
   ms-notificaciones:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/notificaciones/Dockerfile}
     container_name: ms-notificaciones
-    ports: ["8108:8000"]
     environment:
+      <<: *secretos-entorno
       NOTIFICACIONES_VIA_SERVICIO: "false"   # este servicio escribe directo en MongoDB
 
-  # ------------------------------------------------------------------ datos
+  ms-proveedores:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/proveedores/Dockerfile}
+    container_name: ms-proveedores
+
+  ms-abastecimiento:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/abastecimiento/Dockerfile}
+    container_name: ms-abastecimiento
+
+  ms-disponibilidad:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/disponibilidad/Dockerfile}
+    container_name: ms-disponibilidad
+
+  ms-geolocalizacion:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/geolocalizacion/Dockerfile}
+    container_name: ms-geolocalizacion
+
+  ms-sincronizacion:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/sincronizacion/Dockerfile}
+    container_name: ms-sincronizacion
+
+  ms-documentos:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/documentos/Dockerfile}
+    container_name: ms-documentos
+
+  ms-reportes:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/reportes/Dockerfile}
+    container_name: ms-reportes
+
+  ms-recomendaciones:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/recomendaciones/Dockerfile}
+    container_name: ms-recomendaciones
+
+  ms-demanda:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/demanda/Dockerfile}
+    container_name: ms-demanda
+
+  ms-ventas:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/ventas/Dockerfile}
+    container_name: ms-ventas
+
+  ms-entregas:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/entregas/Dockerfile}
+    container_name: ms-entregas
+
+  ms-auditoria:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/auditoria/Dockerfile}
+    container_name: ms-auditoria
+
+  ms-integraciones:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/integraciones/Dockerfile}
+    container_name: ms-integraciones
+
+  ms-configuracion:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/configuracion/Dockerfile}
+    container_name: ms-configuracion
+
+  ms-monitoreo:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/monitoreo/Dockerfile}
+    container_name: ms-monitoreo
+
+  ms-busqueda:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/busqueda/Dockerfile}
+    container_name: ms-busqueda
+
+  # ------------------------------------------------------------------ pruebas (bajo demanda)
+  # docker compose --profile pruebas run --rm pruebas   → reporte en docs/pruebas/ (no hay que instalar Python)
+  pruebas:
+    profiles: [pruebas]
+    build: {context: ., dockerfile: tests/Dockerfile}
+    volumes:
+      - .:/repo
+    secrets: [jwt_secret_key]
+    networks: [publica, datos]
+
+  # ------------------------------------------------------------------ datos (red privada)
   abastored-postgres:
     image: postgis/postgis:16-3.4-alpine
     container_name: abastored-postgres
-    ports:
-      - "5432:5432"
+    restart: unless-stopped
+    # Hora de Monterrey para NOW() y las fechas sin zona (created_at); sin esto quedan en UTC
+    command: postgres -c timezone=America/Monterrey
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       POSTGRES_DB: ${POSTGRES_DB}
+    secrets: [postgres_password]
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./db/postgres:/docker-entrypoint-initdb.d
-    networks:
-      - abastored-network
+    networks: [datos]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -132,19 +245,18 @@ services:
   abastored-mongo:
     image: mongo:7.0
     container_name: abastored-mongo
-    ports:
-      - "27017:27017"
+    restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_password
       MONGO_INITDB_DATABASE: ${MONGO_DB}
+    secrets: [mongo_password]
     volumes:
       - mongo-data:/data/db
       - ./db/mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro
-    networks:
-      - abastored-network
+    networks: [datos]
     healthcheck:
-      test: ["CMD-SHELL", "mongosh --host localhost:27017 --username ${MONGO_USER} --password ${MONGO_PASSWORD} --authenticationDatabase admin --eval 'db.runCommand({ ping: 1 }).ok' --quiet"]
+      test: ["CMD-SHELL", "mongosh --quiet --username \"$$MONGO_INITDB_ROOT_USERNAME\" --password \"$$(cat /run/secrets/mongo_password)\" --authenticationDatabase admin --eval 'db.runCommand({ ping: 1 }).ok'"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -152,23 +264,32 @@ services:
   abastored-redis:
     image: redis:7.2-alpine
     container_name: abastored-redis
-    ports:
-      - "6379:6379"
-    command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASSWORD}
+    restart: unless-stopped
+    command: ["sh", "-c", "exec redis-server /usr/local/etc/redis/redis.conf --requirepass \"$$(cat /run/secrets/redis_password)\""]
+    secrets: [redis_password]
     volumes:
       - redis-data:/data
       - ./db/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
-    networks:
-      - abastored-network
+    networks: [datos]
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD} ping"]
+      test: ["CMD-SHELL", "redis-cli --no-auth-warning -a \"$$(cat /run/secrets/redis_password)\" ping | grep -q PONG"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+secrets:
+  secret_key:        {file: ./secrets/secret_key.txt}
+  jwt_secret_key:    {file: ./secrets/jwt_secret_key.txt}
+  postgres_password: {file: ./secrets/postgres_password.txt}
+  mongo_password:    {file: ./secrets/mongo_password.txt}
+  redis_password:    {file: ./secrets/redis_password.txt}
+
 networks:
-  abastored-network:
+  publica:
     driver: bridge
+  datos:
+    driver: bridge
+    internal: true        # sin salida a internet ni puertos publicados: sólo la usan los contenedores
 
 volumes:
   postgres-data:

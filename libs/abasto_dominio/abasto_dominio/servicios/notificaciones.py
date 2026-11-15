@@ -25,7 +25,8 @@ from redis.exceptions import RedisError
 
 from abasto_dominio import extensiones
 
-TIPOS = ('pedido', 'stock_bajo', 'precio_atipico', 'comercio', 'importacion', 'sistema')
+TIPOS = ('pedido', 'stock_bajo', 'precio_atipico', 'comercio', 'importacion', 'sistema',
+         'entrega', 'incidencia', 'cotizacion', 'recomendacion', 'venta', 'proveedor')
 DIAS_RETENCION = 90
 
 

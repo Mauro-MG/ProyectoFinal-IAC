@@ -12,12 +12,15 @@ from uuid import UUID
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_login import current_user, logout_user
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from abasto_dominio import extensiones, sesiones
 from app.config import DevelopmentConfig, ProductionConfig
 from app.extensions import csrf, db, login_manager
 
 app = Flask(__name__)
+# Detrás del gateway HTTPS: IP real, esquema https y host vienen en los encabezados X-Forwarded-*
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 app.config.from_object(ProductionConfig if os.environ.get('FLASK_ENV') == 'production' else DevelopmentConfig)
 
 extensiones.init_app(app)

@@ -31,8 +31,11 @@ CATEGORIAS = {
     'comprobante_pedido': 'Comprobante de pedido',
     'importacion_csv': 'Archivo de importación',
     'documento': 'Documento',
+    'documento_fiscal': 'Documento fiscal',
+    'evidencia_entrega': 'Evidencia de entrega',
+    'comprobante_venta': 'Comprobante de venta',
 }
-ENTIDADES = ('comercio', 'producto', 'pedido', 'proveedor', 'importacion')
+ENTIDADES = ('comercio', 'producto', 'pedido', 'proveedor', 'importacion', 'entrega', 'venta')
 
 
 def _bucket():
@@ -59,11 +62,13 @@ def _meta(archivo):
         'descripcion': m.get('descripcion'),
         'usuario_id': m.get('usuario_id'),
         'sha256': m.get('sha256'),
+        'visibilidad': m.get('visibilidad', 'entidad'),
         'subido_en': archivo.upload_date,
     }
 
 
-def guardar(contenido, nombre, tipo_mime, categoria, entidad, entidad_id, usuario_id, descripcion=None):
+def guardar(contenido, nombre, tipo_mime, categoria, entidad, entidad_id, usuario_id, descripcion=None,
+            visibilidad='entidad'):
     """Valida y guarda el archivo; regresa sus metadatos."""
     if tipo_mime not in TIPOS_PERMITIDOS:
         raise ReglaNegocioError('Tipo de archivo no permitido. Usa JPG, PNG, WEBP, PDF o CSV.')
@@ -79,7 +84,7 @@ def guardar(contenido, nombre, tipo_mime, categoria, entidad, entidad_id, usuari
 
     archivo_id = _bucket().put(contenido, filename=nombre, metadata={
         'tipo_mime': tipo_mime, 'categoria': categoria, 'entidad': entidad, 'entidad_id': str(entidad_id),
-        'usuario_id': str(usuario_id), 'descripcion': descripcion,
+        'usuario_id': str(usuario_id), 'descripcion': descripcion, 'visibilidad': visibilidad,
         'sha256': hashlib.sha256(contenido).hexdigest(),
         'subido_en': datetime.now(timezone.utc),
     })

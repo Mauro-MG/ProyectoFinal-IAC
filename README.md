@@ -24,7 +24,7 @@ microservicios, contratos, pruebas y plan) está en **`docs/AbastoRed_Equipo01_D
 .
 ├── apps/
 │   ├── web/              Sistema web empresarial (Flask, sin blueprints)     ← avance 1, ampliado en el 2
-│   ├── microservicios/   8 servicios Flask, uno por contenedor                ← avance 2
+│   ├── microservicios/   24 servicios Flask, uno por contenedor (8101–8124)   ← avance 2 y entrega final
 │   ├── movil/            App Android (Kotlin), sólo JSON                       ← avance 3
 │   ├── escritorio/       App PySide6, sólo XML                                 ← avance 3
 │   └── infra/            Despliegue en Google Cloud                            ← avance 4
@@ -42,47 +42,71 @@ microservicios, contratos, pruebas y plan) está en **`docs/AbastoRed_Equipo01_D
 
 ## Cómo levantarlo
 
-Requisitos: Docker y Docker Compose.
+Requisitos: Docker y Docker Compose (y Python 3.11+ sólo para generar los secretos).
 
 ```bash
-cp .env.example .env          # en Windows: copy .env.example .env
+python scripts/preparar_entorno.py   # una vez: crea .env y los secretos aleatorios en secrets/
 docker compose up -d --build
-docker compose ps             # los 12 contenedores deben quedar "healthy"
+docker compose ps                    # los 29 contenedores deben quedar "healthy"
 ```
+
+El sistema tiene **una sola entrada**: el gateway HTTPS (nginx). Ningún otro contenedor publica puertos;
+las bases de datos están en una red interna de Docker sin acceso desde fuera.
 
 | Componente | Dirección |
 | :--- | :--- |
-| Sistema web | http://localhost:5000 |
-| ms-seguridad · comercios · catalogo · inventario | http://localhost:8101/docs · 8102 · 8103 · 8104 |
-| ms-precios · pedidos · analisis · notificaciones | http://localhost:8105/docs · 8106 · 8107 · 8108 |
-| PostgreSQL · MongoDB · Redis | 5432 · 27017 · 6379 |
+| Sistema web | https://localhost/ |
+| Swagger de cada microservicio | https://localhost/ms/seguridad/docs · …/ms/ventas/docs · etc. (los 24 en `apps/microservicios/README.md`) |
+| API de un microservicio | https://localhost/ms/<servicio>/api/v1/… |
 
-Cada servicio publica `/health`, `/openapi.json`, `/docs` (Swagger) y `/xsd` (contrato XML).
+El certificado es autofirmado y se genera al primer arranque en `infra/certs/` (fuera de git). Para que el
+navegador no muestre la advertencia, se puede confiar en él una vez (Windows, sin permisos de administrador):
+
+```bash
+certutil -user -addstore Root infra\certs\abastored.crt
+```
+
+| Archivo | Para qué |
+| :--- | :--- |
+| `.env` | Configuración sin secretos (copia de `.env.example`). `ENTORNO=produccion` hace que el arranque falle si falta un secreto o es de ejemplo. |
+| `secrets/*.txt` | Contraseñas y llaves; Docker las monta en `/run/secrets` sólo en los contenedores que las usan. Nunca van a git. |
+| `docker-compose.dev.yml` | Sólo desarrollo: publica web, servicios y bases en `127.0.0.1` (`docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d`). |
+
+Cada servicio publica `/health`, `/openapi.json`, `/docs` (Swagger) y `/xsd` (contrato XML). Qué servicio es
+dueño de cada tabla y cómo se coordinan las operaciones que cruzan servicios: `docs/propiedad_de_datos.md`.
 Para detener: `docker compose stop` (conserva datos) o `docker compose down -v` (borra los volúmenes
 y vuelve a cargar los scripts de `db/`).
 
-Después de cambiar algo en `libs/` hay que reconstruir los servicios (`docker compose up -d --build`),
-porque sus imágenes copian las bibliotecas; el web monta `apps/web` y `libs` como volumen.
-
 ## Pruebas y evidencias
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate                       # Linux/macOS: source .venv/bin/activate
-pip install -e libs/abasto_dominio -e libs/abasto_api -r tests/requirements.txt
+Dos formas de correr **todas** las pruebas, con el sistema levantado:
 
-pytest tests/unitarias -v                    # no necesita Docker
-pytest tests/integracion -v                  # con el sistema levantado
-python tests/evidencias/generar.py           # docs/evidencias/*.html y docs/postman/*.json
+```bash
+docker compose --profile pruebas run --rm pruebas   # sin instalar nada: corre dentro de un contenedor
+python scripts/ejecutar_pruebas.py                  # en el equipo: crea .venv e instala lo necesario
 ```
 
+Ambas generan un reporte con fecha, ambiente (sistema, versiones, commit, estado de los contenedores), comando y el
+resultado de cada prueba clasificado como **aprobada, fallida, error, omitida** (faltó algo del ambiente) o
+**no aplica** (no tiene sentido en ese ambiente; p. ej. las que detienen contenedores no aplican dentro de un
+contenedor). La última corrida completa queda en `docs/pruebas/` (`reporte.html`, `resultados.json`, `junit.xml`,
+`salida.txt`); `--solo unitarias` corre sólo las que no necesitan Docker.
+
+```bash
+python tests/evidencias/generar.py   # 5 casos por endpoint: docs/evidencias/ y la colección de Postman
+```
+
+- El reporte de evidencias marca cada caso como **aprobado** (obtuvo el código HTTP esperado), **fallido**,
+  **omitido** o **no aplica** con su motivo (p. ej. una operación pública no tiene caso de acceso no autorizado).
 - `tests/integracion/test_proceso_abasto.py` recorre el proceso de abasto completo pasando sólo por los
   microservicios (stock bajo → aviso → pedido en XML → proveedor → recepción → inventario → historial).
-- `tests/integracion/test_resiliencia.py` detiene contenedores con el CLI de Docker.
+- `tests/integracion/test_servicios_nuevos.py` prueba los flujos que cruzan servicios de la entrega final: venta con
+  saga sobre el inventario y su traza en ms-auditoria, lote offline con duplicados y conflicto, entrega con QR,
+  cotización consolidada hasta pedido, documentos con validación del tipo real, búsqueda y demanda, reportes e
+  importación con errores por fila.
 - La colección de Postman (`docs/postman/AbastoRed_Avance2.postman_collection.json`) se ejecuta empezando
-  por la carpeta «00 · Sesiones», que guarda los tokens en variables.
-- La prueba original del web sigue en `apps/web/tests` (`docker exec abastored-web python -m pytest tests`
-  después de `pip install pytest` en el contenedor).
+  por la carpeta «00 · Sesiones». Como el certificado es autofirmado, en Postman se agrega
+  `infra/certs/abastored.crt` en *Settings → Certificates → CA certificates*.
 
 ## Usuarios de prueba
 

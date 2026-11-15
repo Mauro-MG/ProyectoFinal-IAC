@@ -21,7 +21,7 @@ import requests
 from flask import current_app, session
 from redis.exceptions import RedisError
 
-from abasto_dominio import extensiones
+from abasto_dominio import extensiones, registro_servicios
 
 SEGUNDOS_EN_ESPERA = 30
 
@@ -70,9 +70,9 @@ def llamar(servicio, metodo, ruta, **kwargs):
     headers = {'Authorization': f'Bearer {token}', 'Accept': 'application/json',
                'X-Correlation-ID': f'web-{uuid4().hex[:24]}'}
     headers.update(kwargs.pop('headers', {}))
+    timeout = kwargs.pop('timeout', current_app.config.get('MS_TIMEOUT_SEGUNDOS', 3))
     try:
-        respuesta = requests.request(metodo, f'{base}/api/v1{ruta}', headers=headers,
-                                     timeout=current_app.config.get('MS_TIMEOUT_SEGUNDOS', 3), **kwargs)
+        respuesta = requests.request(metodo, f'{base}/api/v1{ruta}', headers=headers, timeout=timeout, **kwargs)
     except requests.RequestException as error:
         current_app.logger.warning('ms-%s no disponible: %s', servicio, error.__class__.__name__)
         _marcar_caido(servicio)
@@ -83,11 +83,11 @@ def llamar(servicio, metodo, ruta, **kwargs):
     return RespuestaServicio(respuesta)
 
 
-SERVICIOS = ('seguridad', 'comercios', 'catalogo', 'inventario', 'precios', 'pedidos', 'analisis', 'notificaciones')
+SERVICIOS = registro_servicios.NOMBRES
 
 
 def salud_todos():
-    """/health de los ocho servicios en paralelo (una caída no suma tiempos de espera)."""
+    """/health de los 24 servicios en paralelo (una caída no suma tiempos de espera)."""
     bases = {s: current_app.config[f'MS_{s.upper()}_URL'] for s in SERVICIOS}
 
     def consultar(servicio):

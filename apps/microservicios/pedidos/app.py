@@ -9,7 +9,13 @@ PostgreSQL: pedidos_abasto, detalle_pedidos, historial_pedido; al recibir, movim
 MongoDB: eventos_pedido (cada transición completa) y agregaciones de desempeño.
 Redis: bloqueo distribuido `bloqueo:pedido:{id}` mientras se ejecuta una acción, para que el web y
 el servicio (o dos clics) no apliquen la misma transición dos veces.
-Integración: cada transición avisa a la otra parte por ms-notificaciones.
+Integración:
+- Es DUEÑO de pedidos_abasto, detalle_pedidos e historial_pedido.
+- Al DESPACHAR pide a ms-proveedores que descuente su existencia (POST /proveedores/{id}/salidas) y al
+  RECIBIR pide a ms-inventario la entrada al inventario del comercio (POST /comercios/{id}/movimientos/lote),
+  ambos con el token del usuario y la referencia `pedido:{id}`: si la llamada se repite, no se aplica dos veces.
+  Si el otro servicio rechaza o no responde, la transición no ocurre.
+- Cada transición avisa a la otra parte por ms-notificaciones.
 """
 from pathlib import Path
 from uuid import UUID
@@ -17,6 +23,7 @@ from uuid import UUID
 from flask import g
 
 from abasto_api import ErrorApi, Servicio, no_encontrado, paginar, prohibido, tiene, usuario_actual
+from abasto_api.clientes import llamar
 from abasto_dominio.extensiones import db
 from abasto_dominio.modelos import Comercio, PedidoAbasto, Proveedor
 from abasto_dominio.modelos.pedido import ESTADOS_PEDIDO
@@ -32,6 +39,35 @@ srv = Servicio('pedidos', 'Pedidos de abasto',
                'pedido mínimo, cobertura y existencia, historial en PostgreSQL y eventos en MongoDB.',
                xsd=Path(__file__).parent / 'xsd' / 'pedidos.xsd', contratos=CONTRATOS_XML)
 app = srv.app
+
+
+def _respuesta_de(servicio, respuesta):
+    if respuesta.status_code in (200, 201):
+        return respuesta.json()
+    try:
+        mensaje = respuesta.json().get('error', {}).get('mensaje')
+    except ValueError:
+        mensaje = None
+    if respuesta.status_code >= 500:
+        raise ErrorApi(503, 'servicio_no_disponible', f'ms-{servicio} respondió {respuesta.status_code}; no se aplicó.')
+    raise ErrorApi(409, f'{servicio}_rechazo', f'ms-{servicio}: {mensaje}')
+
+
+class ExistenciasRemotas:
+    """Las existencias las cambian sus servicios dueños (ver docs/propiedad_de_datos.md)."""
+
+    def descontar_proveedor(self, pedido, usuario):
+        _respuesta_de('proveedores', llamar(
+            'proveedores', 'POST', f'/api/v1/proveedores/{pedido.proveedor_id}/salidas', token=g.token,
+            json={'referencia': f'pedido:{pedido.id}',
+                  'partidas': [{'producto_id': d.producto_id, 'cantidad': str(d.cantidad)} for d in pedido.detalles]}))
+
+    def recibir_comercio(self, pedido, usuario):
+        _respuesta_de('inventario', llamar(
+            'inventario', 'POST', f'/api/v1/comercios/{pedido.comercio_id}/movimientos/lote', token=g.token,
+            json={'referencia': f'pedido:{pedido.id}', 'pedido_id': str(pedido.id),
+                  'movimientos': [{'producto_id': d.producto_id, 'tipo': 'ENTRADA', 'cantidad': str(d.cantidad),
+                                   'motivo': f'Recepción del pedido {pedido.folio_legible}'} for d in pedido.detalles]}))
 
 
 def _uuid(valor, campo):
@@ -174,7 +210,8 @@ def ejecutar(id, accion, datos):
     with bloqueo(f'pedido:{id}', ttl_segundos=30, mensaje='El pedido se está actualizando; intenta de nuevo.'):
         pedido = _pedido(id)
         anterior = pedido.estado
-        nuevo = flujo.ejecutar_accion(pedido, accion, usuario_actual(), datos.comentario)
+        nuevo = flujo.ejecutar_accion(pedido, accion, usuario_actual(), datos.comentario,
+                                      existencias=ExistenciasRemotas())
         db.session.commit()
     return {**pedido_a_dict(pedido, detalle=True), 'transicion': {'accion': accion, 'de': anterior, 'a': nuevo}}
 

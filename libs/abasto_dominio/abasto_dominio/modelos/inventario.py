@@ -49,8 +49,44 @@ class MovimientoInventario(db.Model):
     existencia_nueva = db.Column(db.Numeric(10, 2), nullable=False)
     motivo = db.Column(db.String(255))
     pedido_id = db.Column(UUID(as_uuid=True), db.ForeignKey('pedidos_abasto.id'))
+    # Origen (venta, lote de sincronización, transferencia) para no aplicar dos veces el mismo movimiento
+    referencia = db.Column(db.String(100))
     usuario_id = db.Column(UUID(as_uuid=True), db.ForeignKey('usuarios.id'))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     inventario = db.relationship('InventarioComercio', back_populates='movimientos')
     usuario = db.relationship('Usuario')
+
+
+class ReservaInventario(db.Model):
+    """Cantidad apartada que no se puede vender mientras la reserva esté activa."""
+    __tablename__ = 'reservas_inventario'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    inventario_id = db.Column(db.BigInteger, db.ForeignKey('inventario_comercio.id'), nullable=False)
+    cantidad = db.Column(db.Numeric(10, 2), nullable=False)
+    motivo = db.Column(db.String(255))
+    referencia = db.Column(db.String(100))
+    estado = db.Column(db.String(10), nullable=False, default='ACTIVA')
+    expira_at = db.Column(db.DateTime, nullable=False)
+    usuario_id = db.Column(UUID(as_uuid=True), db.ForeignKey('usuarios.id'))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+
+    inventario = db.relationship('InventarioComercio')
+
+
+class TransferenciaInventario(db.Model):
+    """Paso de mercancía entre dos comercios (sucursales) del mismo dueño."""
+    __tablename__ = 'transferencias_inventario'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    origen_id = db.Column(db.BigInteger, db.ForeignKey('inventario_comercio.id'), nullable=False)
+    destino_id = db.Column(db.BigInteger, db.ForeignKey('inventario_comercio.id'), nullable=False)
+    cantidad = db.Column(db.Numeric(10, 2), nullable=False)
+    motivo = db.Column(db.String(255))
+    usuario_id = db.Column(UUID(as_uuid=True), db.ForeignKey('usuarios.id'))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    origen = db.relationship('InventarioComercio', foreign_keys=[origen_id])
+    destino = db.relationship('InventarioComercio', foreign_keys=[destino_id])

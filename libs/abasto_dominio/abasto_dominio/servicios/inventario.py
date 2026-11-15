@@ -6,6 +6,9 @@ Reglas aplicadas:
           queda PENDIENTE_VALIDACION y no entra en la comparación.
   RN-009  Toda variación de existencia se registra como movimiento
           (ENTRADA, SALIDA o AJUSTE); la existencia nunca queda negativa.
+  RN-017  Una SALIDA no puede tomar lo que está reservado (reservas activas no vencidas).
+  RN-018  Un movimiento con `referencia` (venta, lote offline, transferencia, pedido) se aplica
+          una sola vez por renglón: si llega repetido se regresa el que ya existía.
 """
 from datetime import timedelta
 from decimal import Decimal
@@ -16,7 +19,8 @@ from sqlalchemy import func
 
 from abasto_dominio import extensiones
 from abasto_dominio.extensiones import db
-from abasto_dominio.modelos import Comercio, InventarioComercio, MovimientoInventario, PrecioComercio
+from abasto_dominio.modelos import (Comercio, InventarioComercio, MovimientoInventario, PrecioComercio,
+                                    ReservaInventario)
 from abasto_dominio.servicios import ReglaNegocioError
 from abasto_dominio.servicios.auditoria import registrar_evento
 from abasto_dominio.servicios.cache import invalidar_analisis
@@ -87,11 +91,33 @@ def quitar_del_catalogo(inventario, usuario):
     invalidar_analisis()
 
 
-def registrar_movimiento(inventario, tipo, cantidad, usuario, motivo=None, pedido=None):
+def reservado(inventario_id, excepto=None):
+    """Cantidad apartada por reservas activas que no han vencido."""
+    consulta = (db.session.query(func.coalesce(func.sum(ReservaInventario.cantidad), 0))
+                .filter(ReservaInventario.inventario_id == inventario_id, ReservaInventario.estado == 'ACTIVA',
+                        ReservaInventario.expira_at > func.now()))   # hora de la base, no la del contenedor
+    if excepto is not None:
+        consulta = consulta.filter(ReservaInventario.id != excepto)
+    return Decimal(str(consulta.scalar()))
+
+
+def movimiento_por_referencia(inventario_id, referencia):
+    if not referencia:
+        return None
+    return MovimientoInventario.query.filter_by(inventario_id=inventario_id, referencia=referencia).first()
+
+
+def registrar_movimiento(inventario, tipo, cantidad, usuario, motivo=None, pedido=None, referencia=None,
+                         reserva_consumida=None):
     """
     ENTRADA suma, SALIDA resta y AJUSTE fija la existencia al conteo físico
     capturado (en ese caso `cantidad` es el conteo, no la diferencia).
+    Con `referencia`, un movimiento repetido no se vuelve a aplicar (RN-018).
+    `reserva_consumida`: id de la reserva que esta salida está surtiendo (no cuenta contra la salida).
     """
+    repetido = movimiento_por_referencia(inventario.id, referencia)
+    if repetido:
+        return repetido
     cantidad = Decimal(str(cantidad))
     if cantidad < 0:
         raise ReglaNegocioError('La cantidad no puede ser negativa.')
@@ -107,6 +133,11 @@ def registrar_movimiento(inventario, tipo, cantidad, usuario, motivo=None, pedid
         if cantidad > anterior:
             raise ReglaNegocioError(
                 f'No hay suficiente existencia: tienes {anterior.normalize():f} y quieres sacar {cantidad.normalize():f}.')
+        apartado = reservado(inventario.id, excepto=reserva_consumida)
+        if cantidad > anterior - apartado:
+            raise ReglaNegocioError(
+                f'{apartado.normalize():f} {inventario.producto.unidad_medida} están reservados: sólo puedes sacar '
+                f'{(anterior - apartado).normalize():f}.')
         nueva = anterior - cantidad
     elif tipo == 'AJUSTE':
         if not motivo:
@@ -125,6 +156,7 @@ def registrar_movimiento(inventario, tipo, cantidad, usuario, motivo=None, pedid
         motivo=motivo,
         pedido_id=pedido.id if pedido else None,
         usuario_id=usuario.id,
+        referencia=referencia,
     )
     db.session.add(movimiento)
     registrar_evento(usuario.id, 'ACTUALIZACION', 'InventarioComercio', inventario.id,

@@ -39,6 +39,45 @@ class MovimientoEntrada(BaseEntrada):
     tipo: Literal['ENTRADA', 'SALIDA', 'AJUSTE'] = Field(description='AJUSTE fija la existencia al conteo físico')
     cantidad: Decimal = Field(ge=0, max_digits=10, decimal_places=2)
     motivo: str | None = Field(None, max_length=255)
+    referencia: str | None = Field(None, max_length=100, description='Si se repite, el movimiento no se aplica dos veces')
+
+
+class MovimientoLote(BaseEntrada):
+    inventario_id: int | None = Field(None, ge=1)
+    producto_id: int | None = Field(None, ge=1, description='Alternativa a inventario_id')
+    tipo: Literal['ENTRADA', 'SALIDA', 'AJUSTE']
+    cantidad: Decimal = Field(ge=0, max_digits=10, decimal_places=2)
+    motivo: str | None = Field(None, max_length=255)
+
+    @model_validator(mode='after')
+    def _renglon(self):
+        if not (self.inventario_id or self.producto_id):
+            raise ValueError('indica inventario_id o producto_id')
+        return self
+
+
+class LoteEntrada(BaseEntrada):
+    referencia: str = Field(min_length=3, max_length=100, description='p. ej. venta:<uuid>, sync:<operacion>')
+    pedido_id: str | None = Field(None, description='Si los movimientos son la recepción de un pedido')
+    movimientos: list[MovimientoLote] = Field(min_length=1, max_length=200)
+
+
+class ReservaEntrada(BaseEntrada):
+    cantidad: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
+    motivo: str | None = Field(None, max_length=255)
+    referencia: str | None = Field(None, max_length=100)
+    minutos: int | None = Field(None, ge=1, le=10080, description='Por omisión RESERVA_MINUTOS (ms-configuracion)')
+
+
+class TransferenciaEntrada(BaseEntrada):
+    origen_id: int = Field(ge=1, description='Renglón de inventario de donde sale')
+    destino_comercio_id: str = Field(description='Sucursal (comercio del mismo dueño) a la que llega')
+    cantidad: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
+    motivo: str | None = Field(None, max_length=255)
+
+
+class SucursalesConsulta(BaseConsulta):
+    producto_id: int | None = Field(None, ge=1)
 
 
 class MovimientosConsulta(BaseConsulta):
@@ -46,15 +85,6 @@ class MovimientosConsulta(BaseConsulta):
     pagina: int = Field(1, ge=1)
     por_pagina: int = Field(30, ge=1, le=200)
 
-
-class DisponibilidadConsulta(BaseConsulta):
-    producto_id: int | None = Field(None, ge=1)
-    texto: str | None = Field(None, description='Parte del nombre del producto')
-    zona_id: int | None = Field(None, ge=1)
-    categoria_id: int | None = Field(None, ge=1)
-    con_existencia: bool = False
-    pagina: int = Field(1, ge=1)
-    por_pagina: int = Field(30, ge=1, le=100)
 
 
 # ---------------------------------------------------------------- salidas
@@ -69,6 +99,7 @@ class MovimientoSalida(Salida):
     pedido_id: str | None = None
     usuario_id: str | None = None
     fecha: datetime
+    referencia: str | None = None
     estado_inventario: Literal['DISPONIBLE', 'BAJO', 'AGOTADO'] | None = None
 
 
@@ -104,6 +135,72 @@ class InventarioSalida(Salida):
     paginacion: Paginacion
     resumen: ResumenInventario
     renglones: list[RenglonSalida]
+
+
+class LoteSalida(Salida):
+    referencia: str
+    comercio_id: str
+    ya_aplicado: bool
+    movimientos: list[MovimientoSalida]
+
+
+class ReservaSalida(Salida):
+    id: int
+    inventario_id: int
+    producto: str
+    cantidad: float
+    motivo: str | None = None
+    referencia: str | None = None
+    estado: Literal['ACTIVA', 'CONSUMIDA', 'LIBERADA', 'VENCIDA']
+    expira: datetime
+    creada: datetime | None = None
+    existencia: float
+    reservado_total: float
+    disponible: float
+
+
+class ReservasSalida(Salida):
+    inventario_id: int
+    existencia: float
+    reservado_total: float
+    disponible: float
+    reservas: list[ReservaSalida]
+
+
+class TransferenciaSalida(Salida):
+    id: int
+    origen_id: int
+    origen_comercio: str
+    destino_id: int
+    destino_comercio: str
+    producto: str
+    cantidad: float
+    motivo: str | None = None
+    fecha: datetime | None = None
+    existencia_origen: float | None = None
+    existencia_destino: float | None = None
+
+
+class TransferenciasSalida(Salida):
+    comercio_id: str
+    transferencias: list[TransferenciaSalida]
+
+
+class Sucursal(Salida):
+    comercio_id: str
+    comercio: str
+    zona: str | None = None
+    productos: int
+    bajo: int
+    agotado: int
+    existencia_producto: float | None = None
+    estado_producto: str | None = None
+
+
+class SucursalesSalida(Salida):
+    producto_id: int | None = None
+    total_producto: float | None = None
+    sucursales: list[Sucursal]
 
 
 class MovimientosSalida(Salida):
@@ -142,28 +239,12 @@ class ImportacionesSalida(Salida):
     importaciones: list[ImportacionSalida]
 
 
-class Disponible(Salida):
-    producto_id: int
-    producto: str
-    unidad_medida: str
-    comercio: str
-    sector: str
-    zona: str | None = None
-    existencia: float
-    estado: Literal['DISPONIBLE', 'BAJO', 'AGOTADO']
-    precio: float | None = None
-    actualizado: datetime | None = None
-
-
-class DisponibilidadSalida(Salida):
-    paginacion: Paginacion
-    renglones: list[Disponible]
-    origen: Literal['cache', 'postgres']
-
-
 CONTRATOS_XML = {
     'renglon_entrada': RenglonEntrada, 'limites_entrada': LimitesEntrada, 'movimiento_entrada': MovimientoEntrada,
     'renglon': RenglonSalida, 'inventario': InventarioSalida, 'movimiento': MovimientoSalida,
     'movimientos': MovimientosSalida, 'faltantes': FaltantesSalida, 'importacion': ImportacionSalida,
-    'importaciones': ImportacionesSalida, 'disponibilidad': DisponibilidadSalida,
+    'importaciones': ImportacionesSalida,
+    'lote_entrada': LoteEntrada, 'reserva_entrada': ReservaEntrada, 'transferencia_entrada': TransferenciaEntrada,
+    'lote': LoteSalida, 'reserva': ReservaSalida, 'reservas': ReservasSalida, 'transferencia': TransferenciaSalida,
+    'transferencias': TransferenciasSalida, 'sucursales': SucursalesSalida,
 }

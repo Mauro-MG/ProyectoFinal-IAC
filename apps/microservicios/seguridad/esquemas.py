@@ -1,7 +1,10 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import EmailStr, Field
+import re
+from typing import Annotated
+
+from pydantic import AfterValidator, EmailStr, Field
 
 from abasto_api import BaseConsulta, BaseEntrada
 from abasto_api.modelos_comunes import Paginacion, Salida
@@ -11,6 +14,39 @@ class LoginEntrada(BaseEntrada):
     email: EmailStr = Field(description='Correo de la cuenta')
     password: str = Field(min_length=1, max_length=128)
     origen: Literal['web', 'movil', 'escritorio', 'api'] = Field('api', description='Aplicación que inicia sesión')
+
+
+def _password_segura(valor):
+    if not (re.search(r'[A-Za-zÁÉÍÓÚáéíóúÑñ]', valor) and re.search(r'\d', valor)):
+        raise ValueError('la contraseña debe tener al menos una letra y un número')
+    return valor
+
+
+Password = Annotated[str, Field(min_length=8, max_length=128), AfterValidator(_password_segura)]
+
+
+class RegistroEntrada(BaseEntrada):
+    email: EmailStr
+    password: Password
+    nombre: str = Field(min_length=2, max_length=100)
+    apellido_paterno: str = Field(min_length=2, max_length=100)
+    telefono: str | None = Field(None, pattern=r'^\d{10}$')
+    perfil: Literal['Comerciante Informal', 'Minorista Formal', 'Proveedor']
+    origen: Literal['web', 'movil', 'escritorio', 'api'] = 'api'
+
+
+class RecuperacionEntrada(BaseEntrada):
+    email: EmailStr
+
+
+class RestablecerEntrada(BaseEntrada):
+    token: str = Field(min_length=20, max_length=100)
+    password: Password
+
+
+class CambioPasswordEntrada(BaseEntrada):
+    password_actual: str = Field(min_length=1, max_length=128)
+    password_nueva: Password
 
 
 class RenovarEntrada(BaseEntrada):
@@ -40,22 +76,6 @@ class PermisosEntrada(BaseEntrada):
 
 class SesionesConsulta(BaseConsulta):
     usuario_id: str | None = None
-
-
-class AuditoriaConsulta(BaseConsulta):
-    entidad: str | None = None
-    entidad_id: str | None = None
-    tipo_evento: str | None = None
-    usuario_id: str | None = None
-    desde: str | None = Field(None, description='AAAA-MM-DD')
-    hasta: str | None = Field(None, description='AAAA-MM-DD')
-    pagina: int = Field(1, ge=1)
-    por_pagina: int = Field(30, ge=1, le=200)
-
-
-class ActividadConsulta(BaseConsulta):
-    horas: int = Field(24, ge=1, le=24 * 30)
-    servicio: str | None = None
 
 
 # ---------------------------------------------------------------- salidas
@@ -140,50 +160,11 @@ class RolesSalida(Salida):
     roles: list[RolSalida]
 
 
-class EventoAuditoria(Salida):
-    id: int
-    fecha: datetime
-    usuario_id: str | None = None
-    tipo_evento: str
-    entidad: str
-    entidad_id: str | None = None
-    descripcion: str | None = None
-    datos_anteriores: dict | None = None
-    datos_nuevos: dict | None = None
-    ip: str | None = None
-
-
-class AuditoriaSalida(Salida):
-    paginacion: Paginacion
-    items: list[EventoAuditoria]
-
-
-class ActividadServicio(Salida):
-    servicio: str
-    peticiones: int
-    errores_cliente: int
-    errores_servidor: int
-    respuestas_xml: int
-    duracion_prom_ms: float
-    duracion_max_ms: float
-    ultima: datetime
-    contador_hoy: int
-
-
-class ActividadSalida(Salida):
-    horas: int
-    servicios: list[ActividadServicio]
-
-
-class RastreoSalida(Salida):
-    correlation_id: str
-    pasos: list[dict]
-
-
 CONTRATOS_XML = {
     'login': LoginEntrada, 'renovar': RenovarEntrada, 'validar': ValidarEntrada,
     'usuario_cambio': UsuarioCambio, 'permisos_entrada': PermisosEntrada,
     'tokens': TokensSalida, 'usuario': UsuarioSalida, 'usuarios': UsuariosSalida, 'sesion': SesionSalida,
     'validacion': ValidacionSalida, 'sesiones': SesionesSalida, 'roles': RolesSalida, 'rol': RolSalida,
-    'auditoria': AuditoriaSalida, 'actividad': ActividadSalida, 'rastreo': RastreoSalida,
+    'registro': RegistroEntrada, 'recuperacion': RecuperacionEntrada, 'restablecer': RestablecerEntrada,
+    'cambio_password': CambioPasswordEntrada,
 }

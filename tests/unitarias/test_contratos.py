@@ -19,8 +19,9 @@ def xsd_de(servicio):
     return RAIZ / 'apps' / 'microservicios' / servicio / 'xsd' / f'{servicio}.xsd'
 
 
-def test_hay_entre_6_y_10_servicios():
-    assert 6 <= len(SERVICIOS) <= 10, SERVICIOS
+def test_estan_los_24_servicios():
+    from abasto_dominio.registro_servicios import NOMBRES
+    assert SERVICIOS == sorted(NOMBRES), SERVICIOS
 
 
 @pytest.mark.parametrize('servicio', SERVICIOS)

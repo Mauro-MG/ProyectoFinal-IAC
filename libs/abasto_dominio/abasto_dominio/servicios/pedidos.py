@@ -185,7 +185,23 @@ def _recibir_en_inventario(pedido, usuario):
                              motivo=f'Recepción del pedido {pedido.folio_legible}', pedido=pedido)
 
 
-def ejecutar_accion(pedido, accion, usuario, comentario=None):
+class ExistenciasLocales:
+    """Existencias modificadas directamente en la base (sólo la usa el web mientras termina de migrar a las APIs).
+    ms-pedidos usa ExistenciasRemotas: le pide el cambio a ms-proveedores y ms-inventario, que son los dueños."""
+
+    def descontar_proveedor(self, pedido, usuario):
+        ofertas = _ofertas_bloqueadas(pedido)
+        _validar_existencia_proveedor(pedido, ofertas)
+        for detalle in pedido.detalles:
+            ofertas[detalle.producto_id].existencia_disponible -= detalle.cantidad
+
+    def recibir_comercio(self, pedido, usuario):
+        _recibir_en_inventario(pedido, usuario)
+
+
+def ejecutar_accion(pedido, accion, usuario, comentario=None, existencias=None):
+    """`existencias` decide quién cambia las existencias al despachar y al recibir (ver ExistenciasLocales)."""
+    existencias = existencias or ExistenciasLocales()
     if accion not in TRANSICIONES:
         raise ReglaNegocioError('Acción no válida.')
     if accion not in acciones_disponibles(pedido, usuario):
@@ -208,12 +224,9 @@ def ejecutar_accion(pedido, accion, usuario, comentario=None):
         pedido.fecha_respuesta = db.func.now()
         pedido.motivo_rechazo = comentario
     elif accion == 'despachar':
-        ofertas = _ofertas_bloqueadas(pedido)
-        _validar_existencia_proveedor(pedido, ofertas)
-        for detalle in pedido.detalles:
-            ofertas[detalle.producto_id].existencia_disponible -= detalle.cantidad
+        existencias.descontar_proveedor(pedido, usuario)
     elif accion == 'recibir':
-        _recibir_en_inventario(pedido, usuario)
+        existencias.recibir_comercio(pedido, usuario)
         pedido.fecha_entrega_real = db.func.now()
         comision = Decimal(str(parametro('COMISION_PEDIDO_PCT'))) / 100
         pedido.comision_plataforma = (pedido.subtotal * comision).quantize(Decimal('0.01'))

@@ -5,40 +5,29 @@
     <xs:documentation>Contratos XML v1 de ms-comercios (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
   </xs:annotation>
   <!-- Elementos raíz: uno por petición o respuesta -->
-  <xs:element name="archivo" type="ArchivoSalida"/>
-  <xs:element name="archivos" type="ArchivosSalida"/>
+  <xs:element name="cercanos" type="CercanosSalida"/>
   <xs:element name="comercio" type="ComercioSalida"/>
   <xs:element name="comercio_entrada" type="ComercioEntrada"/>
   <xs:element name="comercios" type="ComerciosSalida"/>
   <xs:element name="error" type="ErrorSalida"/>
-  <xs:element name="localizacion" type="LocalizacionSalida"/>
+  <xs:element name="foto_entrada" type="FotoEntrada"/>
+  <xs:element name="responsable" type="ResponsableSalida"/>
+  <xs:element name="responsable_entrada" type="ResponsableEntrada"/>
+  <xs:element name="responsables" type="ResponsablesSalida"/>
   <xs:element name="resultado" type="Resultado"/>
   <xs:element name="salud" type="Salud"/>
   <xs:element name="validacion_entrada" type="ValidacionEntrada"/>
-  <xs:element name="zonas" type="ZonasSalida"/>
   <!-- Tipos -->
-  <xs:complexType name="ArchivoSalida">
+  <xs:complexType name="CercanosSalida">
     <xs:all>
-      <xs:element name="id" type="xs:string" minOccurs="1"/>
-      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
-      <xs:element name="tipo_mime" type="xs:string" minOccurs="0"/>
-      <xs:element name="tamano_bytes" type="xs:integer" minOccurs="1"/>
-      <xs:element name="categoria" type="xs:string" minOccurs="0"/>
-      <xs:element name="entidad" type="xs:string" minOccurs="0"/>
-      <xs:element name="entidad_id" type="xs:string" minOccurs="0"/>
-      <xs:element name="descripcion" type="xs:string" minOccurs="0"/>
-      <xs:element name="usuario_id" type="xs:string" minOccurs="0"/>
-      <xs:element name="sha256" type="xs:string" minOccurs="0"/>
-      <xs:element name="subido_en" type="xs:dateTime" minOccurs="1"/>
-    </xs:all>
-  </xs:complexType>
-  <xs:complexType name="ArchivosSalida">
-    <xs:all>
-      <xs:element name="paginacion" type="Paginacion" minOccurs="1"/>
-      <xs:element name="archivos" minOccurs="1">
+      <xs:element name="latitud" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="longitud" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="radio_km" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="total" type="xs:integer" minOccurs="1"/>
+      <xs:element name="comercios" minOccurs="1">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="archivo" maxOccurs="unbounded" type="ArchivoSalida" minOccurs="0"/>
+            <xs:element name="comercio" maxOccurs="unbounded" type="ComercioSalida" minOccurs="0"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -128,10 +117,64 @@
       </xs:element>
       <xs:element name="horario_apertura" type="xs:time" minOccurs="0"/>
       <xs:element name="horario_cierre" type="xs:time" minOccurs="0"/>
+      <xs:element name="dias_operacion" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dia" maxOccurs="7" minOccurs="0">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="LUN"/>
+                  <xs:enumeration value="MAR"/>
+                  <xs:enumeration value="MIE"/>
+                  <xs:enumeration value="JUE"/>
+                  <xs:enumeration value="VIE"/>
+                  <xs:enumeration value="SAB"/>
+                  <xs:enumeration value="DOM"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="descripcion" minOccurs="0">
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:maxLength value="1000"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="giro" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="email_contacto" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="rfc" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[A-ZÑ&amp;]{3,4}\d{6}[A-Z0-9]{3}"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="razon_social" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="regimen_fiscal" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -184,9 +227,30 @@
       <xs:element name="telefono_comercio" type="xs:string" minOccurs="0"/>
       <xs:element name="horario_apertura" type="xs:time" minOccurs="0"/>
       <xs:element name="horario_cierre" type="xs:time" minOccurs="0"/>
+      <xs:element name="dias_operacion" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dia" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+      <xs:element name="giro" type="xs:string" minOccurs="0"/>
+      <xs:element name="email_contacto" type="xs:string" minOccurs="0"/>
+      <xs:element name="rfc" type="xs:string" minOccurs="0"/>
+      <xs:element name="razon_social" type="xs:string" minOccurs="0"/>
+      <xs:element name="regimen_fiscal" type="xs:string" minOccurs="0"/>
+      <xs:element name="foto_url" type="xs:string" minOccurs="0"/>
       <xs:element name="fecha_verificacion" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="creado_en" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="responsables" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="responsable" maxOccurs="unbounded" type="ResponsableSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="distancia_km" type="xs:decimal" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="ComerciosSalida">
@@ -243,15 +307,15 @@
       </xs:element>
     </xs:all>
   </xs:complexType>
-  <xs:complexType name="LocalizacionSalida">
+  <xs:complexType name="FotoEntrada">
     <xs:all>
-      <xs:element name="zona" type="ZonaSalida" minOccurs="1"/>
-      <xs:element name="cercanas" minOccurs="1">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="cercana" maxOccurs="unbounded" type="ZonaCercana" minOccurs="0"/>
-          </xs:sequence>
-        </xs:complexType>
+      <xs:element name="documento_id" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="24"/>
+            <xs:maxLength value="24"/>
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
     </xs:all>
   </xs:complexType>
@@ -287,6 +351,74 @@
             <xs:minInclusive value="0"/>
           </xs:restriction>
         </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ResponsableEntrada">
+    <xs:all>
+      <xs:element name="nombre" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+            <xs:maxLength value="150"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="puesto" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="DUENO"/>
+            <xs:enumeration value="ENCARGADO"/>
+            <xs:enumeration value="EMPLEADO"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="telefono" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="20"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="email" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="usuario_id" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ResponsableSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="comercio_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="puesto" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="DUENO"/>
+            <xs:enumeration value="ENCARGADO"/>
+            <xs:enumeration value="EMPLEADO"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="telefono" type="xs:string" minOccurs="0"/>
+      <xs:element name="email" type="xs:string" minOccurs="0"/>
+      <xs:element name="usuario_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="alta" type="xs:dateTime" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ResponsablesSalida">
+    <xs:all>
+      <xs:element name="comercio_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="responsables" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="responsable" maxOccurs="unbounded" type="ResponsableSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
       </xs:element>
     </xs:all>
   </xs:complexType>
@@ -334,45 +466,6 @@
             <xs:maxLength value="500"/>
           </xs:restriction>
         </xs:simpleType>
-      </xs:element>
-    </xs:all>
-  </xs:complexType>
-  <xs:complexType name="ZonaCercana">
-    <xs:all>
-      <xs:element name="zona_id" type="xs:integer" minOccurs="1"/>
-      <xs:element name="zona" type="xs:string" minOccurs="1"/>
-      <xs:element name="distancia_km" type="xs:decimal" minOccurs="1"/>
-      <xs:element name="radio_km" type="xs:decimal" minOccurs="1"/>
-    </xs:all>
-  </xs:complexType>
-  <xs:complexType name="ZonaSalida">
-    <xs:all>
-      <xs:element name="id" type="xs:integer" minOccurs="1"/>
-      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
-      <xs:element name="municipio" type="xs:string" minOccurs="1"/>
-      <xs:element name="estado" type="xs:string" minOccurs="1"/>
-      <xs:element name="latitud_centro" type="xs:decimal" minOccurs="1"/>
-      <xs:element name="longitud_centro" type="xs:decimal" minOccurs="1"/>
-      <xs:element name="radio_km" type="xs:decimal" minOccurs="1"/>
-      <xs:element name="poblacion" type="xs:integer" minOccurs="1"/>
-    </xs:all>
-  </xs:complexType>
-  <xs:complexType name="ZonasSalida">
-    <xs:all>
-      <xs:element name="origen" minOccurs="1">
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
-            <xs:enumeration value="cache"/>
-            <xs:enumeration value="postgres"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="zonas" minOccurs="1">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="zona" maxOccurs="unbounded" type="ZonaSalida" minOccurs="0"/>
-          </xs:sequence>
-        </xs:complexType>
       </xs:element>
     </xs:all>
   </xs:complexType>

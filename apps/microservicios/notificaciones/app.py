@@ -1,5 +1,9 @@
 """
-ms-notificaciones: avisos internos para cada usuario.
+ms-notificaciones: avisos internos y push para cada usuario.
+
+Es DUEÑO de: notificaciones, preferencias_notificacion, plantillas_notificacion, dispositivos_push y
+entregas_canal (MongoDB). Preferencias por tipo y canal, plantillas con variables, registro de
+dispositivos y entrega por canales autorizados (ver canales.py).
 
 Los demás componentes (web, ms-pedidos, ms-inventario, ms-precios, ms-comercios)
 le envían avisos con un token de servicio (POST /notificaciones/lote); cada
@@ -11,13 +15,19 @@ Redis: contador de no leídas por usuario (`notif:no_leidas:{usuario}`, 5 min).
 from pathlib import Path
 from uuid import UUID
 
+from datetime import datetime, timezone
+
 from flask import g
+from pymongo.errors import DuplicateKeyError
 
 from abasto_api import ErrorApi, Servicio, no_encontrado, sobre_lista, tiene
+from abasto_dominio import extensiones
 from abasto_dominio.servicios import notificaciones as notif
 
-from esquemas import (CONTRATOS_XML, LecturaEntrada, LoteEntrada, NotificacionEntrada,
-                      NotificacionesConsulta, ResumenConsulta)
+from esquemas import (CONTRATOS_XML, DispositivoEntrada, EnvioPlantillaEntrada, HistorialConsulta, LecturaEntrada,
+                      LoteEntrada, NotificacionEntrada, NotificacionesConsulta, PlantillaEntrada, PreferenciasEntrada,
+                      ResumenConsulta)
+import canales
 
 srv = Servicio('notificaciones', 'Notificaciones',
                'Notificaciones internas: alta individual y por lote (entre servicios), consulta paginada con filtros, '
@@ -94,8 +104,11 @@ def crear(datos):
         UUID(datos.usuario_id)
     except ValueError:
         raise ErrorApi(422, 'datos_invalidos', 'usuario_id debe ser un UUID.')
-    return notif.crear(datos.usuario_id, datos.tipo, datos.titulo, datos.mensaje, datos.url,
-                       prioridad=datos.prioridad, origen=g.claims.get('origen') or 'administracion')
+    creada, _ = canales.entregar(datos.usuario_id, datos.tipo, datos.titulo, datos.mensaje, datos.url,
+                                 prioridad=datos.prioridad, origen=g.claims.get('origen') or 'administracion')
+    if not creada:
+        raise ErrorApi(409, 'canal_apagado', 'El usuario apagó las notificaciones internas de ese tipo.')
+    return creada
 
 
 @srv.ruta('/notificaciones/lote', 'POST', resumen='Enviar un aviso a varios usuarios (entre servicios)',
@@ -106,9 +119,12 @@ def crear(datos):
                            'entidad': {'tipo': 'pedido', 'id': '…'}, 'prioridad': 'normal', 'origen': 'pedidos'})
 def crear_lote(datos):
     """Lo usan los demás servicios con un token de servicio (permiso notificaciones.crear)."""
-    creadas = [notif.crear(u, datos.tipo, datos.titulo, datos.mensaje, datos.url,
-                           datos.entidad.model_dump() if datos.entidad else None, datos.prioridad, datos.origen)['id']
-               for u in dict.fromkeys(datos.usuarios)]
+    creadas = []
+    for usuario in dict.fromkeys(datos.usuarios):
+        creada, _ = canales.entregar(usuario, datos.tipo, datos.titulo, datos.mensaje, datos.url,
+                                     datos.entidad.model_dump() if datos.entidad else None, datos.prioridad, datos.origen)
+        if creada:
+            creadas.append(creada['id'])
     return {'creadas': len(creadas), 'ids': creadas}
 
 
@@ -118,3 +134,116 @@ def resumen(q):
     if q.todos and not tiene('usuarios.gestionar'):
         raise ErrorApi(403, 'sin_permiso', 'Sólo la administración puede ver el resumen de todas las cuentas.')
     return {'dias': q.dias, 'resumen': notif.resumen(None if q.todos else _yo(), q.dias)}
+
+
+# ---------------------------------------------------------------- preferencias, plantillas y dispositivos
+
+@srv.ruta('/preferencias', 'GET', resumen='Mis preferencias de notificación', etiqueta='Preferencias',
+          raiz_xml='preferencias')
+def mis_preferencias():
+    return canales.preferencias(_yo())
+
+
+@srv.ruta('/preferencias', 'PUT', resumen='Cambiar mis preferencias', etiqueta='Preferencias',
+          cuerpo=PreferenciasEntrada, raiz_xml='preferencias', entrada_xml='preferencias_entrada',
+          ejemplo_entrada={'canales': {'todos': ['interno', 'push'], 'precio_atipico': ['interno']},
+                           'silencio': {'desde': 22, 'hasta': 7}})
+def cambiar_preferencias(datos):
+    """`canales` por tipo de aviso (o "todos" para el resto). Lo urgente (prioridad alta) siempre llega a la bandeja."""
+    tipos_validos = set(notif.TIPOS) | {'todos'}
+    desconocidos = sorted(set(datos.canales) - tipos_validos)
+    if desconocidos:
+        raise ErrorApi(422, 'tipo_invalido', f'Tipos de aviso que no existen: {desconocidos}.')
+    return canales.guardar_preferencias(_yo(), datos.canales, datos.silencio.model_dump())
+
+
+def plantilla_a_dict(p):
+    return {**{k: p[k] for k in ('clave', 'tipo', 'titulo', 'mensaje', 'prioridad')},
+            'variables': sorted(canales.campos_de(p['titulo']) | canales.campos_de(p['mensaje']))}
+
+
+@srv.ruta('/plantillas', 'GET', resumen='Plantillas de avisos', etiqueta='Plantillas',
+          permisos=['usuarios.gestionar', 'notificaciones.crear'], raiz_xml='plantillas')
+def listar_plantillas():
+    return {'plantillas': [plantilla_a_dict(p) for p in canales.plantillas()]}
+
+
+@srv.ruta('/plantillas', 'POST', resumen='Crear o reemplazar una plantilla', etiqueta='Plantillas',
+          permisos=['usuarios.gestionar'], cuerpo=PlantillaEntrada, status=201, raiz_xml='plantilla',
+          entrada_xml='plantilla_entrada',
+          ejemplo_entrada={'clave': 'cotizacion_nueva', 'tipo': 'cotizacion', 'titulo': 'Nueva cotización en {zona}',
+                           'mensaje': '{titulo}: {productos} producto(s).', 'prioridad': 'normal'})
+def guardar_plantilla(datos):
+    canales.plantillas()
+    extensiones.mongo_db()['plantillas_notificacion'].update_one(
+        {'clave': datos.clave}, {'$set': {**datos.model_dump(), 'actualizada': datetime.now(timezone.utc)}}, upsert=True)
+    return plantilla_a_dict(datos.model_dump())
+
+
+@srv.ruta('/notificaciones/plantilla', 'POST', resumen='Enviar un aviso con una plantilla', etiqueta='Envío',
+          permisos=['usuarios.gestionar', 'notificaciones.crear'], cuerpo=EnvioPlantillaEntrada, status=201,
+          raiz_xml='lote', entrada_xml='envio_plantilla_entrada',
+          ejemplo_entrada={'clave': 'mantenimiento', 'usuarios': ['1ebd...'],
+                           'variables': {'fecha': 'domingo 16', 'inicio': '2:00', 'fin': '4:00'}})
+def enviar_plantilla(datos):
+    p = canales.plantilla(datos.clave)
+    if not p:
+        raise no_encontrado(f'La plantilla {datos.clave}')
+    faltan = sorted((canales.campos_de(p['titulo']) | canales.campos_de(p['mensaje'])) - set(datos.variables))
+    if faltan:
+        raise ErrorApi(422, 'faltan_variables', f'Faltan variables de la plantilla: {faltan}.')
+    titulo, mensaje = p['titulo'].format(**datos.variables), p['mensaje'].format(**datos.variables)
+    creadas = []
+    for usuario in dict.fromkeys(datos.usuarios):
+        creada, _ = canales.entregar(usuario, p['tipo'], titulo[:200], mensaje[:1000], datos.url, None, p['prioridad'],
+                                     g.claims.get('origen') or 'administracion')
+        if creada:
+            creadas.append(creada['id'])
+    return {'creadas': len(creadas), 'ids': creadas}
+
+
+def dispositivo_a_dict(d):
+    return {'token_final': d['token'][-8:], 'plataforma': d['plataforma'], 'nombre': d.get('nombre'),
+            'activo': d.get('activo', True), 'registrado': d['registrado']}
+
+
+@srv.ruta('/dispositivos', 'POST', resumen='Registrar este dispositivo para push', etiqueta='Push',
+          cuerpo=DispositivoEntrada, status=201, raiz_xml='dispositivo', entrada_xml='dispositivo_entrada',
+          ejemplo_entrada={'token': 'fcm:APA91bH...', 'plataforma': 'android', 'nombre': 'Celular de Rosa'})
+def registrar_dispositivo(datos):
+    """Si el token ya estaba registrado por otra cuenta (otro usuario usó el mismo teléfono), pasa a esta."""
+    documento = {'usuario_id': _yo(), 'token': datos.token, 'plataforma': datos.plataforma, 'nombre': datos.nombre,
+                 'activo': True, 'registrado': datetime.now(timezone.utc)}
+    try:
+        extensiones.mongo_db()['dispositivos_push'].insert_one(dict(documento))
+    except DuplicateKeyError:
+        extensiones.mongo_db()['dispositivos_push'].update_one({'token': datos.token}, {'$set': documento})
+    return dispositivo_a_dict(documento)
+
+
+@srv.ruta('/dispositivos', 'GET', resumen='Mis dispositivos', etiqueta='Push', raiz_xml='dispositivos')
+def mis_dispositivos():
+    return {'dispositivos': [dispositivo_a_dict(d) for d in
+                             extensiones.mongo_db()['dispositivos_push'].find({'usuario_id': _yo(), 'activo': True})]}
+
+
+@srv.ruta('/dispositivos/<path:token>', 'DELETE', resumen='Dar de baja un dispositivo', etiqueta='Push',
+          raiz_xml='resultado')
+def baja_dispositivo(token):
+    resultado = extensiones.mongo_db()['dispositivos_push'].update_one({'token': token, 'usuario_id': _yo()},
+                                                                       {'$set': {'activo': False}})
+    if not resultado.matched_count:
+        raise no_encontrado('El dispositivo')
+    return {'mensaje': 'Dispositivo dado de baja', 'id': token[-8:]}
+
+
+@srv.ruta('/notificaciones/historial', 'GET', resumen='Historial de entregas por canal', etiqueta='Push',
+          consulta=HistorialConsulta, raiz_xml='historial')
+def historial(q):
+    """Por cada aviso: en qué canal se entregó, se omitió (preferencias o silencio) o no tenía dispositivo."""
+    filtro = {'usuario_id': _yo()}
+    if q.canal:
+        filtro['canal'] = q.canal
+    entregas = list(extensiones.mongo_db()['entregas_canal'].find(filtro, {'_id': 0, 'usuario_id': 0})
+                    .sort('fecha', -1).limit(q.limite))
+    return {'total': len(entregas), 'entregas': entregas}

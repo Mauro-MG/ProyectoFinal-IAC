@@ -28,6 +28,7 @@ Salida:
 import copy
 import html
 import json
+import platform
 import random
 import re
 import struct
@@ -106,14 +107,27 @@ def enviar(servicio, metodo, ruta, rol=None, params=None, cuerpo=None, xml=None,
     if xml is not None:
         h['Content-Type'] = 'application/xml'
     h.update(cabeceras or {})
-    for _ in range(4):
+    for _ in range(6):
+        # El gateway limita a 30 peticiones por segundo por IP: se va a ~25/s para no chocar con él
+        espera = _ULTIMA[0] + 0.04 - time.time()
+        if espera > 0:
+            time.sleep(espera)
+        _ULTIMA[0] = time.time()
         r = requests.request(metodo, url(servicio, ruta), params=params, json=cuerpo,
                              data=xml.encode() if isinstance(xml, str) else (datos if datos is not None else xml),
                              files=archivos, headers=h, timeout=30)
-        if r.status_code != 429 or '/auth/login' not in ruta:
+        if r.status_code != 429:
             break
-        time.sleep(int(r.headers.get('Retry-After', 20)) + 1)  # límite de 10 logins por minuto por IP
+        if r.headers.get('X-Limitado-Por') == 'gateway':
+            time.sleep(1.5)  # ráfaga frenada por el gateway: se reintenta (no es el caso que se está probando)
+        elif '/auth/login' in ruta:
+            time.sleep(int(r.headers.get('Retry-After', 20)) + 1)  # límite de 10 logins por minuto por IP
+        else:
+            break
     return r
+
+
+_ULTIMA = [0.0]
 
 
 def mostrar_cuerpo(r):
@@ -685,27 +699,20 @@ def limpiar():
 
 # ====================================================================== evidencia en las bases de datos
 
-def _env():
-    texto = (RAIZ / '.env').read_text(encoding='utf-8') if (RAIZ / '.env').exists() else ''
-    return dict(re.findall(r'^(\w+)=(.*)$', texto, re.M))
-
-
-def en_contenedor(contenedor, comando, extra_env=None):
-    args = ['docker', 'exec']
-    for k, v in (extra_env or {}).items():
-        args += ['-e', f'{k}={v}']
-    r = subprocess.run(args + [contenedor, 'sh', '-c', comando], capture_output=True, text=True, timeout=60,
-                       encoding='utf-8', errors='replace')
+def en_contenedor(contenedor, comando):
+    """Ejecuta un comando dentro del contenedor; las contraseñas se leen de sus secretos montados."""
+    r = subprocess.run(['docker', 'exec', contenedor, 'sh', '-c', comando], capture_output=True, text=True,
+                       timeout=60, encoding='utf-8', errors='replace')
     return (r.stdout or r.stderr).strip()
 
 
 def evidencias_bd():
     pg = lambda sql: en_contenedor('abastored-postgres', f'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "{sql}"')  # noqa: E731
     mongo = lambda js: en_contenedor('abastored-mongo', (  # noqa: E731
-        'mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase admin '
+        'mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$(cat /run/secrets/mongo_password)" --authenticationDatabase admin '
         f'"$MONGO_INITDB_DATABASE" --quiet --eval \'{js}\''))
-    redis = lambda cmd: en_contenedor('abastored-redis', f'redis-cli --no-auth-warning {cmd}',  # noqa: E731
-                                      {'REDISCLI_AUTH': _env().get('REDIS_PASSWORD', '')})
+    redis = lambda cmd: en_contenedor('abastored-redis',  # noqa: E731
+                                      f'REDISCLI_AUTH="$(cat /run/secrets/redis_password)" redis-cli --no-auth-warning {cmd}')
     pedido, minorista, renglon = ctx.get('pedido_ev', ''), ctx['id_minorista'], ctx['renglon_min_id']
     dia = datetime.now().strftime('%Y%m%d')
     return [
@@ -831,7 +838,7 @@ def reporte(bd):
     servicio_actual = None
     for (servicio, operacion), lista in operaciones.items():
         if servicio != servicio_actual:
-            detalle.append(f'<h2>ms-{e(servicio)} <span class="tenue">· puerto {PUERTOS[servicio]} · '
+            detalle.append(f'<h2>ms-{e(servicio)} <span class="tenue">· {e(base(servicio))} · '
                            f'<a href="{base(servicio)}/docs">Swagger</a></span></h2>')
             servicio_actual = servicio
         ancla = re.sub(r'\W+', '-', f'{servicio}-{operacion}').strip('-')
@@ -848,9 +855,15 @@ def reporte(bd):
 <div class="cifras">
   <div class="cifra"><b>{len(operaciones)}</b>operaciones</div>
   <div class="cifra"><b>{len(total)}</b>casos ejecutados</div>
-  <div class="cifra"><b class="{'ok' if not fallas else 'mal'}">{len(total) - len(fallas)}</b>con el resultado esperado</div>
+  <div class="cifra"><b class="ok">{len(total) - len(fallas)}</b>aprobados</div>
+  <div class="cifra"><b class="{'ok' if not fallas else 'mal'}">{len(fallas)}</b>fallidos</div>
+  <div class="cifra"><b class="na">{len(casos) - len(total)}</b>no aplican (no se ejecutan)</div>
   <div class="cifra"><b>{sum(1 for c in total if c['tipo'] == 'negocio')}</b>reglas de negocio probadas</div>
 </div>
+<p class="tenue">Ambiente: {e(AMBIENTE.get('host'))} · commit {e(AMBIENTE.get('git_commit'))} · {e(AMBIENTE.get('docker'))} ·
+Python {e(AMBIENTE.get('python'))} · comando <code>{e(AMBIENTE.get('comando'))}</code>. Un caso «aprobado» obtuvo
+exactamente el código HTTP esperado; «fallido», otro código; «no aplica» no se ejecutó y su motivo aparece en la
+tabla (por ejemplo, una operación pública no tiene caso de acceso no autorizado).</p>
 <p>Cada operación se prueba con los cinco casos de la rúbrica. Los de parámetros inválidos, registro inexistente y
 acceso no autorizado se derivan del contrato OpenAPI del servicio (tipos, restricciones y permisos declarados).
 «n/a» indica que el caso no aplica (operación pública, sin parámetros o sin regla de negocio que la impida).
@@ -950,7 +963,26 @@ def postman():
 
 # ====================================================================== principal
 
+AMBIENTE = {}
+
+
+def registrar_ambiente():
+    def salida(*cmd):
+        try:
+            return subprocess.run(cmd, capture_output=True, text=True, timeout=20, cwd=RAIZ).stdout.strip()
+        except (OSError, subprocess.TimeoutExpired):
+            return 'no disponible'
+    AMBIENTE.update(fecha=datetime.now().isoformat(timespec='seconds'), comando='python tests/evidencias/generar.py',
+                    host=base('seguridad').rsplit('/ms/', 1)[0], python=platform.python_version(),
+                    sistema_operativo=f'{platform.system()} {platform.release()}', docker=salida('docker', '--version'),
+                    git_commit=salida('git', 'rev-parse', '--short', 'HEAD'),
+                    git_rama=salida('git', 'rev-parse', '--abbrev-ref', 'HEAD'))
+
+
 def main():
+    for flujo in (sys.stdout, sys.stderr):
+        flujo.reconfigure(encoding='utf-8', errors='replace')
+    registrar_ambiente()
     print('Preparando datos de prueba...')
     preparar()
     for especificacion in OPS:
@@ -966,10 +998,24 @@ def main():
     print('\nConsultando las bases de datos...')
     bd = evidencias_bd()
 
+    # Cada caso con un estado explícito (en lugar de ok: true/false/null)
+    for c in casos:
+        c['estado'] = {True: 'aprobado', False: 'fallido', None: 'no_aplica'}[c.get('ok')]
+        if c['estado'] == 'no_aplica':
+            # «No aplica» es por diseño de la operación; «No se pudo preparar» es un caso omitido por el ambiente
+            if c['titulo'].startswith('No se pudo preparar'):
+                c['estado'] = 'omitido'
+            c['motivo'] = c['titulo'].removeprefix('No aplica: ')
+    resumen = {estado: sum(1 for c in casos if c['estado'] == estado)
+               for estado in ('aprobado', 'fallido', 'omitido', 'no_aplica')}
+    resumen.update(operaciones=len({(c['servicio'], c['operacion']) for c in casos}), casos_registrados=len(casos),
+                   casos_ejecutados=resumen['aprobado'] + resumen['fallido'])
+
     SALIDA.mkdir(parents=True, exist_ok=True)
     (SALIDA / 'evidencias_avance2.html').write_text(reporte(bd), encoding='utf-8')
     (SALIDA / 'resultados.json').write_text(json.dumps(
-        {'generado': datetime.now().isoformat(timespec='seconds'), 'casos': casos,
+        {'generado': datetime.now().isoformat(timespec='seconds'), 'ambiente': AMBIENTE, 'resumen': resumen,
+         'casos': [{k: v for k, v in c.items() if k != 'ok'} for c in casos],
          'bases_de_datos': [{'motor': m, 'titulo': t, 'salida': s} for m, t, s in bd]},
         ensure_ascii=False, indent=2, default=str), encoding='utf-8')
     postman()

@@ -11,8 +11,8 @@ from apoyo import url
 
 def test_cache_de_disponibilidad_se_invalida_al_mover_inventario(api):
     params = {'por_pagina': 5, 'texto': 'a'}
-    requests.get(url('inventario', '/disponibilidad'), params=params, timeout=10)  # calienta la caché
-    assert requests.get(url('inventario', '/disponibilidad'), params=params, timeout=10).json()['origen'] == 'cache'
+    requests.get(url('disponibilidad', '/disponibilidad'), params=params, timeout=10)  # calienta la caché
+    assert requests.get(url('disponibilidad', '/disponibilidad'), params=params, timeout=10).json()['origen'] == 'cache'
 
     minorista = api('minorista')
     comercio = minorista.get('comercios', '/comercios').json()['items'][0]['id']
@@ -21,13 +21,13 @@ def test_cache_de_disponibilidad_se_invalida_al_mover_inventario(api):
                        json={'tipo': 'ENTRADA', 'cantidad': 1, 'motivo': 'Prueba de invalidación de caché'})
     assert r.status_code == 201
 
-    # El movimiento incrementa analisis:version, así que la siguiente consulta vuelve a PostgreSQL
-    assert requests.get(url('inventario', '/disponibilidad'), params=params, timeout=10).json()['origen'] == 'postgres'
+    # El movimiento (ms-inventario) incrementa analisis:version, así que ms-disponibilidad vuelve a PostgreSQL
+    assert requests.get(url('disponibilidad', '/disponibilidad'), params=params, timeout=10).json()['origen'] == 'postgres'
 
 
 def test_cache_de_zonas(api):
-    requests.get(url('comercios', '/zonas'), timeout=10)
-    assert requests.get(url('comercios', '/zonas'), timeout=10).json()['origen'] == 'cache'
+    requests.get(url('geolocalizacion', '/zonas'), timeout=10)
+    assert requests.get(url('geolocalizacion', '/zonas'), timeout=10).json()['origen'] == 'cache'
 
 
 def test_snapshot_diario_de_precios_es_idempotente(api):
@@ -84,8 +84,8 @@ def test_notificacion_ajena_no_se_ve(api):
 
 
 def test_actividad_de_servicios_desde_la_bitacora(api):
-    r = api('admin').get('seguridad', '/actividad', params={'horas': 1})
+    r = api('admin').get('monitoreo', '/metricas', params={'horas': 1})
     assert r.status_code == 200
     servicios = {s['servicio']: s for s in r.json()['servicios']}
     assert {'pedidos', 'inventario', 'seguridad'} <= set(servicios)
-    assert all(s['contador_hoy'] >= 1 for s in servicios.values())
+    assert all(s['peticiones_hoy'] >= 1 for s in servicios.values())
