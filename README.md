@@ -25,8 +25,8 @@ microservicios, contratos, pruebas y plan) está en **`docs/AbastoRed_Equipo01_D
 ├── apps/
 │   ├── web/              Sistema web empresarial (Flask, sin blueprints)     ← avance 1, ampliado en el 2
 │   ├── microservicios/   24 servicios Flask, uno por contenedor (8101–8124)   ← avance 2 y entrega final
-│   ├── movil/            App Android (Kotlin), sólo JSON                       ← avance 3
-│   ├── escritorio/       App PySide6, sólo XML                                 ← avance 3
+│   ├── movil/            App Android (Kotlin + Compose), sólo JSON, sin conexión con sincronización
+│   ├── escritorio/       App PySide6, sólo XML validado contra el XSD de cada servicio
 │   └── infra/            Despliegue en Google Cloud                            ← avance 4
 ├── libs/
 │   ├── abasto_dominio/   Modelos y reglas de negocio (los usan el web y los servicios)

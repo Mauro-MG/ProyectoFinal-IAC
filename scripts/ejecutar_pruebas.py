@@ -33,7 +33,8 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parents[1]
 VENV = RAIZ / '.venv'
 DEPENDENCIAS = [RAIZ / 'tests' / 'requirements.txt', RAIZ / 'libs' / 'abasto_dominio' / 'pyproject.toml',
-                RAIZ / 'libs' / 'abasto_api' / 'pyproject.toml']
+                RAIZ / 'libs' / 'abasto_api' / 'pyproject.toml',
+                RAIZ / 'apps' / 'escritorio' / 'requirements.txt']   # PySide6: pruebas de la app de escritorio
 ESTADOS = ('aprobada', 'fallida', 'error', 'omitida', 'no_aplica')
 NOMBRES = {'aprobada': 'Aprobadas', 'fallida': 'Fallidas', 'error': 'Con error', 'omitida': 'Omitidas',
            'no_aplica': 'No aplican'}
@@ -63,7 +64,8 @@ def preparar_entorno():
         print('Instalando dependencias de las pruebas …')
         subprocess.run([str(python), '-m', 'pip', 'install', '-q', '--disable-pip-version-check',
                         '-e', str(RAIZ / 'libs' / 'abasto_dominio'), '-e', str(RAIZ / 'libs' / 'abasto_api'),
-                        '-r', str(RAIZ / 'tests' / 'requirements.txt')], check=True)
+                        '-r', str(RAIZ / 'tests' / 'requirements.txt'),
+                        '-r', str(RAIZ / 'apps' / 'escritorio' / 'requirements.txt')], check=True)
         marca.write_text(huella)
     return python
 

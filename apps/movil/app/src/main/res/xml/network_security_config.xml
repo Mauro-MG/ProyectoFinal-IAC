@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Solo HTTPS. Se confía en las autoridades del sistema y en el certificado autofirmado del gateway del
+     proyecto (lo copia app/build.gradle.kts desde infra/certs); no se acepta cualquier certificado. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/abastored_gateway" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
