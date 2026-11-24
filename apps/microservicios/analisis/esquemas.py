@@ -26,6 +26,11 @@ class EvolucionConsulta(BaseConsulta):
     dias: int = Field(90, ge=1, le=365)
 
 
+class GraficaConsulta(BaseConsulta):
+    zona_id: int | None = Field(None, ge=1)
+    dias: int = Field(90, ge=1, le=365)
+
+
 class OportunidadesConsulta(BaseConsulta):
     limite: int = Field(50, ge=1, le=500)
 
@@ -101,28 +106,6 @@ class BrechasSalida(Salida):
     totales: TotalesBrecha
 
 
-class Recomendacion(Salida):
-    producto_id: int
-    producto: str
-    canasta_basica: bool
-    motivo: str
-    cobertura: float
-    con_disponibilidad: int
-    comercios_analizados: int
-    ventas: float
-    proveedores: int
-    precio_mayoreo_min: float | None = None
-    precio_promedio: float | None = None
-    margen_estimado: float | None = None
-    puntaje: int
-
-
-class RecomendacionesSalida(Salida):
-    comercio_id: str
-    zona: str
-    umbral_cobertura: float
-    recomendaciones: list[Recomendacion]
-
 
 class PuntoComercio(Salida):
     nombre: str
@@ -187,7 +170,39 @@ class EvolucionSalida(Salida):
     datos: list[PuntoEvolucion]
 
 
+class Municipio(Salida):
+    municipio: str
+    zonas: int
+    poblacion: int
+    comercios: int
+    formales: int
+    informales: int
+    proveedores: int
+    habitantes_por_comercio: float | None = None
+    indice_acceso_promedio: float | None = None
+    zonas_criticas: int
+
+
+class MunicipiosSalida(Salida):
+    municipios: list[Municipio]
+
+
+class Serie(Salida):
+    name: str
+    data: list[float | None]
+    type: str | None = None
+
+
+class GraficaSalida(Salida):
+    grafica: str
+    titulo: str
+    tipo: str
+    categories: list[str]
+    series: list[Serie]
+
+
 CONTRATOS_XML = {
-    'zonas': ZonasSalida, 'brechas': BrechasSalida, 'recomendaciones': RecomendacionesSalida, 'mapa': MapaSalida,
+    'zonas': ZonasSalida, 'brechas': BrechasSalida, 'mapa': MapaSalida,
     'oportunidades': OportunidadesSalida, 'ejecucion': EjecucionSalida, 'evolucion': EvolucionSalida,
+    'municipios': MunicipiosSalida, 'grafica': GraficaSalida,
 }

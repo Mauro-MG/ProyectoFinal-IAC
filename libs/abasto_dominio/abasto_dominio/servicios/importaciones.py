@@ -10,6 +10,9 @@ stock_maximo, precio. Sólo `producto` y `existencia` son obligatorias.
   * Cada fila se aplica dentro de un savepoint: una fila con error no
     deshace las demás, y los errores se reportan con su número de fila.
   * La existencia se aplica como AJUSTE (conteo físico), así queda en movimientos.
+  * Los precios no se escriben aquí: al terminar se confirman las filas y cada
+    precio se manda al dueño (ms-precios) con `fijar_precio`; si lo rechaza,
+    el error queda en la fila.
   * El resultado se guarda en MongoDB (colección `importaciones`).
 """
 import csv
@@ -25,7 +28,7 @@ from abasto_dominio.modelos import InventarioComercio, ProductoMaestro
 from abasto_dominio.servicios import ReglaNegocioError, archivos
 from abasto_dominio.servicios.auditoria import registrar_evento
 from abasto_dominio.servicios.bloqueos import bloqueo
-from abasto_dominio.servicios.inventario import actualizar_precio, agregar_al_catalogo, registrar_movimiento
+from abasto_dominio.servicios.inventario import agregar_al_catalogo, registrar_movimiento
 from abasto_dominio.servicios.notificaciones import notificar
 
 OBLIGATORIAS = ('producto', 'existencia')
@@ -72,8 +75,8 @@ def _aplicar_fila(comercio, fila, usuario):
 
     renglon = InventarioComercio.query.filter_by(comercio_id=comercio.id, producto_id=producto.id, activo=True).first()
     if not renglon:
-        agregar_al_catalogo(comercio, producto, usuario, existencia, minimo or 0, maximo, precio)
-        return 'agregado'
+        renglon = agregar_al_catalogo(comercio, producto, usuario, existencia, minimo or 0, maximo)
+        return 'agregado', renglon.id, precio
 
     if minimo is not None:
         renglon.stock_minimo = minimo
@@ -83,12 +86,11 @@ def _aplicar_fila(comercio, fila, usuario):
         renglon.stock_maximo = maximo
     if existencia != renglon.existencia:
         registrar_movimiento(renglon, 'AJUSTE', existencia, usuario, motivo='Importación CSV')
-    if precio is not None:
-        actualizar_precio(renglon, precio, usuario, metodo_captura='IMPORTACION')
-    return 'actualizado'
+    return 'actualizado', renglon.id, (precio if precio is not None and precio != renglon.precio_venta else None)
 
 
-def importar_inventario(comercio, contenido, nombre_archivo, usuario):
+def importar_inventario(comercio, contenido, nombre_archivo, usuario, fijar_precio=None):
+    """`fijar_precio(inventario_id, precio)` manda el precio a su dueño y regresa None o el motivo del rechazo."""
     with bloqueo(f'importacion:{comercio.id}', ttl_segundos=300,
                  mensaje='Ya hay una importación en curso para este comercio.'):
         try:
@@ -107,7 +109,7 @@ def importar_inventario(comercio, contenido, nombre_archivo, usuario):
                                    'comercio', comercio.id, usuario.id, 'Importación de inventario')
 
         conteo = {'agregado': 0, 'actualizado': 0}
-        errores = []
+        errores, precios = [], []
         total = 0
         for numero_fila, fila in enumerate(lector, start=2):
             total += 1
@@ -117,11 +119,22 @@ def importar_inventario(comercio, contenido, nombre_archivo, usuario):
                 break
             try:
                 with db.session.begin_nested():
-                    resultado = _aplicar_fila(comercio, fila, usuario)
+                    resultado, inventario_id, precio = _aplicar_fila(comercio, fila, usuario)
                 conteo[resultado] += 1
+                if precio:
+                    precios.append((numero_fila, (fila.get('producto') or '').strip(), inventario_id, precio))
             except ReglaNegocioError as error:
                 errores.append({'fila': numero_fila, 'producto': (fila.get('producto') or '').strip(),
                                 'error': str(error)})
+
+        # Las filas quedan confirmadas antes de pedir los precios: ms-precios necesita ver los renglones nuevos
+        db.session.commit()
+        for numero_fila, producto, inventario_id, precio in precios:
+            motivo = fijar_precio(inventario_id, precio) if fijar_precio else 'No se indicó cómo fijar el precio.'
+            if motivo:
+                errores.append({'fila': numero_fila, 'producto': producto,
+                                'error': f'Existencia guardada, pero el precio no: {motivo}'})
+        errores.sort(key=lambda e: e['fila'])
 
         resumen = {
             'schema_version': 1,

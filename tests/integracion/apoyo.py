@@ -1,16 +1,32 @@
-"""Utilidades compartidas por las pruebas de integración (URL, usuarios, cliente con token)."""
+"""
+Utilidades compartidas por las pruebas de integración (URL, usuarios, cliente con token).
+
+Las pruebas llegan al sistema como lo haría un cliente real: por el gateway HTTPS
+(https://localhost/ms/<servicio>/...), verificando su certificado. Variables:
+    PRUEBAS_MODO   gateway (por omisión) · directo (puertos 81xx de docker-compose.dev.yml)
+                   · interno (desde un contenedor de la red: http://ms-<servicio>:8000)
+    PRUEBAS_HOST   dirección del gateway (por omisión https://localhost)
+"""
 import os
 import time
 from pathlib import Path
 
 import requests
 
-HOST = os.environ.get('PRUEBAS_HOST', 'http://localhost')
-PUERTOS = {'seguridad': 8101, 'comercios': 8102, 'catalogo': 8103, 'inventario': 8104,
-           'precios': 8105, 'pedidos': 8106, 'analisis': 8107, 'notificaciones': 8108}
-WEB = os.environ.get('PRUEBAS_WEB', f'{HOST}:5000')
+from abasto_dominio import registro_servicios
+
 RAIZ = Path(__file__).resolve().parents[2]
 NS = 'https://abastored.mx/esquemas/v1'
+# Puertos internos de desarrollo (docker-compose.dev.yml); en modo gateway sólo se usa el nombre
+PUERTOS = {nombre: puerto for nombre, (puerto, _) in registro_servicios.SERVICIOS.items()}
+MODO = os.environ.get('PRUEBAS_MODO', 'gateway')
+HOST = os.environ.get('PRUEBAS_HOST', 'https://localhost')
+WEB = {'gateway': HOST, 'directo': 'http://localhost:5000', 'interno': 'http://abastored-web:5000'}[MODO]
+
+# El gateway usa un certificado autofirmado: se confía en él explícitamente (no se desactiva la verificación)
+_CERTIFICADO = RAIZ / 'infra' / 'certs' / 'abastored.crt'
+if MODO == 'gateway' and _CERTIFICADO.exists():
+    os.environ.setdefault('REQUESTS_CA_BUNDLE', str(_CERTIFICADO))
 
 USUARIOS = {
     'admin': ('admin@abastored.mx', 'Admin123!'),
@@ -29,7 +45,11 @@ SESIONES = {}
 
 
 def base(servicio):
-    return f'{HOST}:{PUERTOS[servicio]}'
+    if MODO == 'directo':
+        return f'http://localhost:{PUERTOS[servicio]}'
+    if MODO == 'interno':
+        return f'http://ms-{servicio}:8000'
+    return f'{HOST}/ms/{servicio}'
 
 
 def url(servicio, ruta):

@@ -1,41 +1,44 @@
 """
-ms-comercios: registro de comercios, validación municipal, zonas y evidencias.
+ms-comercios: registro y administración de comercios formales e informales.
 
-PostgreSQL + PostGIS: comercios, zonas_municipales (geometría y buffer de zona).
-MongoDB (GridFS, bucket `archivos`): fotos del comercio y evidencias de validación.
-Redis: caché de zonas (`comercios:zonas`, 10 min).
+Es DUEÑO de: comercios y responsables_comercio.
+- Datos fiscales opcionales (RFC, razón social, régimen), ubicación, contacto, horarios, días de
+  operación, giro y tipo de comercio; verificación municipal y baja lógica.
+- Responsables del establecimiento (dueño, encargado, empleados), con o sin cuenta.
+- Búsqueda geográfica de comercios cercanos (PostGIS, ST_DWithin sobre la geometría del comercio).
+- La zona se pide a ms-geolocalizacion (dueña de las zonas); si no responde, se calcula con la
+  biblioteca de dominio leyendo las zonas (sólo lectura) para no detener el registro.
+- Fotos y evidencias: se suben a ms-documentos; aquí sólo se fija la foto principal (PUT /foto).
 Se integra con ms-notificaciones (aviso al dueño cuando su comercio se valida).
 """
 from pathlib import Path
-import json
 from uuid import UUID
 
-from flask import Response, g, request
-from redis.exceptions import RedisError
-from sqlalchemy import cast, or_
+from flask import g
+from sqlalchemy import cast, or_, text
 
-from abasto_api import (ErrorApi, Servicio, no_encontrado, paginar, prohibido, sobre_lista, tiene,
-                        usuario_actual)
-from abasto_dominio import extensiones
+from abasto_api import ErrorApi, Servicio, no_encontrado, paginar, prohibido, tiene, usuario_actual
+from abasto_api.clientes import llamar
 from abasto_dominio.extensiones import db
-from abasto_dominio.modelos import Comercio, ZonaMunicipal
-from abasto_dominio.servicios import archivos
+from abasto_dominio.modelos import Comercio, ResponsableComercio, Usuario, ZonaMunicipal
 from abasto_dominio.servicios.auditoria import registrar_evento
 from abasto_dominio.servicios.cache import invalidar_analisis
-from abasto_dominio.servicios.geo import distancia_km, zona_para_punto
+from abasto_dominio.servicios.geo import zona_para_punto
 from abasto_dominio.servicios.notificaciones import notificar
 
-from esquemas import (CONTRATOS_XML, ArchivosConsulta, ComercioEntrada, ComerciosConsulta, LocalizarConsulta,
-                      ValidacionEntrada)
+from esquemas import (CONTRATOS_XML, CercanosConsulta, ComercioEntrada, ComerciosConsulta, FotoEntrada,
+                      ResponsableEntrada, ValidacionEntrada)
 
 srv = Servicio('comercios', 'Comercios',
-               'Registro y validación de comercios formales e informales, zonas municipales, localización '
-               'geográfica y evidencias (fotos y documentos en GridFS).',
+               'Registro y administración de comercios formales e informales: datos fiscales opcionales, ubicación, '
+               'contacto, horarios, giro, tipo, verificación y baja lógica; búsqueda geográfica; establecimientos y '
+               'responsables.',
                xsd=Path(__file__).parent / 'xsd' / 'comercios.xsd', contratos=CONTRATOS_XML)
 app = srv.app
 
 CAMPOS = ('nombre_comercio', 'tipo_comercio', 'direccion', 'colonia', 'municipio', 'estado', 'latitud',
-          'longitud', 'telefono_comercio', 'horario_apertura', 'horario_cierre', 'descripcion')
+          'longitud', 'telefono_comercio', 'horario_apertura', 'horario_cierre', 'dias_operacion', 'descripcion',
+          'giro', 'email_contacto', 'rfc', 'razon_social', 'regimen_fiscal')
 
 
 def comercio_a_dict(c, detalle=False):
@@ -49,7 +52,11 @@ def comercio_a_dict(c, detalle=False):
         datos.update({
             'latitud': c.latitud, 'longitud': c.longitud, 'telefono_comercio': c.telefono_comercio,
             'horario_apertura': c.horario_apertura, 'horario_cierre': c.horario_cierre,
-            'descripcion': c.descripcion, 'fecha_verificacion': c.fecha_verificacion, 'creado_en': c.created_at,
+            'dias_operacion': c.dias_operacion, 'descripcion': c.descripcion, 'giro': c.giro,
+            'email_contacto': c.email_contacto, 'rfc': c.rfc, 'razon_social': c.razon_social,
+            'regimen_fiscal': c.regimen_fiscal, 'foto_url': c.foto_url,
+            'fecha_verificacion': c.fecha_verificacion, 'creado_en': c.created_at,
+            'responsables': [responsable_a_dict(r) for r in c.responsables],
         })
     return datos
 
@@ -67,7 +74,14 @@ def _comercio(id, editar=False):
 
 
 def _foto(c):
-    return {k: getattr(c, k) for k in ('nombre_comercio', 'tipo_comercio', 'direccion', 'municipio', 'zona_id')}
+    return {k: getattr(c, k) for k in ('nombre_comercio', 'tipo_comercio', 'direccion', 'municipio', 'zona_id', 'giro',
+                                       'rfc', 'razon_social')}
+
+
+def responsable_a_dict(r):
+    return {'id': r.id, 'comercio_id': str(r.comercio_id), 'nombre': r.nombre, 'puesto': r.puesto,
+            'telefono': r.telefono, 'email': r.email, 'usuario_id': str(r.usuario_id) if r.usuario_id else None,
+            'alta': r.created_at}
 
 
 def _zonas():
@@ -92,7 +106,12 @@ def listar_comercios(q):
         consulta = consulta.filter(Comercio.usuario_id == UUID(g.claims['sub']))
     if q.texto:
         consulta = consulta.filter(or_(Comercio.nombre_comercio.ilike(f'%{q.texto}%'),
-                                       Comercio.direccion.ilike(f'%{q.texto}%')))
+                                       Comercio.direccion.ilike(f'%{q.texto}%'),
+                                       Comercio.razon_social.ilike(f'%{q.texto}%')))
+    if q.giro:
+        consulta = consulta.filter(Comercio.giro == q.giro)
+    if q.municipio:
+        consulta = consulta.filter(Comercio.municipio == q.municipio)
     if q.zona_id:
         consulta = consulta.filter(Comercio.zona_id == q.zona_id)
     if q.estado_registro:
@@ -130,14 +149,28 @@ def crear_comercio(datos):
     return comercio_a_dict(comercio, detalle=True)
 
 
+def zona_de(latitud, longitud):
+    """Pregunta a ms-geolocalizacion (ST_Contains en PostGIS). Si no responde, se calcula aquí con Haversine."""
+    try:
+        respuesta = llamar('geolocalizacion', 'GET', '/api/v1/zonas/localizar', token=g.token,
+                           params={'latitud': str(latitud), 'longitud': str(longitud)})
+        if respuesta.status_code == 200:
+            return respuesta.json()['zona']['id']
+        if respuesta.status_code == 404:
+            return None
+    except ErrorApi:
+        pass
+    zona = zona_para_punto(latitud, longitud, _zonas())
+    return zona.id if zona else None
+
+
 def _asignar_zona(comercio, zona_id):
     if zona_id:
         if not db.session.get(ZonaMunicipal, zona_id):
             raise ErrorApi(422, 'zona_inexistente', 'La zona indicada no existe.')
         comercio.zona_id = zona_id
     elif comercio.latitud is not None and comercio.longitud is not None:
-        zona = zona_para_punto(comercio.latitud, comercio.longitud, _zonas())
-        comercio.zona_id = zona.id if zona else None
+        comercio.zona_id = zona_de(comercio.latitud, comercio.longitud)
     else:
         comercio.zona_id = None
 
@@ -199,111 +232,94 @@ def baja_comercio(id):
     return {'mensaje': 'Comercio dado de baja', 'id': str(comercio.id)}
 
 
-# ---------------------------------------------------------------- zonas
+# ---------------------------------------------------------------- foto, responsables y cercanos
 
-def zona_a_dict(z):
-    return {'id': z.id, 'nombre': z.nombre, 'municipio': z.municipio, 'estado': z.estado,
-            'latitud_centro': float(z.latitud_centro), 'longitud_centro': float(z.longitud_centro),
-            'radio_km': float(z.radio_km), 'poblacion': z.poblacion}
-
-
-@srv.ruta('/zonas', 'GET', resumen='Zonas municipales', etiqueta='Zonas', publico=True, raiz_xml='zonas',
-         )
-def listar_zonas():
-    """Lista pública de zonas activas. Se guarda 10 minutos en Redis (comercios:zonas)."""
-    try:
-        guardado = extensiones.redis_client.get('comercios:zonas')
-        if guardado:
-            return {'origen': 'cache', 'zonas': json.loads(guardado)}
-    except RedisError:
-        pass
-    zonas = [zona_a_dict(z) for z in ZonaMunicipal.query.filter_by(activa=True).order_by(ZonaMunicipal.nombre)]
-    try:
-        extensiones.redis_client.setex('comercios:zonas', 600, json.dumps(zonas))
-    except RedisError:
-        pass
-    return {'origen': 'postgres', 'zonas': zonas}
-
-
-@srv.ruta('/zonas/localizar', 'GET', resumen='¿En qué zona cae un punto?', etiqueta='Zonas', publico=True,
-          consulta=LocalizarConsulta, raiz_xml='localizacion', errores=(400, 404, 422))
-def localizar(q):
-    """Buffer: distancia de Haversine del punto al centro de cada zona contra su radio."""
-    zonas = _zonas()
-    zona = zona_para_punto(q.latitud, q.longitud, zonas)
-    cercanas = sorted(({'zona_id': z.id, 'zona': z.nombre,
-                        'distancia_km': round(distancia_km(q.latitud, q.longitud, z.latitud_centro, z.longitud_centro), 2),
-                        'radio_km': float(z.radio_km)} for z in zonas), key=lambda x: x['distancia_km'])[:3]
-    if not zona:
-        raise ErrorApi(404, 'fuera_de_zona', 'El punto no cae dentro de ninguna zona registrada.',
-                       detalles=cercanas)
-    return {'zona': zona_a_dict(zona), 'cercanas': cercanas}
-
-
-# ---------------------------------------------------------------- archivos (GridFS)
-
-@srv.ruta('/comercios/<uuid:id>/archivos', 'POST', resumen='Subir foto o evidencia', etiqueta='Archivos',
-          permisos=['archivos.gestionar'], status=201, raiz_xml='archivo',
-          errores=(400, 401, 403, 404, 413, 422),
-          multipart={'type': 'object', 'required': ['archivo', 'categoria'], 'properties': {
-              'archivo': {'type': 'string', 'format': 'binary'},
-              'categoria': {'type': 'string', 'enum': ['foto_comercio', 'evidencia_validacion', 'documento']},
-              'descripcion': {'type': 'string'}}})
-def subir_archivo(id):
-    """multipart/form-data. JPG, PNG, WEBP o PDF hasta 10 MB. El dueño sube fotos; el coordinador, evidencias."""
-    comercio = db.session.get(Comercio, id)
-    if not comercio or not comercio.activo:
-        raise no_encontrado('El comercio')
-    if str(comercio.usuario_id) != g.claims['sub'] and not tiene('comercios.validar'):
-        raise prohibido('Sólo el dueño o la coordinación pueden adjuntar archivos a este comercio.')
-    archivo = request.files.get('archivo')
-    categoria = request.form.get('categoria', 'foto_comercio')
-    if not archivo or not archivo.filename:
-        raise ErrorApi(400, 'archivo_requerido', 'Envía el archivo en el campo "archivo" (multipart/form-data).')
-    if categoria not in ('foto_comercio', 'evidencia_validacion', 'documento'):
-        raise ErrorApi(422, 'categoria_invalida', 'categoria debe ser foto_comercio, evidencia_validacion o documento.')
-    meta = archivos.guardar(archivo.read(), archivo.filename, archivo.mimetype, categoria, 'comercio', comercio.id,
-                            g.claims['sub'], request.form.get('descripcion'))
-    if categoria == 'foto_comercio':
-        comercio.foto_url = f'/archivos/{meta["id"]}'
-    registrar_evento(UUID(g.claims['sub']), 'CREACION', 'Archivo', meta['id'],
-                     f'{archivos.CATEGORIAS[categoria]} de {comercio.nombre_comercio}: {meta["nombre"]}')
+@srv.ruta('/comercios/<uuid:id>/foto', 'PUT', resumen='Fijar la foto principal', etiqueta='Comercios',
+          permisos=['comercios.gestionar'], cuerpo=FotoEntrada, raiz_xml='comercio', entrada_xml='foto_entrada',
+          ejemplo_entrada={'documento_id': '6735c1f0a1b2c3d4e5f60718'})
+def fijar_foto(id, datos):
+    """La foto se sube antes a ms-documentos (entidad comercio, categoría foto_comercio); aquí se verifica con
+    ms-documentos que exista y sea de este comercio, y se guarda su ruta."""
+    comercio = _comercio(id, editar=True)
+    respuesta = llamar('documentos', 'GET', f'/api/v1/documentos/{datos.documento_id}', token=g.token)
+    if respuesta.status_code != 200:
+        raise ErrorApi(422 if respuesta.status_code in (403, 404) else 503, 'documento_invalido',
+                       'El documento no existe en ms-documentos o no tienes acceso a él.')
+    documento = respuesta.json()
+    if documento.get('entidad') != 'comercio' or documento.get('entidad_id') != str(comercio.id) \
+            or not (documento.get('tipo_mime') or '').startswith('image/'):
+        raise ErrorApi(422, 'documento_invalido', 'El documento debe ser una imagen de este comercio.')
+    antes = comercio.foto_url
+    comercio.foto_url = f'/ms/documentos/api/v1/documentos/{datos.documento_id}/contenido'
+    registrar_evento(UUID(g.claims['sub']), 'ACTUALIZACION', 'Comercio', comercio.id, 'Foto principal',
+                     datos_anteriores={'foto_url': antes}, datos_nuevos={'foto_url': comercio.foto_url})
     db.session.commit()
-    return meta
+    return comercio_a_dict(comercio, detalle=True)
 
 
-@srv.ruta('/comercios/<uuid:id>/archivos', 'GET', resumen='Archivos del comercio', etiqueta='Archivos',
-          permisos=['comercios.gestionar', 'comercios.ver_todos'], consulta=ArchivosConsulta, raiz_xml='archivos')
-def listar_archivos(id, q):
-    _comercio(id)
-    items, total = archivos.listar('comercio', id, q.categoria, pagina=q.pagina, por_pagina=q.por_pagina)
-    return sobre_lista(items, total, q.pagina, q.por_pagina, 'archivos')
+@srv.ruta('/comercios/<uuid:id>/responsables', 'GET', resumen='Responsables del establecimiento',
+          etiqueta='Responsables', permisos=['comercios.gestionar', 'comercios.ver_todos'], raiz_xml='responsables')
+def listar_responsables(id):
+    comercio = _comercio(id)
+    return {'comercio_id': str(comercio.id), 'responsables': [responsable_a_dict(r) for r in comercio.responsables]}
 
 
-@srv.ruta('/archivos/<archivo_id>', 'GET', resumen='Descargar archivo', etiqueta='Archivos',
-          permisos=['comercios.gestionar', 'comercios.ver_todos', 'archivos.gestionar'], errores=(401, 403, 404))
-def descargar_archivo(archivo_id):
-    """Lo ven quien lo subió, el dueño del comercio y quien tiene comercios.ver_todos (coordinación)."""
-    meta, contenido = archivos.abrir(archivo_id)
-    if not meta:
-        raise no_encontrado('El archivo')
-    if meta['usuario_id'] != g.claims['sub'] and not tiene('comercios.ver_todos'):
-        comercio = db.session.get(Comercio, UUID(meta['entidad_id'])) if meta['entidad'] == 'comercio' else None
-        if not comercio or str(comercio.usuario_id) != g.claims['sub']:
-            raise prohibido('No tienes acceso a este archivo.')
-    return Response(contenido.read(), mimetype=meta['tipo_mime'],
-                    headers={'Content-Disposition': f'inline; filename="{meta["nombre"]}"'})
-
-
-@srv.ruta('/archivos/<archivo_id>', 'DELETE', resumen='Eliminar archivo', etiqueta='Archivos',
-          permisos=['archivos.gestionar'], raiz_xml='resultado')
-def eliminar_archivo(archivo_id):
-    meta = archivos.obtener_metadatos(archivo_id)
-    if not meta:
-        raise no_encontrado('El archivo')
-    if meta['usuario_id'] != g.claims['sub'] and not tiene('catalogos.gestionar'):
-        raise prohibido('Sólo quien subió el archivo o un administrador puede eliminarlo.')
-    archivos.eliminar(archivo_id)
-    registrar_evento(UUID(g.claims['sub']), 'ELIMINACION', 'Archivo', archivo_id, f'Archivo eliminado: {meta["nombre"]}')
+@srv.ruta('/comercios/<uuid:id>/responsables', 'POST', resumen='Agregar un responsable', etiqueta='Responsables',
+          permisos=['comercios.gestionar'], cuerpo=ResponsableEntrada, status=201, raiz_xml='responsable',
+          entrada_xml='responsable_entrada',
+          ejemplo_entrada={'nombre': 'Lucía Garza', 'puesto': 'ENCARGADO', 'telefono': '8112345678'})
+def agregar_responsable(id, datos):
+    comercio = _comercio(id, editar=True)
+    usuario_id = None
+    if datos.usuario_id:
+        try:
+            usuario = db.session.get(Usuario, UUID(datos.usuario_id))
+        except ValueError:
+            raise ErrorApi(400, 'parametro_invalido', 'usuario_id debe ser un UUID.')
+        if not usuario or not usuario.activo:
+            raise ErrorApi(422, 'usuario_inexistente', 'La cuenta indicada no existe o está inactiva.')
+        usuario_id = usuario.id
+    if datos.puesto == 'DUENO' and any(r.puesto == 'DUENO' for r in comercio.responsables):
+        raise ErrorApi(409, 'dueno_existente', 'El comercio ya tiene un responsable con puesto de dueño.')
+    responsable = ResponsableComercio(comercio_id=comercio.id, usuario_id=usuario_id,
+                                      **datos.model_dump(exclude={'usuario_id'}))
+    db.session.add(responsable)
+    db.session.flush()
+    registrar_evento(UUID(g.claims['sub']), 'CREACION', 'ResponsableComercio', responsable.id,
+                     f'{datos.nombre} ({datos.puesto.lower()}) en {comercio.nombre_comercio}',
+                     datos_nuevos=datos.model_dump())
     db.session.commit()
-    return {'mensaje': 'Archivo eliminado', 'id': archivo_id}
+    return responsable_a_dict(responsable)
+
+
+@srv.ruta('/responsables/<int:id>', 'DELETE', resumen='Dar de baja un responsable', etiqueta='Responsables',
+          permisos=['comercios.gestionar'], raiz_xml='resultado')
+def baja_responsable(id):
+    responsable = db.session.get(ResponsableComercio, id)
+    if not responsable or not responsable.activo:
+        raise no_encontrado('El responsable')
+    _comercio(responsable.comercio_id, editar=True)
+    responsable.activo = False
+    registrar_evento(UUID(g.claims['sub']), 'ELIMINACION', 'ResponsableComercio', responsable.id,
+                     f'Baja de {responsable.nombre}')
+    db.session.commit()
+    return {'mensaje': 'Responsable dado de baja', 'id': str(id)}
+
+
+@srv.ruta('/comercios/cercanos', 'GET', resumen='Comercios verificados cerca de un punto', etiqueta='Búsqueda geográfica',
+          permisos=['comercios.gestionar', 'comercios.ver_todos', 'proveedores.consultar', 'pedidos.atender'],
+          consulta=CercanosConsulta, raiz_xml='cercanos')
+def cercanos(q):
+    """ST_DWithin sobre geography con el índice GIST de comercios.geom, ordenados por distancia."""
+    filas = db.session.execute(text(
+        "SELECT id, ST_Distance(geom::geography, ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography) / 1000 AS km "
+        "FROM comercios WHERE activo AND estado_registro = 'VERIFICADO' AND geom IS NOT NULL "
+        + ('AND tipo_comercio = CAST(:tipo AS tipo_comercio) ' if q.tipo_comercio else '') +
+        'AND ST_DWithin(geom::geography, ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, :radio) '
+        'ORDER BY km LIMIT :limite'),
+        {'lat': q.latitud, 'lon': q.longitud, 'radio': float(q.radio_km) * 1000, 'tipo': q.tipo_comercio,
+         'limite': q.limite}).all()
+    comercios = {c.id: c for c in Comercio.query.filter(Comercio.id.in_([f.id for f in filas])).all()}
+    return {'latitud': float(q.latitud), 'longitud': float(q.longitud), 'radio_km': float(q.radio_km),
+            'total': len(filas), 'comercios': [{**comercio_a_dict(comercios[f.id]), 'distancia_km': round(float(f.km), 3)}
+                                               for f in filas]}

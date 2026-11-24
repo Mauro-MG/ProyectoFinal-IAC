@@ -10,7 +10,7 @@ from abasto_api.modelos_comunes import Paginacion, Salida
 
 class PrecioEntrada(BaseEntrada):
     precio: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
-    metodo_captura: Literal['MANUAL', 'MOVIL', 'ESCRITORIO'] = 'MANUAL'
+    metodo_captura: Literal['MANUAL', 'MOVIL', 'ESCRITORIO', 'IMPORTACION'] = 'MANUAL'
 
 
 class HistorialConsulta(BaseConsulta):
@@ -183,9 +183,75 @@ class TendenciaSnapshotsSalida(Salida):
     tendencia: list[PuntoSerie]
 
 
+class PromocionEntrada(BaseEntrada):
+    inventario_id: int = Field(ge=1)
+    precio_promocional: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
+    inicio: date
+    fin: date
+    descripcion: str | None = Field(None, max_length=255)
+
+
+class PromocionesConsulta(BaseConsulta):
+    comercio_id: str | None = None
+    zona_id: int | None = Field(None, ge=1)
+    producto_id: int | None = Field(None, ge=1)
+    vigentes: bool = True
+
+
+class EstadisticasConsulta(BaseConsulta):
+    producto_id: int | None = Field(None, ge=1)
+    agrupar: Literal['municipio', 'zona', 'producto'] = 'municipio'
+    dias: int = Field(30, ge=1, le=365, description='Historial de precios considerado')
+
+
+class PromocionSalida(Salida):
+    id: int
+    inventario_id: int
+    comercio_id: str
+    comercio: str
+    producto_id: int
+    producto: str
+    precio_normal: float | None = None
+    precio_promocional: float
+    descuento_pct: float | None = None
+    inicio: date
+    fin: date
+    descripcion: str | None = None
+    vigente: bool
+    activa: bool
+
+
+class PromocionesSalida(Salida):
+    total: int
+    promociones: list[PromocionSalida]
+
+
+class EstadisticaRenglon(Salida):
+    grupo: str
+    producto_id: int | None = None
+    producto: str | None = None
+    registros: int
+    comercios: int
+    minimo: float
+    promedio: float
+    maximo: float
+    desviacion: float | None = None
+    variacion_pct: float | None = Field(None, description='(máximo - mínimo) / promedio')
+    mayoreo_minimo: float | None = None
+
+
+class EstadisticasSalida(Salida):
+    agrupar: str
+    producto_id: int | None = None
+    dias: int
+    renglones: list[EstadisticaRenglon]
+
+
 CONTRATOS_XML = {
     'precio_entrada': PrecioEntrada, 'validacion_precio': ValidacionPrecio,
     'cambio_precio': CambioPrecioSalida, 'precio': PrecioSalida, 'precios': PreciosSalida,
     'comparacion': ComparacionSalida, 'tendencia': TendenciaSalida, 'snapshot': SnapshotGenerado,
     'snapshots': SnapshotsSalida, 'tendencia_snapshots': TendenciaSnapshotsSalida,
+    'promocion_entrada': PromocionEntrada, 'promocion': PromocionSalida, 'promociones': PromocionesSalida,
+    'estadisticas': EstadisticasSalida,
 }

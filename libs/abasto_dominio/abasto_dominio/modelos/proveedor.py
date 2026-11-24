@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 
 from abasto_dominio.extensiones import db
 
@@ -29,6 +29,12 @@ class Proveedor(db.Model):
     tiempo_entrega_dias = db.Column(db.Integer, nullable=False, default=1)
     condiciones_venta = db.Column(db.Text)
     plan = db.Column(db.String(20), nullable=False, default='BASICO')
+    estado_verificacion = db.Column(db.String(12), nullable=False, default='PENDIENTE')
+    verificado_por = db.Column(UUID(as_uuid=True), db.ForeignKey('usuarios.id'))
+    fecha_verificacion = db.Column(db.DateTime)
+    capacidad_pedidos_dia = db.Column(db.Integer)
+    monto_maximo_pedido = db.Column(db.Numeric(12, 2))
+    dias_entrega = db.Column(ARRAY(db.String(3)))
     activo = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -59,3 +65,19 @@ class CatalogoProveedor(db.Model):
 
     proveedor = db.relationship('Proveedor', back_populates='catalogo')
     producto = db.relationship('ProductoMaestro')
+
+
+class EvaluacionProveedor(db.Model):
+    """Calificación que deja el comercio al recibir un pedido (una por pedido)."""
+    __tablename__ = 'evaluaciones_proveedor'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    proveedor_id = db.Column(UUID(as_uuid=True), db.ForeignKey('proveedores.id'), nullable=False)
+    pedido_id = db.Column(UUID(as_uuid=True), db.ForeignKey('pedidos_abasto.id'), nullable=False, unique=True)
+    comercio_id = db.Column(UUID(as_uuid=True), db.ForeignKey('comercios.id'), nullable=False)
+    calificacion = db.Column(db.SmallInteger, nullable=False)
+    puntualidad = db.Column(db.SmallInteger)
+    calidad = db.Column(db.SmallInteger)
+    comentario = db.Column(db.String(500))
+    usuario_id = db.Column(UUID(as_uuid=True), db.ForeignKey('usuarios.id'))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())

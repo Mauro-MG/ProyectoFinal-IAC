@@ -19,10 +19,9 @@ from decimal import Decimal
 
 from abasto_dominio.extensiones import db
 from abasto_dominio.modelos.pedido import ESTADOS_PEDIDO
-from abasto_dominio.modelos import CatalogoProveedor, DetallePedido, HistorialPedido, InventarioComercio, PedidoAbasto
+from abasto_dominio.modelos import CatalogoProveedor, DetallePedido, HistorialPedido, PedidoAbasto
 from abasto_dominio.servicios import ReglaNegocioError
 from abasto_dominio.servicios.auditoria import registrar_evento
-from abasto_dominio.servicios.inventario import registrar_movimiento
 from abasto_dominio.servicios import eventos
 from abasto_dominio.servicios.notificaciones import notificar
 from abasto_dominio.servicios.parametros import parametro
@@ -152,12 +151,13 @@ def _validar_envio(pedido):
         raise ReglaNegocioError('El proveedor ya no entrega en la zona del comercio.')
 
 
-def _ofertas_bloqueadas(pedido):
+def _ofertas(pedido):
+    """Lectura sin bloqueo: sirve para validar al aceptar. El descuento real (con SELECT ... FOR UPDATE)
+    lo hace ms-proveedores, dueño del catálogo, al despachar."""
     ids = [d.producto_id for d in pedido.detalles]
     ofertas = (CatalogoProveedor.query
                .filter(CatalogoProveedor.proveedor_id == pedido.proveedor_id,
                        CatalogoProveedor.producto_id.in_(ids))
-               .with_for_update()
                .all())
     return {o.producto_id: o for o in ofertas}
 
@@ -170,22 +170,9 @@ def _validar_existencia_proveedor(pedido, ofertas):
                                 '. Actualiza tu catálogo o rechaza el pedido.')
 
 
-def _recibir_en_inventario(pedido, usuario):
-    for detalle in pedido.detalles:
-        inventario = InventarioComercio.query.filter_by(comercio_id=pedido.comercio_id,
-                                                        producto_id=detalle.producto_id).first()
-        if not inventario:
-            # El comercio empieza a vender un producto que pidió por primera vez
-            inventario = InventarioComercio(comercio_id=pedido.comercio_id, producto_id=detalle.producto_id,
-                                            existencia=0, stock_minimo=0)
-            db.session.add(inventario)
-            db.session.flush()
-        inventario.activo = True
-        registrar_movimiento(inventario, 'ENTRADA', detalle.cantidad, usuario,
-                             motivo=f'Recepción del pedido {pedido.folio_legible}', pedido=pedido)
-
-
-def ejecutar_accion(pedido, accion, usuario, comentario=None):
+def ejecutar_accion(pedido, accion, usuario, comentario, existencias):
+    """`existencias` cambia las existencias al despachar y al recibir. ms-pedidos usa ExistenciasRemotas:
+    le pide el cambio a ms-proveedores y a ms-inventario, que son los dueños de esas tablas."""
     if accion not in TRANSICIONES:
         raise ReglaNegocioError('Acción no válida.')
     if accion not in acciones_disponibles(pedido, usuario):
@@ -199,7 +186,7 @@ def ejecutar_accion(pedido, accion, usuario, comentario=None):
         _validar_envio(pedido)
         pedido.fecha_envio = db.func.now()
     elif accion == 'aceptar':
-        _validar_existencia_proveedor(pedido, _ofertas_bloqueadas(pedido))
+        _validar_existencia_proveedor(pedido, _ofertas(pedido))
         pedido.fecha_respuesta = db.func.now()
         pedido.fecha_entrega_estimada = date.today() + timedelta(days=pedido.proveedor.tiempo_entrega_dias)
     elif accion == 'rechazar':
@@ -208,12 +195,9 @@ def ejecutar_accion(pedido, accion, usuario, comentario=None):
         pedido.fecha_respuesta = db.func.now()
         pedido.motivo_rechazo = comentario
     elif accion == 'despachar':
-        ofertas = _ofertas_bloqueadas(pedido)
-        _validar_existencia_proveedor(pedido, ofertas)
-        for detalle in pedido.detalles:
-            ofertas[detalle.producto_id].existencia_disponible -= detalle.cantidad
+        existencias.descontar_proveedor(pedido, usuario)
     elif accion == 'recibir':
-        _recibir_en_inventario(pedido, usuario)
+        existencias.recibir_comercio(pedido, usuario)
         pedido.fecha_entrega_real = db.func.now()
         comision = Decimal(str(parametro('COMISION_PEDIDO_PCT'))) / 100
         pedido.comision_plataforma = (pedido.subtotal * comision).quantize(Decimal('0.01'))

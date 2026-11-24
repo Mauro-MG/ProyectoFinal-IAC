@@ -8,35 +8,35 @@
   "variable": [
     {
       "key": "ms_seguridad",
-      "value": "http://localhost:8101/api/v1"
+      "value": "https://localhost/ms/seguridad/api/v1"
     },
     {
       "key": "ms_comercios",
-      "value": "http://localhost:8102/api/v1"
+      "value": "https://localhost/ms/comercios/api/v1"
     },
     {
       "key": "ms_catalogo",
-      "value": "http://localhost:8103/api/v1"
+      "value": "https://localhost/ms/catalogo/api/v1"
     },
     {
       "key": "ms_inventario",
-      "value": "http://localhost:8104/api/v1"
+      "value": "https://localhost/ms/inventario/api/v1"
     },
     {
       "key": "ms_precios",
-      "value": "http://localhost:8105/api/v1"
+      "value": "https://localhost/ms/precios/api/v1"
     },
     {
       "key": "ms_pedidos",
-      "value": "http://localhost:8106/api/v1"
+      "value": "https://localhost/ms/pedidos/api/v1"
     },
     {
       "key": "ms_analisis",
-      "value": "http://localhost:8107/api/v1"
+      "value": "https://localhost/ms/analisis/api/v1"
     },
     {
       "key": "ms_notificaciones",
-      "value": "http://localhost:8108/api/v1"
+      "value": "https://localhost/ms/notificaciones/api/v1"
     },
     {
       "key": "token_admin",
@@ -93,79 +93,79 @@
     },
     {
       "key": "codigo_barras",
-      "value": "7505574453502"
+      "value": "7502687616321"
     },
     {
       "key": "id_admin",
-      "value": "3122a5b1-a074-4d57-8fce-7aa9e5fc9743"
+      "value": "7df51c35-b421-47fb-b413-aa59884074b6"
     },
     {
       "key": "id_minorista",
-      "value": "aec7225c-47b9-4352-8d74-55d73a4e9acc"
+      "value": "b16d744f-1567-4fb0-bcdc-99b16b8cbcc0"
     },
     {
       "key": "jti_minorista",
-      "value": "4954e9b555a6418caa74d0f3304cb293"
+      "value": "23d2080c562a43dd8a5a8f7ab5232b9b"
     },
     {
       "key": "comercio_min",
-      "value": "4489609b-3ca0-490b-8da4-6877b09c2a30"
+      "value": "c72413e5-b374-4e52-81dd-d54ca9f694fd"
     },
     {
       "key": "regia_id",
-      "value": "69ad862f-8b2b-48ca-b227-b058ac3ceb4e"
+      "value": "3eaacab4-ac7e-4225-980b-a08f1724a6de"
     },
     {
       "key": "jti_jorge",
-      "value": "fd42c61d4e7747e9bb0bb09e6e6a2f91"
+      "value": "27679cd34f5a4d0baee43a42e7431359"
     },
     {
       "key": "id_jorge",
-      "value": "b5418c05-789a-4367-a135-2439fece4773"
+      "value": "00f5e022-6106-48fe-812b-c5dc2e293b56"
     },
     {
       "key": "refresh_usado",
-      "value": "rLH-Wfu_XTYEvpFzvwo7Vc52nFetGdC4-_BHuBLJg6MwH1mv0Au26w5sxVbdpEyq"
+      "value": "KobfKag8RcPU_0oHRSRFR8dz7OUCEjgoS9WIhC04u3J7A_LoM6QpNgXhSMYPyKqB"
     },
     {
       "key": "token_cerrado",
-      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiNTQxOGMwNS03ODlhLTQzNjctYTEzNS0yNDM5ZmVjZTQ3NzMiLCJqdGkiOiIyZDdkMmVmOTU1ZjU0N2Q5ODA5ZTE5NTljOTI2ZTYwNCIsInRpcG8iOiJhY2Nlc28iLCJvcmlnZW4iOiJhcGkiLCJub21icmUiOiJKb3JnZSBUcmV2aVx1MDBmMW8iLCJyb2wiOiJNaW5vcmlzdGEgRm9ybWFsIiwicGVybWlzb3MiOlsiY29tZXJjaW9zLmdlc3Rpb25hciIsImludmVudGFyaW8uZ2VzdGlvbmFyIiwiaW1wb3J0YWNpb25lcy5lamVjdXRhciIsImFyY2hpdm9zLmdlc3Rpb25hciIsInByZWNpb3MuY29uc3VsdGFyIiwicHJvdmVlZG9yZXMuY29uc3VsdGFyIiwicGVkaWRvcy5jcmVhciIsInJlY29tZW5kYWNpb25lcy52ZXIiLCJyZXBvcnRlcy52ZXIiXSwiaWF0IjoxNzkxODQ1MDQxLCJleHAiOjE3OTE4NzM4NDF9.w3ER0m8NDs2_SZ-rEqblMFXzsD2Jhu6bnFpxlAE7M7s"
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMGY1ZTAyMi02MTA2LTQ4ZmUtODEyYi1jNWRjMmUyOTNiNTYiLCJqdGkiOiI3NTQ3NTk4OWE1YzM0MzM4OWJiMzBhZmEwOGRlYzYyZCIsInRpcG8iOiJhY2Nlc28iLCJvcmlnZW4iOiJhcGkiLCJub21icmUiOiJKb3JnZSBUcmV2aVx1MDBmMW8iLCJyb2wiOiJNaW5vcmlzdGEgRm9ybWFsIiwicGVybWlzb3MiOlsiY29tZXJjaW9zLmdlc3Rpb25hciIsImludmVudGFyaW8uZ2VzdGlvbmFyIiwiaW1wb3J0YWNpb25lcy5lamVjdXRhciIsImFyY2hpdm9zLmdlc3Rpb25hciIsInByZWNpb3MuY29uc3VsdGFyIiwicHJvdmVlZG9yZXMuY29uc3VsdGFyIiwicGVkaWRvcy5jcmVhciIsInJlY29tZW5kYWNpb25lcy52ZXIiLCJyZXBvcnRlcy52ZXIiXSwiaWF0IjoxNzk0Njk3MzgxLCJleHAiOjE3OTQ3MjYxODF9.jOkztg1YUpnkIrEbLSYtEa1A_XizfkaaVEUnb3Qmil0"
     },
     {
       "key": "jti_lucia",
-      "value": "78c64ad5da094824b3e24f9d511a73dc"
+      "value": "6fc6a4cb5c1b4a79b9b1d1a6225ce979"
     },
     {
       "key": "id_lucia",
-      "value": "9db06885-11b0-47d9-8866-c428c3bf4775"
+      "value": "e8e63f87-0a52-41de-828e-7c061e94f619"
     },
     {
       "key": "jti_rosa",
-      "value": "9b0383fc6f734716b79783d9e4da973d"
+      "value": "507fea20820d4ed89fbc9ebd332afa18"
     },
     {
       "key": "id_rosa",
-      "value": "6faa6a7a-bd18-4378-8a33-3b9a763bafbf"
+      "value": "96793ca8-25d6-4a79-9239-e60642e294cd"
     },
     {
       "key": "comercio_nuevo",
-      "value": "024f8aa8-fe75-4f2b-8e14-ee2376825626"
+      "value": "0bc34aa6-04e5-46a0-8f4a-4d3be3e01ca9"
     },
     {
       "key": "archivo_id",
-      "value": "6acd62ee79101689b4c03cb3"
+      "value": "6af8e8e48d75ac91cee31b82"
     },
     {
       "key": "pedido_ev",
-      "value": "b428ab06-f882-4bb4-b085-ab35e1572d25"
+      "value": "6f1177b4-0a21-49cd-81ac-60a6f8b5602e"
     },
     {
       "key": "comercio_sin_zona",
-      "value": "ee965a6b-46e0-4ab9-a65f-bfe50c73f0ad"
+      "value": "e806655c-51b9-4ed5-9cef-05e850b2aaf6"
     },
     {
       "key": "notificacion_id",
-      "value": "6acd62f2326223e69fe5dd34"
+      "value": "6af8e8efe95762dca390c596"
     }
   ],
   "item": [
@@ -1214,7 +1214,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZWM3MjI1Yy00N2I5LTQzNTItOGQ3NC01NWQ3M2E0ZTlhY2MiLCJqdGkiOiI0OTU0ZTliNTU1YTY0MThjYWE3NGQwZjMzMDRjYjI5MyIsInRpcG8iOiJhY2Nlc28iLCJvcmlnZW4iOiJhcGkiLCJub21icmUiOiJNYXJcdTAwZWRhIEdhcmNcdTAwZWRhIiwicm9sIjoiTWlub3Jpc3RhIEZvcm1hbCIsInBlcm1pc29zIjpbImNvbWVyY2lvcy5nZXN0aW9uYXIiLCJpbnZlbnRhcmlvLmdlc3Rpb25hciIsImltcG9ydGFjaW9uZXMuZWplY3V0YXIiLCJhcmNoaXZvcy5nZXN0aW9uYXIiLCJwcmVjaW9zLmNvbnN1bHRhciIsInByb3ZlZWRvcmVzLmNvbnN1bHRhciIsInBlZGlkb3MuY3JlYXIiLCJyZWNvbWVuZGFjaW9uZXMudmVyIiwicmVwb3J0ZXMudmVyIl0sImlhdCI6MTc5MTg0NDk4NCwiZXhwIjoxNzkxODczNzg0fQ.gwjg3pUwgJKCggyRatwmlto9UtomUVNj6ASyUaJK8ws\"\n}",
+                  "raw": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMTZkNzQ0Zi0xNTY3LTRmYjAtYmNkYy05OWIxNmI4Y2JjYzAiLCJqdGkiOiIyM2QyMDgwYzU2MmE0M2RkOGE1YThmN2FiNTIzMmI5YiIsInRpcG8iOiJhY2Nlc28iLCJvcmlnZW4iOiJhcGkiLCJub21icmUiOiJNYXJcdTAwZWRhIEdhcmNcdTAwZWRhIiwicm9sIjoiTWlub3Jpc3RhIEZvcm1hbCIsInBlcm1pc29zIjpbImNvbWVyY2lvcy5nZXN0aW9uYXIiLCJpbnZlbnRhcmlvLmdlc3Rpb25hciIsImltcG9ydGFjaW9uZXMuZWplY3V0YXIiLCJhcmNoaXZvcy5nZXN0aW9uYXIiLCJwcmVjaW9zLmNvbnN1bHRhciIsInByb3ZlZWRvcmVzLmNvbnN1bHRhciIsInBlZGlkb3MuY3JlYXIiLCJyZWNvbWVuZGFjaW9uZXMudmVyIiwicmVwb3J0ZXMudmVyIl0sImlhdCI6MTc5NDY5NzMwMSwiZXhwIjoxNzk0NzI2MTAxfQ.zkYzmYIVtDULW5emch9dsQp1RUvqsHIvDlwqaZR0tKY\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3373,14 +3373,14 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_seguridad}}/actividad/peticiones/evidencia-85ac008dd755",
+                  "raw": "{{ms_seguridad}}/actividad/peticiones/evidencia-4db687d10332",
                   "host": [
                     "{{ms_seguridad}}"
                   ],
                   "path": [
                     "actividad",
                     "peticiones",
-                    "evidencia-85ac008dd755"
+                    "evidencia-4db687d10332"
                   ],
                   "query": []
                 }
@@ -3486,14 +3486,14 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_seguridad}}/actividad/peticiones/evidencia-85ac008dd755",
+                  "raw": "{{ms_seguridad}}/actividad/peticiones/evidencia-4db687d10332",
                   "host": [
                     "{{ms_seguridad}}"
                   ],
                   "path": [
                     "actividad",
                     "peticiones",
-                    "evidencia-85ac008dd755"
+                    "evidencia-4db687d10332"
                   ],
                   "query": []
                 }
@@ -3525,14 +3525,14 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_seguridad}}/actividad/peticiones/evidencia-85ac008dd755",
+                  "raw": "{{ms_seguridad}}/actividad/peticiones/evidencia-4db687d10332",
                   "host": [
                     "{{ms_seguridad}}"
                   ],
                   "path": [
                     "actividad",
                     "peticiones",
-                    "evidencia-85ac008dd755"
+                    "evidencia-4db687d10332"
                   ],
                   "query": []
                 }
@@ -3774,7 +3774,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1012-164304\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
+                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1114-170141\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3870,7 +3870,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1012-164304\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
+                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1114-170141\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -3920,7 +3920,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1012-164304\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
+                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1114-170141\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4205,7 +4205,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1012-164304 (editado)\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
+                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1114-170141 (editado)\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4307,7 +4307,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1012-164304 (editado)\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
+                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1114-170141 (editado)\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4354,7 +4354,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1012-164304 (editado)\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
+                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1114-170141 (editado)\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4405,7 +4405,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1012-164304 (editado)\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
+                  "raw": "{\n  \"nombre_comercio\": \"Puesto de evidencias 1114-170141 (editado)\",\n  \"tipo_comercio\": \"INFORMAL_TIANGUIS\",\n  \"direccion\": \"Tianguis Los Nogales, pasillo F\",\n  \"municipio\": \"García\",\n  \"estado\": \"Nuevo León\",\n  \"latitud\": 25.821,\n  \"longitud\": -100.589,\n  \"horario_apertura\": \"07:00:00\",\n  \"horario_cierre\": \"15:00:00\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -6174,7 +6174,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1012-164304\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
+                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1114-170141\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -6270,7 +6270,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1012-164304\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
+                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1114-170141\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -6320,7 +6320,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1012-164304\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
+                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1114-170141\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -6370,7 +6370,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1012-164304\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
+                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1114-170141\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -6406,13 +6406,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_catalogo}}/productos/31",
+                  "raw": "{{ms_catalogo}}/productos/30",
                   "host": [
                     "{{ms_catalogo}}"
                   ],
                   "path": [
                     "productos",
-                    "31"
+                    "30"
                   ],
                   "query": []
                 }
@@ -6521,19 +6521,19 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_catalogo}}/productos/31",
+                  "raw": "{{ms_catalogo}}/productos/30",
                   "host": [
                     "{{ms_catalogo}}"
                   ],
                   "path": [
                     "productos",
-                    "31"
+                    "30"
                   ],
                   "query": []
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1012-164304 (editado)\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
+                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1114-170141 (editado)\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -6572,13 +6572,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_catalogo}}/productos/31",
+                  "raw": "{{ms_catalogo}}/productos/30",
                   "host": [
                     "{{ms_catalogo}}"
                   ],
                   "path": [
                     "productos",
-                    "31"
+                    "30"
                   ],
                   "query": []
                 },
@@ -6635,7 +6635,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1012-164304 (editado)\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
+                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1114-170141 (editado)\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -6670,19 +6670,19 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_catalogo}}/productos/31",
+                  "raw": "{{ms_catalogo}}/productos/30",
                   "host": [
                     "{{ms_catalogo}}"
                   ],
                   "path": [
                     "productos",
-                    "31"
+                    "30"
                   ],
                   "query": []
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1012-164304 (editado)\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
+                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1114-170141 (editado)\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -6721,19 +6721,19 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_catalogo}}/productos/31",
+                  "raw": "{{ms_catalogo}}/productos/30",
                   "host": [
                     "{{ms_catalogo}}"
                   ],
                   "path": [
                     "productos",
-                    "31"
+                    "30"
                   ],
                   "query": []
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1012-164304 (editado)\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
+                  "raw": "{\n  \"nombre\": \"Producto de evidencias 1114-170141 (editado)\",\n  \"categoria_id\": 1,\n  \"unidad_medida\": \"pieza\",\n  \"codigo_barras\": \"{{codigo_barras}}\",\n  \"es_canasta_basica\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -6773,13 +6773,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_catalogo}}/productos/31",
+                  "raw": "{{ms_catalogo}}/productos/30",
                   "host": [
                     "{{ms_catalogo}}"
                   ],
                   "path": [
                     "productos",
-                    "31"
+                    "30"
                   ],
                   "query": []
                 }
@@ -6883,13 +6883,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_catalogo}}/productos/31",
+                  "raw": "{{ms_catalogo}}/productos/30",
                   "host": [
                     "{{ms_catalogo}}"
                   ],
                   "path": [
                     "productos",
-                    "31"
+                    "30"
                   ],
                   "query": []
                 }
@@ -6921,13 +6921,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_catalogo}}/productos/31",
+                  "raw": "{{ms_catalogo}}/productos/30",
                   "host": [
                     "{{ms_catalogo}}"
                   ],
                   "path": [
                     "productos",
-                    "31"
+                    "30"
                   ],
                   "query": []
                 }
@@ -8900,13 +8900,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382",
+                  "raw": "{{ms_inventario}}/inventario/380",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382"
+                    "380"
                   ],
                   "query": []
                 }
@@ -9010,13 +9010,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382",
+                  "raw": "{{ms_inventario}}/inventario/380",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382"
+                    "380"
                   ],
                   "query": []
                 }
@@ -9048,13 +9048,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382",
+                  "raw": "{{ms_inventario}}/inventario/380",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382"
+                    "380"
                   ],
                   "query": []
                 }
@@ -9095,13 +9095,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382",
+                  "raw": "{{ms_inventario}}/inventario/380",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382"
+                    "380"
                   ],
                   "query": []
                 },
@@ -9146,13 +9146,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382",
+                  "raw": "{{ms_inventario}}/inventario/380",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382"
+                    "380"
                   ],
                   "query": []
                 },
@@ -9244,13 +9244,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382",
+                  "raw": "{{ms_inventario}}/inventario/380",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382"
+                    "380"
                   ],
                   "query": []
                 },
@@ -9295,13 +9295,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382",
+                  "raw": "{{ms_inventario}}/inventario/380",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382"
+                    "380"
                   ],
                   "query": []
                 },
@@ -9351,13 +9351,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382/movimientos",
+                  "raw": "{{ms_inventario}}/inventario/380/movimientos",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382",
+                    "380",
                     "movimientos"
                   ],
                   "query": []
@@ -9403,13 +9403,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382/movimientos",
+                  "raw": "{{ms_inventario}}/inventario/380/movimientos",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382",
+                    "380",
                     "movimientos"
                   ],
                   "query": []
@@ -9503,13 +9503,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382/movimientos",
+                  "raw": "{{ms_inventario}}/inventario/380/movimientos",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382",
+                    "380",
                     "movimientos"
                   ],
                   "query": []
@@ -9555,13 +9555,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382/movimientos",
+                  "raw": "{{ms_inventario}}/inventario/380/movimientos",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382",
+                    "380",
                     "movimientos"
                   ],
                   "query": []
@@ -9607,13 +9607,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382/movimientos",
+                  "raw": "{{ms_inventario}}/inventario/380/movimientos",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382",
+                    "380",
                     "movimientos"
                   ],
                   "query": []
@@ -9660,13 +9660,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382/movimientos",
+                  "raw": "{{ms_inventario}}/inventario/380/movimientos",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382",
+                    "380",
                     "movimientos"
                   ],
                   "query": []
@@ -9699,13 +9699,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382/movimientos?tipo=VALOR_INEXISTENTE",
+                  "raw": "{{ms_inventario}}/inventario/380/movimientos?tipo=VALOR_INEXISTENTE",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382",
+                    "380",
                     "movimientos"
                   ],
                   "query": [
@@ -9778,13 +9778,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382/movimientos",
+                  "raw": "{{ms_inventario}}/inventario/380/movimientos",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382",
+                    "380",
                     "movimientos"
                   ],
                   "query": []
@@ -9817,13 +9817,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382/movimientos",
+                  "raw": "{{ms_inventario}}/inventario/380/movimientos",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382",
+                    "380",
                     "movimientos"
                   ],
                   "query": []
@@ -9861,13 +9861,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382",
+                  "raw": "{{ms_inventario}}/inventario/380",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382"
+                    "380"
                   ],
                   "query": []
                 }
@@ -9971,13 +9971,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382",
+                  "raw": "{{ms_inventario}}/inventario/380",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382"
+                    "380"
                   ],
                   "query": []
                 }
@@ -10009,13 +10009,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_inventario}}/inventario/382",
+                  "raw": "{{ms_inventario}}/inventario/380",
                   "host": [
                     "{{ms_inventario}}"
                   ],
                   "path": [
                     "inventario",
-                    "382"
+                    "380"
                   ],
                   "query": []
                 }
@@ -10830,7 +10830,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"precio\": 44.5,\n  \"metodo_captura\": \"MOVIL\"\n}",
+                  "raw": "{\n  \"precio\": 45.0,\n  \"metodo_captura\": \"MOVIL\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -10934,7 +10934,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"precio\": 44.5,\n  \"metodo_captura\": \"MOVIL\"\n}",
+                  "raw": "{\n  \"precio\": 45.0,\n  \"metodo_captura\": \"MOVIL\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -10982,7 +10982,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"precio\": 44.5,\n  \"metodo_captura\": \"MOVIL\"\n}",
+                  "raw": "{\n  \"precio\": 45.0,\n  \"metodo_captura\": \"MOVIL\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -11034,7 +11034,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"precio\": 44.5,\n  \"metodo_captura\": \"MOVIL\"\n}",
+                  "raw": "{\n  \"precio\": 45.0,\n  \"metodo_captura\": \"MOVIL\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -11086,7 +11086,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"precio\": 44.5,\n  \"metodo_captura\": \"MOVIL\"\n}",
+                  "raw": "{\n  \"precio\": 45.0,\n  \"metodo_captura\": \"MOVIL\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -11430,13 +11430,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_precios}}/precios/3416/validacion",
+                  "raw": "{{ms_precios}}/precios/3408/validacion",
                   "host": [
                     "{{ms_precios}}"
                   ],
                   "path": [
                     "precios",
-                    "3416",
+                    "3408",
                     "validacion"
                   ],
                   "query": []
@@ -11482,13 +11482,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_precios}}/precios/3416/validacion",
+                  "raw": "{{ms_precios}}/precios/3408/validacion",
                   "host": [
                     "{{ms_precios}}"
                   ],
                   "path": [
                     "precios",
-                    "3416",
+                    "3408",
                     "validacion"
                   ],
                   "query": []
@@ -11582,13 +11582,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_precios}}/precios/3416/validacion",
+                  "raw": "{{ms_precios}}/precios/3408/validacion",
                   "host": [
                     "{{ms_precios}}"
                   ],
                   "path": [
                     "precios",
-                    "3416",
+                    "3408",
                     "validacion"
                   ],
                   "query": []
@@ -11634,13 +11634,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_precios}}/precios/3416/validacion",
+                  "raw": "{{ms_precios}}/precios/3408/validacion",
                   "host": [
                     "{{ms_precios}}"
                   ],
                   "path": [
                     "precios",
-                    "3416",
+                    "3408",
                     "validacion"
                   ],
                   "query": []
@@ -11686,13 +11686,13 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_precios}}/precios/3416/validacion",
+                  "raw": "{{ms_precios}}/precios/3408/validacion",
                   "host": [
                     "{{ms_precios}}"
                   ],
                   "path": [
                     "precios",
-                    "3416",
+                    "3408",
                     "validacion"
                   ],
                   "query": []
@@ -12972,7 +12972,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"comercio_id\": \"{{comercio_min}}\",\n  \"proveedor_id\": \"423590b8-5545-4f19-b88a-8a8028c95fc7\",\n  \"partidas\": [\n    {\n      \"producto_id\": 9,\n      \"cantidad\": 12.0\n    }\n  ]\n}",
+                  "raw": "{\n  \"comercio_id\": \"{{comercio_min}}\",\n  \"proveedor_id\": \"6a0ae1ca-6166-455e-9660-4094cd48f349\",\n  \"partidas\": [\n    {\n      \"producto_id\": 9,\n      \"cantidad\": 12.0\n    }\n  ]\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -13554,7 +13554,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_pedidos}}/pedidos/{{pedido_ev}}/partidas/32",
+                  "raw": "{{ms_pedidos}}/pedidos/{{pedido_ev}}/partidas/24",
                   "host": [
                     "{{ms_pedidos}}"
                   ],
@@ -13562,7 +13562,7 @@
                     "pedidos",
                     "{{pedido_ev}}",
                     "partidas",
-                    "32"
+                    "24"
                   ],
                   "query": []
                 }
@@ -13594,7 +13594,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_pedidos}}/pedidos/valor-no-valido/partidas/32",
+                  "raw": "{{ms_pedidos}}/pedidos/valor-no-valido/partidas/24",
                   "host": [
                     "{{ms_pedidos}}"
                   ],
@@ -13602,7 +13602,7 @@
                     "pedidos",
                     "valor-no-valido",
                     "partidas",
-                    "32"
+                    "24"
                   ],
                   "query": []
                 }
@@ -13634,7 +13634,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_pedidos}}/pedidos/00000000-0000-0000-0000-000000000000/partidas/32",
+                  "raw": "{{ms_pedidos}}/pedidos/00000000-0000-0000-0000-000000000000/partidas/24",
                   "host": [
                     "{{ms_pedidos}}"
                   ],
@@ -13642,7 +13642,7 @@
                     "pedidos",
                     "00000000-0000-0000-0000-000000000000",
                     "partidas",
-                    "32"
+                    "24"
                   ],
                   "query": []
                 }
@@ -13670,7 +13670,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_pedidos}}/pedidos/{{pedido_ev}}/partidas/32",
+                  "raw": "{{ms_pedidos}}/pedidos/{{pedido_ev}}/partidas/24",
                   "host": [
                     "{{ms_pedidos}}"
                   ],
@@ -13678,7 +13678,7 @@
                     "pedidos",
                     "{{pedido_ev}}",
                     "partidas",
-                    "32"
+                    "24"
                   ],
                   "query": []
                 }
@@ -13710,7 +13710,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{ms_pedidos}}/pedidos/{{pedido_ev}}/partidas/32",
+                  "raw": "{{ms_pedidos}}/pedidos/{{pedido_ev}}/partidas/24",
                   "host": [
                     "{{ms_pedidos}}"
                   ],
@@ -13718,7 +13718,7 @@
                     "pedidos",
                     "{{pedido_ev}}",
                     "partidas",
-                    "32"
+                    "24"
                   ],
                   "query": []
                 }

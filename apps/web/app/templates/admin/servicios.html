@@ -79,18 +79,22 @@
     {% if rastreo %}
     <div class="tabla-contenedor">
         <table>
-            <thead><tr><th>Hora</th><th>Servicio</th><th>Petición</th><th>Status</th><th class="num">Duración</th><th>Rol</th><th>Formato</th></tr></thead>
+            <thead><tr><th>Hora</th><th>Servicio</th><th>Paso</th><th>Resultado</th><th class="num">Duración</th></tr></thead>
             <tbody>
             {% for p in rastreo %}
             <tr>
                 <td class="nowrap"><small>{{ p.fecha|fecha }}</small></td>
-                <td>ms-{{ p.servicio }}</td>
+                <td>{{ p.servicio }}</td>
+                {% if p.tipo == 'peticion' %}
                 <td><code>{{ p.metodo }} {{ p.ruta }}</code></td>
-                <td><span class="etiqueta-estado {{ 'ok' if p.status < 400 else ('alerta' if p.status < 500 else 'critico') }}">{{ p.status }}</span>
-                    {% if p.codigo_error %}<small>{{ p.codigo_error }}</small>{% endif %}</td>
+                <td><span class="etiqueta-estado {{ 'ok' if p.status < 400 else ('alerta' if p.status < 500 else 'critico') }}">{{ p.status }}</span></td>
                 <td class="num">{{ p.duracion_ms }} ms</td>
-                <td>{{ p.rol or 'público' }}</td>
-                <td>{{ p.formato|upper }}</td>
+                {% else %}
+                <td>{{ p.tipo_evento|lower }} de <strong>{{ p.entidad }}</strong> <small>{{ p.entidad_id }}</small><br>
+                    <small>{{ p.descripcion }}</small></td>
+                <td>{% for c in p.cambios or [] %}<small><code>{{ c.campo }}</code>: {{ c.antes or '-' }} &rarr; {{ c.despues or '-' }}</small><br>{% endfor %}</td>
+                <td></td>
+                {% endif %}
             </tr>
             {% endfor %}
             </tbody>

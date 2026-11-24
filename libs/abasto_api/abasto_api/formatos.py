@@ -36,6 +36,24 @@ SINGULARES = {
     'mayoreo': 'renglon', 'faltantes': 'faltante', 'dependencias': 'dependencia', 'tendencia': 'punto',
     'roles': 'rol', 'permisos_disponibles': 'permiso', 'servicios': 'servicio', 'pasos': 'paso',
     'cercanas': 'cercana', 'importaciones': 'importacion', 'oportunidades': 'oportunidad', 'ids': 'id',
+    # Entrega final
+    'evaluaciones': 'evaluacion', 'ventas': 'venta', 'entregas': 'entrega', 'operaciones': 'operacion',
+    'lotes': 'lote', 'alertas': 'alerta', 'cotizaciones': 'cotizacion', 'necesidades': 'necesidad',
+    'ordenes': 'orden', 'solicitudes': 'solicitud', 'devoluciones': 'devolucion', 'incidencias': 'incidencia',
+    'colonias': 'colonia', 'resultados': 'resultado', 'parametros': 'parametro', 'documentos': 'documento',
+    'reportes': 'reporte', 'variantes': 'variante', 'marcas': 'marca', 'unidades': 'unidad',
+    'equivalentes': 'equivalente', 'responsables': 'responsable', 'reservas': 'reserva',
+    'transferencias': 'transferencia', 'promociones': 'promocion', 'sugerencias': 'sugerencia',
+    'cambios': 'cambio', 'filas': 'fila', 'conectores': 'conector', 'renglones': 'renglon', 'puntos': 'punto',
+    'participantes': 'participante', 'programados': 'programado', 'plantillas': 'plantilla',
+    'dispositivos': 'dispositivo', 'municipios': 'municipio', 'regiones': 'region', 'sucursales': 'sucursal',
+    'mejores_precios': 'mejor_precio', 'por_proveedor': 'grupo', 'explicacion': 'razon',
+    'por_dia_semana': 'indice', 'por_mes': 'indice', 'estimacion': 'punto', 'serie': 'punto', 'bases': 'base',
+    'elementos': 'elemento', 'catalogos': 'catalogo', 'tipos': 'tipo', 'motivos_rechazo': 'elemento',
+    'populares': 'popular', 'motivos': 'motivo', 'eventos_entrega': 'evento', 'categorias_uso': 'categoria',
+    'registros': 'registro', 'zonas_detalle': 'zona', 'dias_entrega': 'dia', 'dias_operacion': 'dia',
+    'formatos': 'formato', 'tipos_permitidos': 'tipo', 'entidades': 'entidad', 'alternativas': 'colonia',
+    'avisos': 'aviso', 'productos_pedidos': 'producto',
 }
 
 

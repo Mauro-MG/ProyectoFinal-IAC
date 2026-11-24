@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generado con: python -m abasto_api.contratos apps/microservicios/monitoreo -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://abastored.mx/esquemas/v1" targetNamespace="https://abastored.mx/esquemas/v1" elementFormDefault="qualified" version="1.0">
+  <xs:annotation>
+    <xs:documentation>Contratos XML v1 de ms-monitoreo (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
+  </xs:annotation>
+  <!-- Elementos raíz: uno por petición o respuesta -->
+  <xs:element name="alerta" type="Alerta"/>
+  <xs:element name="alerta_cierre" type="AlertaCierre"/>
+  <xs:element name="alertas" type="AlertasSalida"/>
+  <xs:element name="bases_datos" type="BasesDatosSalida"/>
+  <xs:element name="error" type="ErrorSalida"/>
+  <xs:element name="estado" type="EstadoGeneral"/>
+  <xs:element name="evaluacion" type="EvaluacionSalida"/>
+  <xs:element name="metricas" type="MetricasSalida"/>
+  <xs:element name="resultado" type="Resultado"/>
+  <xs:element name="salud" type="Salud"/>
+  <xs:element name="serie" type="SerieSalida"/>
+  <xs:element name="servicio" type="ServicioEstado"/>
+  <!-- Tipos -->
+  <xs:complexType name="Alerta">
+    <xs:all>
+      <xs:element name="id" type="xs:string" minOccurs="1"/>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="regla" type="xs:string" minOccurs="1"/>
+      <xs:element name="severidad" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="advertencia"/>
+            <xs:enumeration value="critica"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="valor" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="umbral" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="activa" type="xs:boolean" minOccurs="1"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="actualizada" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="cerrada" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="comentario" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="AlertaCierre">
+    <xs:all>
+      <xs:element name="comentario" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="300"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="AlertasSalida">
+    <xs:all>
+      <xs:element name="total" type="xs:integer" minOccurs="1"/>
+      <xs:element name="alertas" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="alerta" maxOccurs="unbounded" type="Alerta" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="BaseDatos">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="version" type="xs:string" minOccurs="0"/>
+      <xs:element name="conexiones" type="xs:integer" minOccurs="0"/>
+      <xs:element name="tamano_mb" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="detalle" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="BasesDatosSalida">
+    <xs:all>
+      <xs:element name="revisado" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="bases" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="base" maxOccurs="unbounded" type="BaseDatos" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Dependencia">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DependenciaEstado">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DetalleError">
+    <xs:all>
+      <xs:element name="campo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ErrorSalida">
+    <xs:annotation>
+      <xs:documentation>Error estandarizado (en JSON viene dentro de la llave `error`).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="codigo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="status" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="400"/>
+            <xs:maxInclusive value="599"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ruta" type="xs:string" minOccurs="0"/>
+      <xs:element name="correlation_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="detalles" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="detalle" maxOccurs="unbounded" type="DetalleError" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EstadoGeneral">
+    <xs:all>
+      <xs:element name="revisado" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="total" type="xs:integer" minOccurs="1"/>
+      <xs:element name="ok" type="xs:integer" minOccurs="1"/>
+      <xs:element name="degradados" type="xs:integer" minOccurs="1"/>
+      <xs:element name="caidos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="disponibilidad_pct" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="servicios" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="servicio" maxOccurs="unbounded" type="ServicioEstado" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EvaluacionSalida">
+    <xs:all>
+      <xs:element name="revisado" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="nuevas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="vigentes" type="xs:integer" minOccurs="1"/>
+      <xs:element name="resueltas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="alertas" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="alerta" maxOccurs="unbounded" type="Alerta" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="MetricaServicio">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="peticiones" type="xs:integer" minOccurs="1"/>
+      <xs:element name="errores_cliente" type="xs:integer" minOccurs="1"/>
+      <xs:element name="errores_servidor" type="xs:integer" minOccurs="1"/>
+      <xs:element name="tasa_error_servidor_pct" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="latencia_prom_ms" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="latencia_p95_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="latencia_max_ms" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="respuestas_xml" type="xs:integer" minOccurs="1"/>
+      <xs:element name="ultima" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="peticiones_hoy" type="xs:integer" minOccurs="1"/>
+      <xs:element name="errores_hoy" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="MetricasSalida">
+    <xs:all>
+      <xs:element name="horas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="servicios" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="servicio" maxOccurs="unbounded" type="MetricaServicio" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PuntoSerie">
+    <xs:all>
+      <xs:element name="hora" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="peticiones" type="xs:integer" minOccurs="1"/>
+      <xs:element name="errores" type="xs:integer" minOccurs="1"/>
+      <xs:element name="latencia_prom_ms" type="xs:decimal" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Resultado">
+    <xs:annotation>
+      <xs:documentation>Respuesta de operaciones que no regresan un recurso (bajas, revocaciones, marcados).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+      <xs:element name="jti" type="xs:string" minOccurs="0"/>
+      <xs:element name="sesiones_cerradas" type="xs:integer" minOccurs="0"/>
+      <xs:element name="cambiadas" type="xs:integer" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Salud">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="version" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="dependencias" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="Dependencia" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="SerieSalida">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="horas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="puntos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="punto" maxOccurs="unbounded" type="PuntoSerie" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ServicioEstado">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="puerto_desarrollo" type="xs:integer" minOccurs="1"/>
+      <xs:element name="descripcion" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="ok"/>
+            <xs:enumeration value="degradado"/>
+            <xs:enumeration value="caido"/>
+            <xs:enumeration value="sin_respuesta"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="http" type="xs:integer" minOccurs="0"/>
+      <xs:element name="tiempo_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="version" type="xs:string" minOccurs="0"/>
+      <xs:element name="dependencias" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="DependenciaEstado" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

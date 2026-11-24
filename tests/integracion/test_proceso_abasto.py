@@ -5,7 +5,7 @@ lo que dejó el anterior (no son llamadas aisladas):
   1. La minorista entra (ms-seguridad) y consulta su comercio (ms-comercios).
   2. Vende hasta dejar un producto en stock bajo (ms-inventario) -> aviso (ms-notificaciones).
   3. El producto aparece en faltantes y en la caché de disponibilidad se nota el cambio (Redis).
-  4. Busca quién se lo vende en su zona (ms-catalogo).
+  4. Busca quién se lo vende en su zona (ms-proveedores).
   5. Crea el pedido en XML, validado contra pedidos.xsd (ms-pedidos).
   6. Lo envía; el operador del proveedor recibe aviso, lo acepta y prepara; el dueño lo despacha.
   7. El proveedor no puede marcarlo como recibido (409); la minorista sí.
@@ -47,13 +47,18 @@ def test_01_comercio_e_inventario(minorista):
     r = minorista.get('inventario', f"/comercios/{comercio['id']}/inventario", params={'por_pagina': 200})
     assert r.status_code == 200
 
-    # Un producto con existencia que la Distribuidora Regia entregue en su zona
+    # Un producto con existencia que la Distribuidora Regia entregue en su zona y del que tenga suficiente
+    # (cada corrida le compra; sin existencia, aceptar el pedido es un 409 legítimo)
+    def suficiente(o):
+        return o['existencia_disponible'] >= max(o['cantidad_minima'], (o['pedido_minimo'] or 0) / o['precio_mayoreo'] + 1)
+
     for renglon in r.json()['renglones']:
         if renglon['existencia'] <= renglon['stock_minimo']:
             continue
-        ofertas = minorista.get('catalogo', '/ofertas',
+        ofertas = minorista.get('proveedores', '/ofertas',
                                 params={'producto_id': renglon['producto_id'], 'zona_id': comercio['zona_id']}).json()
-        oferta = next((o for o in ofertas['ofertas'] if o['cubre_zona'] and o['proveedor'].startswith('Distribuidora Regia')), None)
+        oferta = next((o for o in ofertas['ofertas'] if o['cubre_zona'] and suficiente(o)
+                       and o['proveedor'].startswith('Distribuidora Regia')), None)
         if oferta:
             break
     else:
@@ -183,7 +188,7 @@ def test_14_estadisticas_por_agregacion(api):
 
 
 def test_15_rastreo_por_correlation_id(api):
-    r = api('admin').get('seguridad', f"/actividad/peticiones/{ESTADO['correlation_id']}")
+    r = api('auditor').get('auditoria', f"/trazas/{ESTADO['correlation_id']}")
     assert r.status_code == 200
-    paso = r.json()['pasos'][0]
-    assert (paso['servicio'], paso['metodo'], paso['status'], paso['formato']) == ('pedidos', 'POST', 201, 'xml')
+    peticion = next(p for p in r.json()['pasos'] if p['tipo'] == 'peticion')
+    assert (peticion['servicio'], peticion['metodo'], peticion['status']) == ('ms-pedidos', 'POST', 201)

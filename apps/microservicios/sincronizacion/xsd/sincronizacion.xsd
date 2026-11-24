@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generado con: python -m abasto_api.contratos apps/microservicios/sincronizacion -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://abastored.mx/esquemas/v1" targetNamespace="https://abastored.mx/esquemas/v1" elementFormDefault="qualified" version="1.0">
+  <xs:annotation>
+    <xs:documentation>Contratos XML v1 de ms-sincronizacion (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
+  </xs:annotation>
+  <!-- Elementos raíz: uno por petición o respuesta -->
+  <xs:element name="error" type="ErrorSalida"/>
+  <xs:element name="estado" type="EstadoSalida"/>
+  <xs:element name="lote" type="LoteSalida"/>
+  <xs:element name="lote_entrada" type="LoteEntrada"/>
+  <xs:element name="lotes" type="LotesSalida"/>
+  <xs:element name="reintento_entrada" type="ReintentoEntrada"/>
+  <xs:element name="resultado" type="Resultado"/>
+  <xs:element name="salud" type="Salud"/>
+  <!-- Tipos -->
+  <xs:complexType name="DatosOperacion">
+    <xs:annotation>
+      <xs:documentation>Campos según el tipo de operación (los que no aplican se omiten).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="comercio_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="inventario_id" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="producto_id" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="proveedor_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="tipo_movimiento" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="ENTRADA"/>
+            <xs:enumeration value="SALIDA"/>
+            <xs:enumeration value="AJUSTE"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="cantidad" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="motivo" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="precio" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minExclusive value="0.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="stock_minimo" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="stock_maximo" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="metodo_pago" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="EFECTIVO"/>
+            <xs:enumeration value="TARJETA"/>
+            <xs:enumeration value="TRANSFERENCIA"/>
+            <xs:enumeration value="FIADO"/>
+            <xs:enumeration value="OTRO"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="partidas" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="partida" maxOccurs="100" type="Partida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="texto" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="120"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="resultados" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="zona_id" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Dependencia">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DetalleError">
+    <xs:all>
+      <xs:element name="campo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ErrorSalida">
+    <xs:annotation>
+      <xs:documentation>Error estandarizado (en JSON viene dentro de la llave `error`).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="codigo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="status" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="400"/>
+            <xs:maxInclusive value="599"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ruta" type="xs:string" minOccurs="0"/>
+      <xs:element name="correlation_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="detalles" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="detalle" maxOccurs="unbounded" type="DetalleError" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EstadoSalida">
+    <xs:all>
+      <xs:element name="servidor" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="max_operaciones" type="xs:integer" minOccurs="1"/>
+      <xs:element name="politica_conflictos" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="servidor_gana"/>
+            <xs:enumeration value="cliente_gana"/>
+            <xs:enumeration value="rechazar"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="tipos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tipo" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="LoteEntrada">
+    <xs:all>
+      <xs:element name="lote_id" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="8"/>
+            <xs:maxLength value="64"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="dispositivo_id" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="4"/>
+            <xs:maxLength value="64"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="plataforma" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="android"/>
+            <xs:enumeration value="escritorio"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="version_app" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="20"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="politica_conflictos" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="servidor_gana"/>
+            <xs:enumeration value="cliente_gana"/>
+            <xs:enumeration value="rechazar"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="operaciones" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="operacion" maxOccurs="1000" type="Operacion" minOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="LoteSalida">
+    <xs:all>
+      <xs:element name="lote_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="dispositivo_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="plataforma" type="xs:string" minOccurs="1"/>
+      <xs:element name="recibido" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="terminado" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="politica_conflictos" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="servidor_gana"/>
+            <xs:enumeration value="cliente_gana"/>
+            <xs:enumeration value="rechazar"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="total" type="xs:integer" minOccurs="1"/>
+      <xs:element name="aplicadas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="duplicadas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="conflictos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="rechazadas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="pendientes" type="xs:integer" minOccurs="1"/>
+      <xs:element name="resultados" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="resultado" maxOccurs="unbounded" type="ResultadoOperacion" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="LotesSalida">
+    <xs:all>
+      <xs:element name="total" type="xs:integer" minOccurs="1"/>
+      <xs:element name="lotes" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="lote" maxOccurs="unbounded" type="LoteSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Operacion">
+    <xs:all>
+      <xs:element name="operacion_id" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="8"/>
+            <xs:maxLength value="64"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="tipo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="movimiento_inventario"/>
+            <xs:enumeration value="venta"/>
+            <xs:enumeration value="precio"/>
+            <xs:enumeration value="limites_inventario"/>
+            <xs:enumeration value="pedido_borrador"/>
+            <xs:enumeration value="busqueda"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="realizada" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="version_base" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="datos" type="DatosOperacion" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Partida">
+    <xs:all>
+      <xs:element name="producto_id" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="cantidad" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minExclusive value="0.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="precio_unitario" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ReintentoEntrada">
+    <xs:all>
+      <xs:element name="operaciones" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="operacion" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Resultado">
+    <xs:annotation>
+      <xs:documentation>Respuesta de operaciones que no regresan un recurso (bajas, revocaciones, marcados).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+      <xs:element name="jti" type="xs:string" minOccurs="0"/>
+      <xs:element name="sesiones_cerradas" type="xs:integer" minOccurs="0"/>
+      <xs:element name="cambiadas" type="xs:integer" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ResultadoOperacion">
+    <xs:all>
+      <xs:element name="operacion_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="aplicada"/>
+            <xs:enumeration value="duplicada"/>
+            <xs:enumeration value="conflicto"/>
+            <xs:enumeration value="rechazada"/>
+            <xs:enumeration value="pendiente_reintento"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="mensaje" type="xs:string" minOccurs="0"/>
+      <xs:element name="servicio" type="xs:string" minOccurs="0"/>
+      <xs:element name="id_servidor" type="xs:string" minOccurs="0"/>
+      <xs:element name="version_servidor" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="intentos" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Salud">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="version" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="dependencias" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="Dependencia" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

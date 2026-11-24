@@ -5,20 +5,28 @@
     <xs:documentation>Contratos XML v1 de ms-inventario (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
   </xs:annotation>
   <!-- Elementos raíz: uno por petición o respuesta -->
-  <xs:element name="disponibilidad" type="DisponibilidadSalida"/>
   <xs:element name="error" type="ErrorSalida"/>
   <xs:element name="faltantes" type="FaltantesSalida"/>
   <xs:element name="importacion" type="ImportacionSalida"/>
   <xs:element name="importaciones" type="ImportacionesSalida"/>
   <xs:element name="inventario" type="InventarioSalida"/>
   <xs:element name="limites_entrada" type="LimitesEntrada"/>
+  <xs:element name="lote" type="LoteSalida"/>
+  <xs:element name="lote_entrada" type="LoteEntrada"/>
   <xs:element name="movimiento" type="MovimientoSalida"/>
   <xs:element name="movimiento_entrada" type="MovimientoEntrada"/>
   <xs:element name="movimientos" type="MovimientosSalida"/>
   <xs:element name="renglon" type="RenglonSalida"/>
   <xs:element name="renglon_entrada" type="RenglonEntrada"/>
+  <xs:element name="reserva" type="ReservaSalida"/>
+  <xs:element name="reserva_entrada" type="ReservaEntrada"/>
+  <xs:element name="reservas" type="ReservasSalida"/>
   <xs:element name="resultado" type="Resultado"/>
   <xs:element name="salud" type="Salud"/>
+  <xs:element name="sucursales" type="SucursalesSalida"/>
+  <xs:element name="transferencia" type="TransferenciaSalida"/>
+  <xs:element name="transferencia_entrada" type="TransferenciaEntrada"/>
+  <xs:element name="transferencias" type="TransferenciasSalida"/>
   <!-- Tipos -->
   <xs:complexType name="Dependencia">
     <xs:all>
@@ -33,48 +41,6 @@
       <xs:element name="campo" type="xs:string" minOccurs="1"/>
       <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
       <xs:element name="tipo" type="xs:string" minOccurs="0"/>
-    </xs:all>
-  </xs:complexType>
-  <xs:complexType name="DisponibilidadSalida">
-    <xs:all>
-      <xs:element name="paginacion" type="Paginacion" minOccurs="1"/>
-      <xs:element name="renglones" minOccurs="1">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="renglon" maxOccurs="unbounded" type="Disponible" minOccurs="0"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="origen" minOccurs="1">
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
-            <xs:enumeration value="cache"/>
-            <xs:enumeration value="postgres"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-    </xs:all>
-  </xs:complexType>
-  <xs:complexType name="Disponible">
-    <xs:all>
-      <xs:element name="producto_id" type="xs:integer" minOccurs="1"/>
-      <xs:element name="producto" type="xs:string" minOccurs="1"/>
-      <xs:element name="unidad_medida" type="xs:string" minOccurs="1"/>
-      <xs:element name="comercio" type="xs:string" minOccurs="1"/>
-      <xs:element name="sector" type="xs:string" minOccurs="1"/>
-      <xs:element name="zona" type="xs:string" minOccurs="0"/>
-      <xs:element name="existencia" type="xs:decimal" minOccurs="1"/>
-      <xs:element name="estado" minOccurs="1">
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
-            <xs:enumeration value="DISPONIBLE"/>
-            <xs:enumeration value="BAJO"/>
-            <xs:enumeration value="AGOTADO"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="precio" type="xs:decimal" minOccurs="0"/>
-      <xs:element name="actualizado" type="xs:dateTime" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="ErrorFila">
@@ -188,8 +154,90 @@
       </xs:element>
     </xs:all>
   </xs:complexType>
+  <xs:complexType name="LoteEntrada">
+    <xs:all>
+      <xs:element name="referencia" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="pedido_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="movimientos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="movimiento" maxOccurs="200" type="MovimientoLote" minOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="LoteSalida">
+    <xs:all>
+      <xs:element name="referencia" type="xs:string" minOccurs="1"/>
+      <xs:element name="comercio_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="ya_aplicado" type="xs:boolean" minOccurs="1"/>
+      <xs:element name="movimientos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="movimiento" maxOccurs="unbounded" type="MovimientoSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
   <xs:complexType name="MovimientoEntrada">
     <xs:all>
+      <xs:element name="tipo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="ENTRADA"/>
+            <xs:enumeration value="SALIDA"/>
+            <xs:enumeration value="AJUSTE"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="cantidad" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="motivo" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="referencia" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="MovimientoLote">
+    <xs:all>
+      <xs:element name="inventario_id" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="producto_id" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
       <xs:element name="tipo" minOccurs="1">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -235,6 +283,7 @@
       <xs:element name="pedido_id" type="xs:string" minOccurs="0"/>
       <xs:element name="usuario_id" type="xs:string" minOccurs="0"/>
       <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="referencia" type="xs:string" minOccurs="0"/>
       <xs:element name="estado_inventario" minOccurs="0">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -364,6 +413,80 @@
       </xs:element>
       <xs:element name="proveedores" type="xs:integer" minOccurs="0"/>
       <xs:element name="precio_mayoreo_min" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="aviso" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ReservaEntrada">
+    <xs:all>
+      <xs:element name="cantidad" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minExclusive value="0.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="motivo" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="referencia" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="minutos" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="10080"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ReservaSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="inventario_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="producto" type="xs:string" minOccurs="1"/>
+      <xs:element name="cantidad" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="motivo" type="xs:string" minOccurs="0"/>
+      <xs:element name="referencia" type="xs:string" minOccurs="0"/>
+      <xs:element name="estado" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="ACTIVA"/>
+            <xs:enumeration value="CONSUMIDA"/>
+            <xs:enumeration value="LIBERADA"/>
+            <xs:enumeration value="VENCIDA"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="expira" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="creada" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="existencia" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="reservado_total" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="disponible" type="xs:decimal" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ReservasSalida">
+    <xs:all>
+      <xs:element name="inventario_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="existencia" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="reservado_total" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="disponible" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="reservas" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="reserva" maxOccurs="unbounded" type="ReservaSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="Resultado">
@@ -398,6 +521,84 @@
         <xs:complexType>
           <xs:sequence>
             <xs:element name="dependencia" maxOccurs="unbounded" type="Dependencia" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Sucursal">
+    <xs:all>
+      <xs:element name="comercio_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="comercio" type="xs:string" minOccurs="1"/>
+      <xs:element name="zona" type="xs:string" minOccurs="0"/>
+      <xs:element name="productos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="bajo" type="xs:integer" minOccurs="1"/>
+      <xs:element name="agotado" type="xs:integer" minOccurs="1"/>
+      <xs:element name="existencia_producto" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="estado_producto" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="SucursalesSalida">
+    <xs:all>
+      <xs:element name="producto_id" type="xs:integer" minOccurs="0"/>
+      <xs:element name="total_producto" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="sucursales" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sucursal" maxOccurs="unbounded" type="Sucursal" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="TransferenciaEntrada">
+    <xs:all>
+      <xs:element name="origen_id" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="destino_comercio_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="cantidad" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minExclusive value="0.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="motivo" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="TransferenciaSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="origen_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="origen_comercio" type="xs:string" minOccurs="1"/>
+      <xs:element name="destino_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="destino_comercio" type="xs:string" minOccurs="1"/>
+      <xs:element name="producto" type="xs:string" minOccurs="1"/>
+      <xs:element name="cantidad" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="motivo" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="existencia_origen" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="existencia_destino" type="xs:decimal" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="TransferenciasSalida">
+    <xs:all>
+      <xs:element name="comercio_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="transferencias" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="transferencia" maxOccurs="unbounded" type="TransferenciaSalida" minOccurs="0"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>

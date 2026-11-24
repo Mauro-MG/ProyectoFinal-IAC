@@ -9,9 +9,10 @@
   <xs:element name="ejecucion" type="EjecucionSalida"/>
   <xs:element name="error" type="ErrorSalida"/>
   <xs:element name="evolucion" type="EvolucionSalida"/>
+  <xs:element name="grafica" type="GraficaSalida"/>
   <xs:element name="mapa" type="MapaSalida"/>
+  <xs:element name="municipios" type="MunicipiosSalida"/>
   <xs:element name="oportunidades" type="OportunidadesSalida"/>
-  <xs:element name="recomendaciones" type="RecomendacionesSalida"/>
   <xs:element name="resultado" type="Resultado"/>
   <xs:element name="salud" type="Salud"/>
   <xs:element name="zonas" type="ZonasSalida"/>
@@ -125,6 +126,27 @@
       </xs:element>
     </xs:all>
   </xs:complexType>
+  <xs:complexType name="GraficaSalida">
+    <xs:all>
+      <xs:element name="grafica" type="xs:string" minOccurs="1"/>
+      <xs:element name="titulo" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="1"/>
+      <xs:element name="categories" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="series" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="serie" maxOccurs="unbounded" type="Serie" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
   <xs:complexType name="MapaSalida">
     <xs:all>
       <xs:element name="comercios" minOccurs="1">
@@ -138,6 +160,31 @@
         <xs:complexType>
           <xs:sequence>
             <xs:element name="proveedor" maxOccurs="unbounded" type="PuntoProveedor" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Municipio">
+    <xs:all>
+      <xs:element name="municipio" type="xs:string" minOccurs="1"/>
+      <xs:element name="zonas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="poblacion" type="xs:integer" minOccurs="1"/>
+      <xs:element name="comercios" type="xs:integer" minOccurs="1"/>
+      <xs:element name="formales" type="xs:integer" minOccurs="1"/>
+      <xs:element name="informales" type="xs:integer" minOccurs="1"/>
+      <xs:element name="proveedores" type="xs:integer" minOccurs="1"/>
+      <xs:element name="habitantes_por_comercio" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="indice_acceso_promedio" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="zonas_criticas" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="MunicipiosSalida">
+    <xs:all>
+      <xs:element name="municipios" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="municipio" maxOccurs="unbounded" type="Municipio" minOccurs="0"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -242,37 +289,6 @@
       <xs:element name="plan" type="xs:string" minOccurs="1"/>
     </xs:all>
   </xs:complexType>
-  <xs:complexType name="Recomendacion">
-    <xs:all>
-      <xs:element name="producto_id" type="xs:integer" minOccurs="1"/>
-      <xs:element name="producto" type="xs:string" minOccurs="1"/>
-      <xs:element name="canasta_basica" type="xs:boolean" minOccurs="1"/>
-      <xs:element name="motivo" type="xs:string" minOccurs="1"/>
-      <xs:element name="cobertura" type="xs:decimal" minOccurs="1"/>
-      <xs:element name="con_disponibilidad" type="xs:integer" minOccurs="1"/>
-      <xs:element name="comercios_analizados" type="xs:integer" minOccurs="1"/>
-      <xs:element name="ventas" type="xs:decimal" minOccurs="1"/>
-      <xs:element name="proveedores" type="xs:integer" minOccurs="1"/>
-      <xs:element name="precio_mayoreo_min" type="xs:decimal" minOccurs="0"/>
-      <xs:element name="precio_promedio" type="xs:decimal" minOccurs="0"/>
-      <xs:element name="margen_estimado" type="xs:decimal" minOccurs="0"/>
-      <xs:element name="puntaje" type="xs:integer" minOccurs="1"/>
-    </xs:all>
-  </xs:complexType>
-  <xs:complexType name="RecomendacionesSalida">
-    <xs:all>
-      <xs:element name="comercio_id" type="xs:string" minOccurs="1"/>
-      <xs:element name="zona" type="xs:string" minOccurs="1"/>
-      <xs:element name="umbral_cobertura" type="xs:decimal" minOccurs="1"/>
-      <xs:element name="recomendaciones" minOccurs="1">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="recomendacion" maxOccurs="unbounded" type="Recomendacion" minOccurs="0"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-    </xs:all>
-  </xs:complexType>
   <xs:complexType name="Resultado">
     <xs:annotation>
       <xs:documentation>Respuesta de operaciones que no regresan un recurso (bajas, revocaciones, marcados).</xs:documentation>
@@ -298,6 +314,19 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Serie">
+    <xs:all>
+      <xs:element name="name" type="xs:string" minOccurs="1"/>
+      <xs:element name="data" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" maxOccurs="unbounded" type="xs:decimal" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="type" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="TotalesBrecha">

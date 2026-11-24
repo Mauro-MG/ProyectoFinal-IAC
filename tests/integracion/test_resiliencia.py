@@ -6,7 +6,7 @@ Requiere el CLI de Docker (detiene y arranca el contenedor).
 """
 import requests
 
-from apoyo import WEB, esperar_salud
+from apoyo import WEB, base, esperar_salud
 
 
 def test_aviso_no_se_pierde_con_notificaciones_caido(api, docker):
@@ -45,14 +45,14 @@ def test_salud_reporta_dependencia_caida(docker):
     """Con Redis detenido, /health de un servicio lo reporta y las rutas protegidas responden 503 (no 500)."""
     assert docker('stop', 'abastored-redis').returncode == 0
     try:
-        r = requests.get('http://localhost:8106/health', timeout=10)
+        r = requests.get(f"{base('pedidos')}/health", timeout=10)
         assert r.status_code == 503
         caidas = [d['nombre'] for d in r.json()['dependencias'] if d['estado'] != 'ok']
         assert caidas == ['redis']
-        r = requests.get('http://localhost:8106/api/v1/pedidos', headers={'Authorization': 'Bearer x.y.z'}, timeout=10)
+        r = requests.get(f"{base('pedidos')}/api/v1/pedidos", headers={'Authorization': 'Bearer x.y.z'}, timeout=10)
         assert r.status_code in (401, 503)
     finally:
         assert docker('start', 'abastored-redis').returncode == 0
         for _ in range(30):
-            if requests.get('http://localhost:8106/health', timeout=10).status_code == 200:
+            if requests.get(f"{base('pedidos')}/health", timeout=10).status_code == 200:
                 break

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generado con: python -m abasto_api.contratos apps/microservicios/busqueda -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://abastored.mx/esquemas/v1" targetNamespace="https://abastored.mx/esquemas/v1" elementFormDefault="qualified" version="1.0">
+  <xs:annotation>
+    <xs:documentation>Contratos XML v1 de ms-busqueda (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
+  </xs:annotation>
+  <!-- Elementos raíz: uno por petición o respuesta -->
+  <xs:element name="busqueda" type="BusquedaSalida"/>
+  <xs:element name="error" type="ErrorSalida"/>
+  <xs:element name="ofertas" type="OfertasSalida"/>
+  <xs:element name="populares" type="PopularesSalida"/>
+  <xs:element name="resultado" type="abasto_api__modelos_comunes__Resultado"/>
+  <xs:element name="salud" type="Salud"/>
+  <xs:element name="sugerencias" type="SugerenciasSalida"/>
+  <!-- Tipos -->
+  <xs:complexType name="BusquedaSalida">
+    <xs:all>
+      <xs:element name="q" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="1"/>
+      <xs:element name="origen" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="cache"/>
+            <xs:enumeration value="postgres"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="conteos" type="Conteos" minOccurs="1"/>
+      <xs:element name="paginacion" type="Paginacion" minOccurs="1"/>
+      <xs:element name="resultados" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="resultado" maxOccurs="unbounded" type="esquemas_busqueda__Resultado" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Conteos">
+    <xs:all>
+      <xs:element name="productos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="comercios" type="xs:integer" minOccurs="1"/>
+      <xs:element name="proveedores" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Dependencia">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DetalleError">
+    <xs:all>
+      <xs:element name="campo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ErrorSalida">
+    <xs:annotation>
+      <xs:documentation>Error estandarizado (en JSON viene dentro de la llave `error`).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="codigo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="status" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="400"/>
+            <xs:maxInclusive value="599"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ruta" type="xs:string" minOccurs="0"/>
+      <xs:element name="correlation_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="detalles" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="detalle" maxOccurs="unbounded" type="DetalleError" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="OfertaEncontrada">
+    <xs:all>
+      <xs:element name="oferta_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="producto_id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="producto" type="xs:string" minOccurs="1"/>
+      <xs:element name="proveedor_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="proveedor" type="xs:string" minOccurs="1"/>
+      <xs:element name="precio_mayoreo" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="cantidad_minima" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="existencia_disponible" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="tiempo_entrega_dias" type="xs:integer" minOccurs="1"/>
+      <xs:element name="cubre_zona" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="relevancia" type="xs:decimal" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="OfertasSalida">
+    <xs:all>
+      <xs:element name="q" type="xs:string" minOccurs="1"/>
+      <xs:element name="paginacion" type="Paginacion" minOccurs="1"/>
+      <xs:element name="ofertas" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="oferta" maxOccurs="unbounded" type="OfertaEncontrada" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Paginacion">
+    <xs:annotation>
+      <xs:documentation>Datos de paginación de toda lista.</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="pagina" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="por_pagina" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="total" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="paginas" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Popular">
+    <xs:all>
+      <xs:element name="texto" type="xs:string" minOccurs="1"/>
+      <xs:element name="busquedas" type="xs:integer" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PopularesSalida">
+    <xs:all>
+      <xs:element name="populares" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="popular" maxOccurs="unbounded" type="Popular" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Salud">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="version" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="dependencias" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="Dependencia" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Sugerencia">
+    <xs:all>
+      <xs:element name="texto" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="producto"/>
+            <xs:enumeration value="categoria"/>
+            <xs:enumeration value="popular"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="SugerenciasSalida">
+    <xs:all>
+      <xs:element name="q" type="xs:string" minOccurs="1"/>
+      <xs:element name="sugerencias" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="sugerencia" maxOccurs="unbounded" type="Sugerencia" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="abasto_api__modelos_comunes__Resultado">
+    <xs:annotation>
+      <xs:documentation>Respuesta de operaciones que no regresan un recurso (bajas, revocaciones, marcados).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+      <xs:element name="jti" type="xs:string" minOccurs="0"/>
+      <xs:element name="sesiones_cerradas" type="xs:integer" minOccurs="0"/>
+      <xs:element name="cambiadas" type="xs:integer" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="esquemas_busqueda__Resultado">
+    <xs:all>
+      <xs:element name="tipo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="producto"/>
+            <xs:enumeration value="comercio"/>
+            <xs:enumeration value="proveedor"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="id" type="xs:string" minOccurs="1"/>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="detalle" type="xs:string" minOccurs="0"/>
+      <xs:element name="zona" type="xs:string" minOccurs="0"/>
+      <xs:element name="municipio" type="xs:string" minOccurs="0"/>
+      <xs:element name="relevancia" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="distancia_km" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="existencia" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="precio" type="xs:decimal" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

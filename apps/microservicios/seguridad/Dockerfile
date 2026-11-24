@@ -12,6 +12,8 @@ RUN pip install --no-cache-dir /libs/abasto_dominio /libs/abasto_api
 
 WORKDIR /srv
 COPY apps/microservicios/seguridad/ .
+# Dependencias propias del servicio (sólo si tiene requirements.txt)
+RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
 
 EXPOSE 8000
 HEALTHCHECK --interval=20s --timeout=5s --start-period=10s --retries=3 \

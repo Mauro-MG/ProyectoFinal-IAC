@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generado con: python -m abasto_api.contratos apps/microservicios/entregas -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://abastored.mx/esquemas/v1" targetNamespace="https://abastored.mx/esquemas/v1" elementFormDefault="qualified" version="1.0">
+  <xs:annotation>
+    <xs:documentation>Contratos XML v1 de ms-entregas (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
+  </xs:annotation>
+  <!-- Elementos raíz: uno por petición o respuesta -->
+  <xs:element name="asignacion_entrada" type="AsignacionEntrada"/>
+  <xs:element name="confirmacion_entrada" type="ConfirmacionEntrada"/>
+  <xs:element name="entrega" type="EntregaSalida"/>
+  <xs:element name="entrega_entrada" type="EntregaEntrada"/>
+  <xs:element name="entregas" type="EntregasSalida"/>
+  <xs:element name="error" type="ErrorSalida"/>
+  <xs:element name="incidencia" type="IncidenciaSalida"/>
+  <xs:element name="incidencia_entrada" type="IncidenciaEntrada"/>
+  <xs:element name="qr" type="QrSalida"/>
+  <xs:element name="resolucion_entrada" type="ResolucionEntrada"/>
+  <xs:element name="resultado" type="Resultado"/>
+  <xs:element name="salud" type="Salud"/>
+  <xs:element name="ubicacion_entrada" type="UbicacionEntrada"/>
+  <!-- Tipos -->
+  <xs:complexType name="AsignacionEntrada">
+    <xs:all>
+      <xs:element name="responsable_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="responsable_nombre" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="150"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="vehiculo" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="fecha_estimada" type="xs:date" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ConfirmacionEntrada">
+    <xs:all>
+      <xs:element name="codigo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="6"/>
+            <xs:maxLength value="12"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="recibido_por" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="2"/>
+            <xs:maxLength value="150"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="comentario" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="500"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Dependencia">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DetalleError">
+    <xs:all>
+      <xs:element name="campo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EntregaEntrada">
+    <xs:all>
+      <xs:element name="pedido_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="fecha_estimada" type="xs:date" minOccurs="0"/>
+      <xs:element name="responsable_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="responsable_nombre" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="150"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="vehiculo" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EntregaSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:string" minOccurs="1"/>
+      <xs:element name="pedido_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="folio_pedido" type="xs:string" minOccurs="0"/>
+      <xs:element name="estado_pedido" type="xs:string" minOccurs="0"/>
+      <xs:element name="proveedor_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="proveedor" type="xs:string" minOccurs="1"/>
+      <xs:element name="comercio_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="comercio" type="xs:string" minOccurs="1"/>
+      <xs:element name="direccion" type="xs:string" minOccurs="0"/>
+      <xs:element name="latitud" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="longitud" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="estado" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="PROGRAMADA"/>
+            <xs:enumeration value="ASIGNADA"/>
+            <xs:enumeration value="EN_RUTA"/>
+            <xs:enumeration value="ENTREGADA"/>
+            <xs:enumeration value="CON_INCIDENCIA"/>
+            <xs:enumeration value="CANCELADA"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="responsable_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="responsable_nombre" type="xs:string" minOccurs="0"/>
+      <xs:element name="vehiculo" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha_estimada" type="xs:date" minOccurs="0"/>
+      <xs:element name="fecha_salida" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="fecha_entrega" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="recibido_por" type="xs:string" minOccurs="0"/>
+      <xs:element name="evidencia_archivo_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="incidencias_abiertas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="eventos" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="evento" maxOccurs="unbounded" type="EventoSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="incidencias" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="incidencia" maxOccurs="unbounded" type="IncidenciaSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EntregasSalida">
+    <xs:all>
+      <xs:element name="paginacion" type="Paginacion" minOccurs="1"/>
+      <xs:element name="entregas" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="entrega" maxOccurs="unbounded" type="EntregaSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ErrorSalida">
+    <xs:annotation>
+      <xs:documentation>Error estandarizado (en JSON viene dentro de la llave `error`).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="codigo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="status" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="400"/>
+            <xs:maxInclusive value="599"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ruta" type="xs:string" minOccurs="0"/>
+      <xs:element name="correlation_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="detalles" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="detalle" maxOccurs="unbounded" type="DetalleError" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EventoSalida">
+    <xs:all>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="comentario" type="xs:string" minOccurs="0"/>
+      <xs:element name="latitud" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="longitud" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="usuario_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="IncidenciaEntrada">
+    <xs:all>
+      <xs:element name="tipo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="RETRASO"/>
+            <xs:enumeration value="PRODUCTO_DANADO"/>
+            <xs:enumeration value="FALTANTE"/>
+            <xs:enumeration value="DIRECCION"/>
+            <xs:enumeration value="RECHAZO"/>
+            <xs:enumeration value="OTRO"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="descripcion" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="5"/>
+            <xs:maxLength value="500"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="IncidenciaSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:integer" minOccurs="1"/>
+      <xs:element name="entrega_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="RETRASO"/>
+            <xs:enumeration value="PRODUCTO_DANADO"/>
+            <xs:enumeration value="FALTANTE"/>
+            <xs:enumeration value="DIRECCION"/>
+            <xs:enumeration value="RECHAZO"/>
+            <xs:enumeration value="OTRO"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="descripcion" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="ABIERTA"/>
+            <xs:enumeration value="RESUELTA"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="resolucion" type="xs:string" minOccurs="0"/>
+      <xs:element name="reportada_por" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="resuelta" type="xs:dateTime" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Paginacion">
+    <xs:annotation>
+      <xs:documentation>Datos de paginación de toda lista.</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="pagina" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="por_pagina" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="total" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="paginas" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="QrSalida">
+    <xs:all>
+      <xs:element name="entrega_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="codigo" type="xs:string" minOccurs="1"/>
+      <xs:element name="contenido_qr" type="xs:string" minOccurs="1"/>
+      <xs:element name="instrucciones" type="xs:string" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ResolucionEntrada">
+    <xs:all>
+      <xs:element name="resolucion" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="5"/>
+            <xs:maxLength value="500"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Resultado">
+    <xs:annotation>
+      <xs:documentation>Respuesta de operaciones que no regresan un recurso (bajas, revocaciones, marcados).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+      <xs:element name="jti" type="xs:string" minOccurs="0"/>
+      <xs:element name="sesiones_cerradas" type="xs:integer" minOccurs="0"/>
+      <xs:element name="cambiadas" type="xs:integer" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Salud">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="version" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="dependencias" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="Dependencia" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="UbicacionEntrada">
+    <xs:all>
+      <xs:element name="comentario" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="500"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="latitud" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="-90.0"/>
+            <xs:maxInclusive value="90.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="longitud" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="-180.0"/>
+            <xs:maxInclusive value="180.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>

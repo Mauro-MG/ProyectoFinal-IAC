@@ -26,7 +26,8 @@ class PartidaEntrada(BaseEntrada):
 class PedidoEntrada(BaseEntrada):
     comercio_id: str = Field(description='UUID del comercio que pide')
     proveedor_id: str = Field(description='UUID del proveedor')
-    partidas: list[PartidaEntrada] = Field(min_length=1, max_length=100)
+    partidas: list[PartidaEntrada] = Field(default_factory=list, max_length=100,
+                                           description='Vacío abre (o reutiliza) el borrador sin productos')
     notas: str | None = Field(None, max_length=500)
 
 

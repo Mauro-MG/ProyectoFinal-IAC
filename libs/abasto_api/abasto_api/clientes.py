@@ -20,9 +20,9 @@ def llamar(servicio, metodo, ruta, token=None, permisos_servicio=None, **kwargs)
     headers = {'Authorization': f'Bearer {token}', 'Accept': 'application/json',
                'X-Correlation-ID': getattr(g, 'correlation_id', '')}
     headers.update(kwargs.pop('headers', {}))
+    timeout = kwargs.pop('timeout', current_app.config.get('MS_TIMEOUT_SEGUNDOS', 3))
     try:
-        respuesta = requests.request(metodo, f'{base}{ruta}', headers=headers,
-                                     timeout=current_app.config.get('MS_TIMEOUT_SEGUNDOS', 3), **kwargs)
+        respuesta = requests.request(metodo, f'{base}{ruta}', headers=headers, timeout=timeout, **kwargs)
     except requests.RequestException as error:
         raise ErrorApi(503, 'servicio_no_disponible', f'ms-{servicio} no respondió: {error.__class__.__name__}.')
     return respuesta

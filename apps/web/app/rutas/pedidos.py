@@ -1,4 +1,11 @@
-"""Pedidos de abasto (la lógica del flujo está en servicios/pedidos.py)."""
+"""
+Pedidos de abasto.
+
+Las pantallas leen los pedidos de la base; crear, editar el borrador y cada
+transición (enviar, aceptar, despachar, recibir...) los hace ms-pedidos. Al
+despachar, ms-pedidos descuenta la existencia del proveedor con ms-proveedores
+y al recibir suma la mercancía al inventario del comercio con ms-inventario.
+"""
 from decimal import Decimal, InvalidOperation
 from uuid import UUID
 
@@ -7,9 +14,9 @@ from flask_login import current_user, login_required
 
 from app import app
 from abasto_dominio.extensiones import db
-from abasto_dominio.modelos import CatalogoProveedor, Comercio, PedidoAbasto, ProductoMaestro, Proveedor
+from app.microservicios import escribir
+from abasto_dominio.modelos import CatalogoProveedor, Comercio, PedidoAbasto, ProductoMaestro
 from app.permisos import permiso_requerido
-from abasto_dominio.servicios import ReglaNegocioError
 from abasto_dominio.servicios import pedidos as flujo
 
 
@@ -31,10 +38,8 @@ def _cantidad(texto):
     try:
         cantidad = Decimal((texto or '').strip())
     except InvalidOperation:
-        raise ReglaNegocioError('Captura una cantidad válida.')
-    if cantidad <= 0:
-        raise ReglaNegocioError('La cantidad debe ser mayor a cero.')
-    return cantidad
+        return None
+    return cantidad if cantidad > 0 else None
 
 
 @app.route('/pedidos')
@@ -66,22 +71,21 @@ def pedidos_lista():
 @login_required
 @permiso_requerido('pedidos.crear')
 def pedido_nuevo():
-    comercio = db.get_or_404(Comercio, _uuid(request.form.get('comercio_id')))
-    proveedor = db.get_or_404(Proveedor, _uuid(request.form.get('proveedor_id')))
-    if comercio.usuario_id != current_user.id:
-        abort(403)
-    try:
-        pedido = flujo.obtener_borrador(comercio, proveedor, current_user)
-        if request.form.get('producto_id'):
-            flujo.agregar_producto(pedido, request.form.get('producto_id', type=int),
-                                   _cantidad(request.form.get('cantidad')), current_user)
-        db.session.commit()
-    except ReglaNegocioError as e:
-        db.session.rollback()
-        flash(str(e), 'error')
+    """Abre (o reutiliza) el borrador entre el comercio y el proveedor y, si viene, le agrega el producto."""
+    cuerpo = {'comercio_id': str(_uuid(request.form.get('comercio_id'))),
+              'proveedor_id': str(_uuid(request.form.get('proveedor_id'))), 'partidas': []}
+    if request.form.get('producto_id'):
+        cantidad = _cantidad(request.form.get('cantidad'))
+        if cantidad is None:
+            flash('Captura una cantidad mayor a cero.', 'error')
+            return redirect(request.referrer or url_for('proveedores_lista'))
+        cuerpo['partidas'].append({'producto_id': request.form.get('producto_id', type=int), 'cantidad': cantidad})
+    pedido = escribir('pedidos', 'POST', '/pedidos', json=cuerpo)
+    if pedido is None:
         return redirect(request.referrer or url_for('proveedores_lista'))
-    flash(f'Producto agregado al pedido {pedido.folio_legible}. Revisa y confirma cuando esté completo.', 'ok')
-    return redirect(url_for('pedido_detalle', id=pedido.id))
+    flash(f"Producto agregado al pedido {pedido['folio']}. Revisa y confirma cuando esté completo."
+          if cuerpo['partidas'] else f"Pedido {pedido['folio']} abierto. Agrega los productos.", 'ok')
+    return redirect(url_for('pedido_detalle', id=pedido['id']))
 
 
 @app.route('/pedidos/<uuid:id>')
@@ -105,16 +109,13 @@ def pedido_detalle(id):
 @login_required
 @permiso_requerido('pedidos.crear')
 def pedido_agregar(id):
-    pedido = _pedido_visible(id)
-    if not flujo.es_del_comercio(pedido, current_user):
-        abort(403)
-    try:
-        flujo.agregar_producto(pedido, request.form.get('producto_id', type=int),
-                               _cantidad(request.form.get('cantidad')), current_user)
-        db.session.commit()
-    except ReglaNegocioError as e:
-        db.session.rollback()
-        flash(str(e), 'error')
+    _pedido_visible(id)
+    cantidad = _cantidad(request.form.get('cantidad'))
+    if cantidad is None:
+        flash('Captura una cantidad mayor a cero.', 'error')
+    else:
+        escribir('pedidos', 'POST', f'/pedidos/{id}/partidas',
+                 json={'producto_id': request.form.get('producto_id', type=int), 'cantidad': cantidad})
     return redirect(url_for('pedido_detalle', id=id))
 
 
@@ -122,34 +123,22 @@ def pedido_agregar(id):
 @login_required
 @permiso_requerido('pedidos.crear')
 def pedido_quitar(id, detalle_id):
-    pedido = _pedido_visible(id)
-    if not flujo.es_del_comercio(pedido, current_user):
-        abort(403)
-    try:
-        flujo.quitar_producto(pedido, detalle_id, current_user)
-        db.session.commit()
-    except ReglaNegocioError as e:
-        db.session.rollback()
-        flash(str(e), 'error')
+    _pedido_visible(id)
+    escribir('pedidos', 'DELETE', f'/pedidos/{id}/partidas/{detalle_id}')
     return redirect(url_for('pedido_detalle', id=id))
 
 
 @app.route('/pedidos/<uuid:id>/accion/<accion>', methods=['POST'])
 @login_required
 def pedido_accion(id, accion):
-    pedido = _pedido_visible(id)
-    try:
-        nuevo = flujo.ejecutar_accion(pedido, accion, current_user,
-                                      comentario=(request.form.get('comentario') or '').strip() or None)
-        db.session.commit()
-    except ReglaNegocioError as e:
-        db.session.rollback()
-        flash(str(e), 'error')
-        return redirect(url_for('pedido_detalle', id=id))
-
-    mensajes = {
-        'ENVIADO': 'Pedido enviado. El proveedor lo verá en su panel.',
-        'ENTREGADO': 'Recepción confirmada. Las cantidades se sumaron a tu inventario.',
-    }
-    flash(mensajes.get(nuevo, f'El pedido quedó como: {pedido.estado_legible.lower()}.'), 'ok')
+    _pedido_visible(id)
+    resultado = escribir('pedidos', 'POST', f'/pedidos/{id}/acciones/{accion}', timeout=15,
+                         json={'comentario': (request.form.get('comentario') or '').strip() or None})
+    if resultado is not None:
+        nuevo = resultado['transicion']['a']
+        mensajes = {
+            'ENVIADO': 'Pedido enviado. El proveedor lo verá en su panel.',
+            'ENTREGADO': 'Recepción confirmada. Las cantidades se sumaron a tu inventario.',
+        }
+        flash(mensajes.get(nuevo, f"El pedido quedó como: {resultado.get('estado_legible', nuevo).lower()}."), 'ok')
     return redirect(url_for('pedido_detalle', id=id))

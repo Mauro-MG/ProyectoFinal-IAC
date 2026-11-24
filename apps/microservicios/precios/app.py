@@ -1,7 +1,10 @@
 """
-ms-precios: precio al consumidor, validación de precios atípicos, comparación y tendencias.
+ms-precios: precio al consumidor, validación de precios atípicos, comparación, promociones y estadísticas.
 
-PostgreSQL: precios_comercio (historial al consumidor), precios_mayoreo, inventario_comercio.precio_venta.
+Es DUEÑO de: precios_comercio (historial al consumidor) y promociones. Cambia también la columna
+inventario_comercio.precio_venta (el precio vigente del renglón): es la única columna de esa tabla
+que escribe y está documentado como excepción en docs/propiedad_de_datos.md. Lee precios_mayoreo
+(de ms-proveedores) para comparar.
 MongoDB: snapshots_precios (fotografía diaria agregada por zona, producto y sector).
 Redis: promedio regional de 7 días (`precio_promedio:zona:{z}:producto:{p}`, 4 h).
 """
@@ -10,10 +13,11 @@ from datetime import date, timedelta
 from uuid import UUID
 
 from flask import g
+from sqlalchemy import text
 
 from abasto_api import ErrorApi, Servicio, no_encontrado, paginar, prohibido, sobre_lista, tiene, usuario_actual
 from abasto_dominio.extensiones import db
-from abasto_dominio.modelos import Comercio, InventarioComercio, PrecioComercio, ProductoMaestro
+from abasto_dominio.modelos import Comercio, InventarioComercio, PrecioComercio, ProductoMaestro, Promocion
 from abasto_dominio.servicios import historicos
 from abasto_dominio.servicios import precios as servicio_precios
 from abasto_dominio.servicios.auditoria import registrar_evento
@@ -21,8 +25,9 @@ from abasto_dominio.servicios.cache import invalidar_analisis
 from abasto_dominio.servicios.inventario import actualizar_precio, promedio_zona
 from abasto_dominio.servicios.notificaciones import notificar
 
-from esquemas import (CONTRATOS_XML, ComparacionConsulta, HistorialConsulta, PrecioEntrada, SerieConsulta,
-                      SnapshotsConsulta, TendenciaConsulta, ValidacionPrecio)
+from esquemas import (CONTRATOS_XML, ComparacionConsulta, EstadisticasConsulta, HistorialConsulta, PrecioEntrada,
+                      PromocionEntrada, PromocionesConsulta, SerieConsulta, SnapshotsConsulta, TendenciaConsulta,
+                      ValidacionPrecio)
 
 srv = Servicio('precios', 'Precios',
                'Actualización rápida del precio al consumidor con validación de precios atípicos (RN-001), '
@@ -185,3 +190,120 @@ def consultar_snapshots(q):
 def serie_snapshots(q):
     return {'producto_id': q.producto_id, 'zona_id': q.zona_id,
             'tendencia': historicos.tendencia_snapshots(q.producto_id, q.zona_id)}
+
+
+# ---------------------------------------------------------------- promociones
+
+def promocion_a_dict(p):
+    r = p.inventario
+    normal = r.precio_venta
+    return {'id': p.id, 'inventario_id': r.id, 'comercio_id': str(r.comercio_id), 'comercio': r.comercio.nombre_comercio,
+            'producto_id': r.producto_id, 'producto': r.producto.nombre, 'precio_normal': normal,
+            'precio_promocional': p.precio_promocional,
+            'descuento_pct': round(float((normal - p.precio_promocional) * 100 / normal), 1) if normal else None,
+            'inicio': p.inicio, 'fin': p.fin, 'descripcion': p.descripcion,
+            'vigente': p.activa and p.inicio <= date.today() <= p.fin, 'activa': p.activa}
+
+
+@srv.ruta('/promociones', 'POST', resumen='Crear una promoción', etiqueta='Promociones',
+          permisos=['inventario.gestionar'], cuerpo=PromocionEntrada, status=201, raiz_xml='promocion',
+          entrada_xml='promocion_entrada',
+          ejemplo_entrada={'inventario_id': 120, 'precio_promocional': 27.5, 'inicio': '2026-11-15',
+                           'fin': '2026-11-22', 'descripcion': 'Buen Fin'})
+def crear_promocion(datos):
+    """El precio promocional debe ser menor al precio de venta y no puede haber dos promociones del mismo producto que
+    se traslapen. ms-ventas aplica la promoción vigente al registrar una venta."""
+    renglon = db.session.get(InventarioComercio, datos.inventario_id)
+    if not renglon or not renglon.activo:
+        raise no_encontrado('El renglón de inventario')
+    if str(renglon.comercio.usuario_id) != g.claims['sub']:
+        raise prohibido('El comercio no es tuyo.')
+    if datos.fin < datos.inicio:
+        raise ErrorApi(422, 'fechas_invalidas', 'La fecha de fin no puede ser anterior al inicio.')
+    if datos.fin < date.today():
+        raise ErrorApi(422, 'fechas_invalidas', 'La promoción ya habría terminado.')
+    if renglon.precio_venta and datos.precio_promocional >= renglon.precio_venta:
+        raise ErrorApi(422, 'precio_no_promocional', f'Debe ser menor al precio de venta (${renglon.precio_venta}).')
+    traslape = Promocion.query.filter(Promocion.inventario_id == renglon.id, Promocion.activa.is_(True),
+                                      Promocion.inicio <= datos.fin, Promocion.fin >= datos.inicio).first()
+    if traslape:
+        raise ErrorApi(409, 'promocion_traslapada', f'Ya hay una promoción del {traslape.inicio} al {traslape.fin}.')
+    promocion = Promocion(usuario_id=UUID(g.claims['sub']), **datos.model_dump())
+    db.session.add(promocion)
+    db.session.flush()
+    registrar_evento(UUID(g.claims['sub']), 'CREACION', 'Promocion', promocion.id,
+                     f'Promoción de {renglon.producto.nombre}: ${datos.precio_promocional}', datos_nuevos=datos.model_dump())
+    db.session.commit()
+    invalidar_analisis()
+    return promocion_a_dict(promocion)
+
+
+@srv.ruta('/promociones', 'GET', resumen='Promociones', etiqueta='Promociones', publico=True,
+          consulta=PromocionesConsulta, raiz_xml='promociones')
+def listar_promociones(q):
+    """Públicas: sólo de comercios verificados. Por omisión, las vigentes hoy."""
+    consulta = (Promocion.query.join(InventarioComercio).join(Comercio)
+                .filter(Promocion.activa.is_(True), Comercio.activo.is_(True), Comercio.estado_registro == 'VERIFICADO'))
+    if q.vigentes:
+        consulta = consulta.filter(Promocion.inicio <= date.today(), Promocion.fin >= date.today())
+    if q.comercio_id:
+        try:
+            consulta = consulta.filter(Comercio.id == UUID(q.comercio_id))
+        except ValueError:
+            raise ErrorApi(400, 'parametro_invalido', 'comercio_id debe ser un UUID.')
+    if q.zona_id:
+        consulta = consulta.filter(Comercio.zona_id == q.zona_id)
+    if q.producto_id:
+        consulta = consulta.filter(InventarioComercio.producto_id == q.producto_id)
+    lista = consulta.order_by(Promocion.fin).limit(200).all()
+    return {'total': len(lista), 'promociones': [promocion_a_dict(p) for p in lista]}
+
+
+@srv.ruta('/promociones/<int:id>', 'DELETE', resumen='Terminar una promoción', etiqueta='Promociones',
+          permisos=['inventario.gestionar'], raiz_xml='promocion')
+def terminar_promocion(id):
+    promocion = db.session.get(Promocion, id)
+    if not promocion or not promocion.activa:
+        raise no_encontrado('La promoción')
+    if str(promocion.inventario.comercio.usuario_id) != g.claims['sub']:
+        raise prohibido('La promoción es de otro comercio.')
+    promocion.activa = False
+    registrar_evento(UUID(g.claims['sub']), 'ELIMINACION', 'Promocion', promocion.id, 'Promoción terminada')
+    db.session.commit()
+    invalidar_analisis()
+    return promocion_a_dict(promocion)
+
+
+# ---------------------------------------------------------------- estadísticas
+
+@srv.ruta('/precios/estadisticas', 'GET', resumen='Estadísticas de precio por municipio, zona o producto',
+          etiqueta='Estadísticas', permisos=['precios.consultar', 'analisis.ver'], consulta=EstadisticasConsulta,
+          raiz_xml='estadisticas')
+def estadisticas(q):
+    """Sobre el historial de precios VALIDADOS de los últimos `dias`: mínimo, promedio, máximo, desviación estándar y
+    variación, y el precio de mayoreo más bajo del producto para comparar."""
+    grupo = {'municipio': 'c.municipio', 'zona': 'z.nombre', 'producto': 'p.nombre'}[q.agrupar]
+    filas = db.session.execute(text(
+        f'SELECT {grupo} AS grupo, '
+        f'{"p.id" if q.agrupar == "producto" or q.producto_id else "NULL::int"} AS producto_id, '
+        f'{"p.nombre" if q.agrupar == "producto" or q.producto_id else "NULL"} AS producto, '
+        'count(*) AS registros, count(DISTINCT pc.comercio_id) AS comercios, min(pc.precio) AS minimo, '
+        'avg(pc.precio) AS promedio, max(pc.precio) AS maximo, stddev_samp(pc.precio) AS desviacion, '
+        '(SELECT min(cp.precio_mayoreo) FROM catalogo_proveedor cp WHERE cp.activo AND cp.producto_id = '
+        f'{"p.id" if q.agrupar == "producto" or q.producto_id else "NULL"}) AS mayoreo '
+        'FROM precios_comercio pc JOIN comercios c ON c.id = pc.comercio_id '
+        'JOIN productos_maestros p ON p.id = pc.producto_id LEFT JOIN zonas_municipales z ON z.id = c.zona_id '
+        "WHERE pc.estado_validacion = 'VALIDADO' AND pc.fecha_registro >= :desde "
+        f'{"AND p.id = :producto" if q.producto_id else ""} '
+        f'GROUP BY {grupo}{", p.id, p.nombre" if q.agrupar == "producto" or q.producto_id else ""} '
+        'ORDER BY promedio DESC'), {'desde': date.today() - timedelta(days=q.dias), 'producto': q.producto_id}).all()
+    renglones = []
+    for f in filas:
+        promedio = float(f.promedio)
+        renglones.append({'grupo': f.grupo or 'Sin zona', 'producto_id': f.producto_id, 'producto': f.producto,
+                          'registros': f.registros, 'comercios': f.comercios, 'minimo': float(f.minimo),
+                          'promedio': round(promedio, 2), 'maximo': float(f.maximo),
+                          'desviacion': round(float(f.desviacion), 2) if f.desviacion is not None else None,
+                          'variacion_pct': round((float(f.maximo) - float(f.minimo)) * 100 / promedio, 1) if promedio else None,
+                          'mayoreo_minimo': float(f.mayoreo) if f.mayoreo is not None else None})
+    return {'agrupar': q.agrupar, 'producto_id': q.producto_id, 'dias': q.dias, 'renglones': renglones}

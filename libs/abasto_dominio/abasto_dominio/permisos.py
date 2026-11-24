@@ -31,4 +31,16 @@ PERMISOS = {
     'reportes.ver': 'Consultar y exportar reportes',
     'auditoria.ver': 'Consultar la bitácora de auditoría',
     'notificaciones.crear': 'Emitir notificaciones a otros usuarios (uso entre servicios)',
+    # Entrega final (servicios 8109-8124)
+    'proveedores.verificar': 'Verificar, rechazar o suspender proveedores',
+    'ventas.registrar': 'Registrar ventas y devoluciones de su comercio',
+    'entregas.gestionar': 'Asignar y actualizar entregas de pedidos (proveedor)',
+    'entregas.recibir': 'Confirmar la recepción de entregas y reportar incidencias (comercio)',
+    'abastecimiento.solicitar': 'Solicitar cotizaciones y generar órdenes de compra',
+    'abastecimiento.cotizar': 'Responder solicitudes de cotización (proveedor)',
+    'sincronizacion.enviar': 'Enviar lotes de operaciones hechas sin conexión (apps)',
+    'integraciones.ejecutar': 'Importar y exportar información en CSV, JSON o XML',
+    'demanda.ver': 'Consultar demanda histórica, tendencias y estimaciones',
+    'demanda.registrar': 'Registrar búsquedas de productos (uso entre servicios)',
+    'auditoria.registrar': 'Registrar eventos de auditoría de sistemas externos (uso entre servicios)',
 }

@@ -1,5 +1,5 @@
 """
-ms-seguridad: autenticación, sesiones, usuarios, roles y auditoría.
+ms-seguridad: autenticación, registro, recuperación de acceso, sesiones, usuarios y roles.
 
 Es el servicio responsable del mecanismo común de seguridad: emite los JWT,
 registra cada sesión en Redis, la renueva, la revoca y permite a otros
@@ -7,12 +7,14 @@ componentes validar un token. Todos los servicios validan con la misma
 biblioteca (abasto_dominio.sesiones), así que un token revocado aquí deja de
 servir en todos.
 
-PostgreSQL: usuarios, roles, auditoria_eventos.
-Redis: sesion:*, sesiones_usuario:*, jwt:revocado:*, refresh:*, login_fallidos:*.
-MongoDB: bitacora_peticiones (agregación de actividad de los servicios).
+Es DUEÑO de: usuarios y roles. La bitácora de auditoría la consulta ms-auditoria y la actividad de
+los servicios, ms-monitoreo.
+Redis: sesion:*, sesiones_usuario:*, jwt:revocado:*, refresh:*, login_fallidos:*, recuperacion:*.
+Bloqueo por intentos fallidos: 5 intentos fallidos bloquean el correo 15 minutos (HTTP 423).
 """
+import secrets
+from datetime import datetime, timezone
 from pathlib import Path
-from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from flask import g, request
@@ -21,16 +23,19 @@ from sqlalchemy import or_
 from abasto_api import ErrorApi, Servicio, no_encontrado, paginar, usuario_actual
 from abasto_dominio import extensiones, sesiones
 from abasto_dominio.extensiones import db
-from abasto_dominio.modelos import AuditoriaEvento, Rol, Usuario
+from abasto_dominio.modelos import Proveedor, Rol, Usuario
 from abasto_dominio.permisos import PERMISOS
 from abasto_dominio.servicios.auditoria import registrar_evento
+from abasto_dominio.servicios.notificaciones import notificar
 
-from esquemas import (CONTRATOS_XML, ActividadConsulta, AuditoriaConsulta, LoginEntrada, PermisosEntrada,
-                      RenovarEntrada, SesionesConsulta, UsuarioCambio, UsuariosConsulta, ValidarEntrada)
+from esquemas import (CONTRATOS_XML, CambioPasswordEntrada, LoginEntrada, OperadorCambio, OperadorEntrada,
+                      PermisosEntrada, RecuperacionEntrada,
+                      RegistroEntrada, RenovarEntrada, RestablecerEntrada, SesionesConsulta, UsuarioCambio,
+                      UsuariosConsulta, ValidarEntrada)
 
 srv = Servicio('seguridad', 'Seguridad',
-               'Inicio de sesión con JWT, sesiones en Redis, renovación y revocación de tokens, usuarios, '
-               'roles, auditoría y actividad de los microservicios.',
+               'Autenticación, registro y recuperación de acceso, JWT y refresh tokens, administración de usuarios, '
+               'roles y permisos, control y revocación de sesiones en Redis y bloqueo por intentos fallidos.',
                xsd=Path(__file__).parent / 'xsd' / 'seguridad.xsd', contratos=CONTRATOS_XML)
 app = srv.app
 
@@ -127,6 +132,95 @@ def mi_perfil():
     return usuario_a_dict(usuario_actual())
 
 
+# ---------------------------------------------------------------- registro y recuperación de acceso
+
+TTL_RECUPERACION = 30 * 60
+
+
+@srv.ruta('/auth/registro', 'POST', resumen='Crear una cuenta', etiqueta='Registro', publico=True,
+          cuerpo=RegistroEntrada, status=201, raiz_xml='tokens', entrada_xml='registro', limite=5,
+          ejemplo_entrada={'email': 'nuevo@puesto.mx', 'password': 'Nogales2026', 'nombre': 'Rosa',
+                           'apellido_paterno': 'Treviño', 'telefono': '8112345678', 'perfil': 'Comerciante Informal',
+                           'origen': 'movil'}, errores=(400, 409, 422, 429))
+def registrar(datos):
+    """Sólo perfiles de autoservicio (comerciante, minorista, proveedor); los demás roles los asigna el
+    administrador. La contraseña se guarda con bcrypt. Regresa los tokens: la cuenta queda con sesión iniciada.
+    Límite: 5 registros por minuto por IP."""
+    email = str(datos.email).lower()
+    if Usuario.query.filter_by(email=email).first():
+        raise ErrorApi(409, 'correo_registrado', 'Ya existe una cuenta con ese correo.')
+    rol = Rol.query.filter_by(nombre=datos.perfil, activo=True).first()
+    if not rol:
+        raise ErrorApi(422, 'perfil_invalido', 'Ese perfil no está disponible.')
+    usuario = Usuario(email=email, nombre=datos.nombre, apellido_paterno=datos.apellido_paterno,
+                      telefono=datos.telefono, rol_id=rol.id)
+    usuario.set_password(datos.password)
+    db.session.add(usuario)
+    db.session.flush()
+    registrar_evento(usuario.id, 'CREACION', 'Usuario', usuario.id, f'Registro de cuenta ({rol.nombre}, {datos.origen})',
+                     datos_nuevos={'email': email, 'rol': rol.nombre, 'origen': datos.origen})
+    db.session.commit()
+    tokens = sesiones.emitir_tokens(usuario, origen=datos.origen, ip=request.remote_addr)
+    return {**{k: tokens[k] for k in ('access_token', 'token_type', 'expires_in', 'refresh_token')},
+            'usuario': usuario_a_dict(usuario)}
+
+
+@srv.ruta('/auth/recuperacion', 'POST', resumen='Solicitar recuperación de acceso', etiqueta='Registro',
+          publico=True, cuerpo=RecuperacionEntrada, status=202, raiz_xml='resultado', entrada_xml='recuperacion',
+          limite=5, ejemplo_entrada={'email': 'comerciante@test.mx'}, errores=(400, 422, 429))
+def recuperacion(datos):
+    """Genera un token de un solo uso válido 30 minutos (`recuperacion:{token}` en Redis, el mismo que usa el web).
+    Siempre responde lo mismo, exista o no el correo, para no revelar qué cuentas existen. Aún no hay servidor de
+    correo: el enlace queda en la bitácora del contenedor (docker compose logs ms-seguridad)."""
+    usuario = Usuario.query.filter_by(email=str(datos.email).lower(), activo=True).first()
+    if usuario:
+        token = secrets.token_urlsafe(32)
+        extensiones.redis_client.setex(f'recuperacion:{token}', TTL_RECUPERACION, str(usuario.id))
+        app.logger.info('Recuperación de acceso para %s: token %s (válido 30 min; en el web: /restablecer/%s)',
+                        usuario.email, token, token)
+        registrar_evento(usuario.id, 'ACTUALIZACION', 'Usuario', usuario.id, 'Solicitud de recuperación de acceso')
+        db.session.commit()
+    return {'mensaje': 'Si el correo está registrado, recibirás las instrucciones. El enlace dura 30 minutos.'}
+
+
+@srv.ruta('/auth/recuperacion/confirmacion', 'POST', resumen='Restablecer la contraseña con el token',
+          etiqueta='Registro', publico=True, cuerpo=RestablecerEntrada, raiz_xml='resultado', entrada_xml='restablecer',
+          limite=10, ejemplo_entrada={'token': 'Qm9w...', 'password': 'NuevaClave2026'}, errores=(400, 401, 422, 429))
+def restablecer(datos):
+    """El token se borra al usarse. Se cierran todas las sesiones abiertas de la cuenta y se limpian los intentos
+    fallidos de inicio de sesión."""
+    clave = f'recuperacion:{datos.token}'
+    usuario_id = extensiones.redis_client.getdel(clave)
+    usuario = db.session.get(Usuario, UUID(usuario_id)) if usuario_id else None
+    if not usuario or not usuario.activo:
+        raise ErrorApi(401, 'token_invalido', 'El enlace de recuperación no es válido o ya expiró.')
+    usuario.set_password(datos.password)
+    sesiones.revocar_todas(usuario.id)
+    sesiones.limpiar_intentos(usuario.email)
+    registrar_evento(usuario.id, 'ACTUALIZACION', 'Usuario', usuario.id, 'Contraseña restablecida por recuperación')
+    db.session.commit()
+    return {'mensaje': 'Contraseña actualizada. Inicia sesión con la nueva contraseña.', 'id': str(usuario.id)}
+
+
+@srv.ruta('/usuarios/me/password', 'PUT', resumen='Cambiar mi contraseña', etiqueta='Usuarios',
+          cuerpo=CambioPasswordEntrada, raiz_xml='resultado', entrada_xml='cambio_password',
+          ejemplo_entrada={'password_actual': 'Password123!', 'password_nueva': 'OtraClave2026'})
+def cambiar_password(datos):
+    """Requiere la contraseña actual. Cierra todas las demás sesiones (la actual sigue vigente)."""
+    usuario = usuario_actual()
+    if not usuario.check_password(datos.password_actual):
+        raise ErrorApi(401, 'credenciales_invalidas', 'La contraseña actual no es correcta.')
+    if datos.password_actual == datos.password_nueva:
+        raise ErrorApi(422, 'misma_password', 'La contraseña nueva debe ser distinta.')
+    usuario.set_password(datos.password_nueva)
+    for sesion in sesiones.sesiones_activas(usuario.id):
+        if sesion.get('jti') != g.claims['jti']:
+            sesiones.revocar_jti(sesion['jti'], usuario.id)
+    registrar_evento(usuario.id, 'ACTUALIZACION', 'Usuario', usuario.id, 'Cambio de contraseña')
+    db.session.commit()
+    return {'mensaje': 'Contraseña actualizada; se cerraron tus otras sesiones.', 'id': str(usuario.id)}
+
+
 # ---------------------------------------------------------------- sesiones activas
 
 @srv.ruta('/sesiones', 'GET', resumen='Sesiones activas', etiqueta='Sesiones', permisos=['sesiones.gestionar'],
@@ -215,6 +309,75 @@ def cambiar_usuario(id, datos):
     return usuario_a_dict(usuario)
 
 
+# ---------------------------------------------------------------- equipo del proveedor (operadores)
+
+def _mi_empresa():
+    empresa = Proveedor.query.filter_by(usuario_id=UUID(g.claims['sub'])).first()
+    if not empresa:
+        raise ErrorApi(409, 'sin_empresa', 'Primero registra los datos de tu empresa en ms-proveedores.')
+    return empresa
+
+
+def _mi_operador(id):
+    operador = db.session.get(Usuario, id)
+    if not operador or operador.proveedor_id != _mi_empresa().id:
+        raise no_encontrado('El operador')
+    return operador
+
+
+@srv.ruta('/operadores', 'GET', resumen='Operadores de mi empresa', etiqueta='Equipo del proveedor',
+          permisos=['proveedor.equipo'], raiz_xml='operadores')
+def listar_operadores():
+    empresa = _mi_empresa()
+    operadores = (Usuario.query.filter_by(proveedor_id=empresa.id)
+                  .order_by(Usuario.activo.desc(), Usuario.nombre).all())
+    return {'items': [usuario_a_dict(u) for u in operadores],
+            'paginacion': {'pagina': 1, 'por_pagina': len(operadores), 'total': len(operadores), 'paginas': 1}}
+
+
+@srv.ruta('/operadores', 'POST', resumen='Dar de alta un operador', etiqueta='Equipo del proveedor',
+          permisos=['proveedor.equipo'], cuerpo=OperadorEntrada, status=201, raiz_xml='usuario',
+          entrada_xml='operador_entrada', limite=10,
+          ejemplo_entrada={'email': 'bodega@mayoreo.mx', 'password': 'Temporal2026', 'nombre': 'Luis',
+                           'apellido_paterno': 'Garza', 'telefono': '8187654321'}, errores=(400, 409, 422))
+def crear_operador(datos):
+    """El operador ve y atiende los pedidos de la empresa, pero no cambia precios, catálogo ni datos de la empresa."""
+    empresa = _mi_empresa()
+    email = str(datos.email).lower()
+    if Usuario.query.filter(db.func.lower(Usuario.email) == email).first():
+        raise ErrorApi(409, 'correo_registrado', 'Ya existe una cuenta con ese correo.')
+    operador = Usuario(email=email, nombre=datos.nombre, apellido_paterno=datos.apellido_paterno,
+                       telefono=datos.telefono, proveedor_id=empresa.id,
+                       rol=Rol.query.filter_by(nombre='Operador de Proveedor').one())
+    operador.set_password(datos.password)
+    db.session.add(operador)
+    db.session.flush()
+    registrar_evento(UUID(g.claims['sub']), 'CREACION', 'Usuario', operador.id,
+                     f'Operador {email} agregado a {empresa.nombre_empresa}', datos_nuevos={'email': email})
+    db.session.commit()
+    notificar(operador.id, 'sistema', f'Bienvenido al equipo de {empresa.nombre_empresa}',
+              'Desde «Pedidos recibidos» puedes aceptar, preparar y despachar los pedidos de la empresa.',
+              url='/pedidos', origen='seguridad')
+    return usuario_a_dict(operador)
+
+
+@srv.ruta('/operadores/<uuid:id>', 'PATCH', resumen='Quitar o devolver el acceso a un operador',
+          etiqueta='Equipo del proveedor', permisos=['proveedor.equipo'], cuerpo=OperadorCambio, raiz_xml='usuario',
+          entrada_xml='operador_cambio', ejemplo_entrada={'activo': False})
+def cambiar_operador(id, datos):
+    operador = _mi_operador(id)
+    if operador.activo == datos.activo:
+        raise ErrorApi(409, 'sin_cambio', 'El operador ya está ' + ('activo.' if datos.activo else 'dado de baja.'))
+    operador.activo = datos.activo
+    registrar_evento(UUID(g.claims['sub']), 'CAMBIO_ESTADO', 'Usuario', operador.id,
+                     f'Operador {operador.email} {"reactivado" if datos.activo else "dado de baja"}',
+                     datos_anteriores={'activo': not datos.activo}, datos_nuevos={'activo': datos.activo})
+    db.session.commit()
+    if not datos.activo:
+        sesiones.revocar_todas(operador.id)  # deja de poder entrar al web y a la API de inmediato
+    return usuario_a_dict(operador)
+
+
 @srv.ruta('/roles', 'GET', resumen='Roles y permisos', etiqueta='Usuarios',
           permisos=['roles.gestionar', 'usuarios.gestionar'], raiz_xml='roles')
 def listar_roles():
@@ -239,75 +402,3 @@ def cambiar_permisos(id, datos):
                      datos_anteriores={'permisos': antes}, datos_nuevos={'permisos': rol.permisos})
     db.session.commit()
     return {'id': rol.id, 'nombre': rol.nombre, 'permisos': rol.permisos}
-
-
-# ---------------------------------------------------------------- auditoría y actividad
-
-@srv.ruta('/auditoria', 'GET', resumen='Bitácora de auditoría', etiqueta='Auditoría', permisos=['auditoria.ver'],
-          consulta=AuditoriaConsulta, raiz_xml='auditoria')
-def auditoria(q):
-    consulta = AuditoriaEvento.query
-    if q.entidad:
-        consulta = consulta.filter(AuditoriaEvento.entidad == q.entidad)
-    if q.entidad_id:
-        consulta = consulta.filter(AuditoriaEvento.entidad_id == q.entidad_id)
-    if q.tipo_evento:
-        consulta = consulta.filter(AuditoriaEvento.tipo_evento == q.tipo_evento)
-    if q.usuario_id:
-        consulta = consulta.filter(AuditoriaEvento.usuario_id == q.usuario_id)
-    try:
-        if q.desde:
-            consulta = consulta.filter(AuditoriaEvento.created_at >= datetime.strptime(q.desde, '%Y-%m-%d'))
-        if q.hasta:
-            consulta = consulta.filter(AuditoriaEvento.created_at < datetime.strptime(q.hasta, '%Y-%m-%d') + timedelta(days=1))
-    except ValueError:
-        raise ErrorApi(400, 'fecha_invalida', 'Las fechas deben tener formato AAAA-MM-DD.')
-    return paginar(consulta.order_by(AuditoriaEvento.created_at.desc()), q.pagina, q.por_pagina, lambda e: {
-        'id': e.id, 'fecha': e.created_at, 'usuario_id': str(e.usuario_id) if e.usuario_id else None,
-        'tipo_evento': e.tipo_evento, 'entidad': e.entidad, 'entidad_id': e.entidad_id,
-        'descripcion': e.descripcion, 'datos_anteriores': e.datos_anteriores, 'datos_nuevos': e.datos_nuevos,
-        'ip': str(e.ip_address) if e.ip_address else None})
-
-
-@srv.ruta('/actividad', 'GET', resumen='Actividad de los microservicios', etiqueta='Auditoría',
-          permisos=['servicios.monitorear'], consulta=ActividadConsulta, raiz_xml='actividad')
-def actividad(q):
-    """Agregación sobre MongoDB (bitacora_peticiones): peticiones, errores y tiempos por servicio,
-    y los contadores del día que lleva cada servicio en Redis."""
-    filtro = {'fecha': {'$gte': datetime.now(timezone.utc) - timedelta(hours=q.horas)}}
-    if q.servicio:
-        filtro['servicio'] = q.servicio
-    pipeline = [
-        {'$match': filtro},
-        {'$group': {'_id': '$servicio', 'peticiones': {'$sum': 1},
-                    'errores_cliente': {'$sum': {'$cond': [{'$and': [{'$gte': ['$status', 400]},
-                                                                     {'$lt': ['$status', 500]}]}, 1, 0]}},
-                    'errores_servidor': {'$sum': {'$cond': [{'$gte': ['$status', 500]}, 1, 0]}},
-                    'xml': {'$sum': {'$cond': [{'$eq': ['$formato', 'xml']}, 1, 0]}},
-                    'duracion_prom_ms': {'$avg': '$duracion_ms'}, 'duracion_max_ms': {'$max': '$duracion_ms'},
-                    'ultima': {'$max': '$fecha'}}},
-        {'$sort': {'_id': 1}},
-    ]
-    dia = datetime.now(timezone.utc).strftime('%Y%m%d')
-    servicios = []
-    for r in extensiones.mongo_db()['bitacora_peticiones'].aggregate(pipeline):
-        servicios.append({
-            'servicio': r['_id'], 'peticiones': r['peticiones'], 'errores_cliente': r['errores_cliente'],
-            'errores_servidor': r['errores_servidor'], 'respuestas_xml': r['xml'],
-            'duracion_prom_ms': round(r['duracion_prom_ms'] or 0, 1), 'duracion_max_ms': r['duracion_max_ms'],
-            'ultima': r['ultima'],
-            'contador_hoy': int(extensiones.redis_client.get(f"contador:{r['_id']}:peticiones:{dia}") or 0),
-        })
-    return {'horas': q.horas, 'servicios': servicios}
-
-
-@srv.ruta('/actividad/peticiones/<correlation_id>', 'GET', resumen='Rastrear una petición entre servicios',
-          etiqueta='Auditoría', permisos=['servicios.monitorear'], raiz_xml='rastreo')
-def rastrear(correlation_id):
-    """Todas las entradas de bitácora con el mismo X-Correlation-ID, en orden."""
-    cursor = (extensiones.mongo_db()['bitacora_peticiones']
-              .find({'correlation_id': correlation_id}, {'_id': 0}).sort('fecha', 1))
-    pasos = list(cursor)
-    if not pasos:
-        raise no_encontrado('Ese correlation_id')
-    return {'correlation_id': correlation_id, 'pasos': pasos}

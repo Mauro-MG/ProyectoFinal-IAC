@@ -2,6 +2,7 @@
 Mecanismo común de autenticación: el mismo JWT y la misma sesión en Redis valen
 (o dejan de valer) en todos los servicios al mismo tiempo.
 """
+import time
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
@@ -9,12 +10,12 @@ import jwt
 import pytest
 import requests
 
-from apoyo import PUERTOS, SESIONES, Api, base, iniciar_sesion, url
+from apoyo import HOST, MODO, PUERTOS, SESIONES, Api, base, iniciar_sesion, url
 
 SERVICIOS_PROTEGIDOS = [
     ('seguridad', '/auth/sesion'), ('comercios', '/comercios'), ('inventario', '/comercios/00000000-0000-0000-0000-000000000000/inventario'),
     ('precios', '/precios'), ('pedidos', '/pedidos'), ('analisis', '/analisis/zonas'), ('notificaciones', '/notificaciones'),
-    ('catalogo', '/mi-catalogo'),
+    ('proveedores', '/mi-catalogo'),
 ]
 
 
@@ -120,7 +121,7 @@ def test_administrador_cierra_las_sesiones_de_un_usuario(api):
 
 
 def test_limite_de_peticiones_429():
-    """120 peticiones por minuto por usuario y servicio (RATE_LIMIT_POR_MINUTO)."""
+    """120 peticiones por minuto por usuario y servicio (RATE_LIMIT_POR_MINUTO); lo aplica el microservicio."""
     sesion = Api('auditor')
     codigos = []
     for _ in range(130):
@@ -128,11 +129,49 @@ def test_limite_de_peticiones_429():
         codigos.append(r.status_code)
         if r.status_code == 429:
             break
+        time.sleep(0.05)  # por debajo del límite por IP del gateway (30/s): así se prueba el del servicio
     assert 429 in codigos
+    assert 'X-Limitado-Por' not in r.headers, 'lo frenó el gateway, no el servicio'
     assert r.json()['error']['codigo'] == 'limite_excedido'
     assert int(r.headers['Retry-After']) > 0
     # Los demás servicios no se ven afectados: el límite es por servicio
     assert sesion.get('pedidos', '/pedidos', params={'por_pagina': 1}).status_code == 200
+
+
+def test_gateway_limita_rafagas_por_ip():
+    """El gateway corta ráfagas de una misma IP (30/s, 60 de margen) con el mismo formato de error JSON."""
+    if MODO != 'gateway':
+        pytest.skip('No aplica: sólo existe al entrar por el gateway')
+    from concurrent.futures import ThreadPoolExecutor
+    # /health/live no lo limitan los servicios: si aparece un 429, sólo pudo ponerlo el gateway
+    with ThreadPoolExecutor(max_workers=25) as grupo:
+        respuestas = list(grupo.map(lambda _: requests.get(f"{base('catalogo')}/health/live", timeout=10), range(200)))
+    limitadas = [r for r in respuestas if r.status_code == 429]
+    assert limitadas, 'el gateway dejó pasar 200 peticiones simultáneas'
+    assert limitadas[0].headers.get('X-Limitado-Por') == 'gateway'
+    assert limitadas[0].json()['error']['codigo'] == 'limite_excedido'
+    assert any(r.status_code == 200 for r in respuestas)  # el margen inicial sí pasa
+    time.sleep(3)  # deja recuperar el margen antes de las siguientes pruebas
+
+
+def test_solo_el_gateway_esta_expuesto(docker):
+    """Sólo el gateway publica puertos; las bases, el web y los servicios quedan dentro de las redes de Docker."""
+    if MODO != 'gateway':
+        pytest.skip('No aplica: en modo directo/interno los puertos se abren a propósito')
+    salida = docker('ps', '--filter', 'name=abastored-', '--filter', 'name=ms-', '--format', '{{.Names}}|{{.Ports}}').stdout
+    publicados = {nombre: puertos for nombre, puertos in (linea.split('|', 1) for linea in salida.splitlines())
+                  if '->' in puertos}
+    assert set(publicados) == {'abastored-gateway'}, publicados
+    assert '0.0.0.0:443->443' in publicados['abastored-gateway']
+    # La red de datos es interna (sin acceso desde el anfitrión ni salida a internet)
+    # (el nombre de la red lleva el del proyecto de Compose, que depende de la carpeta donde se clonó)
+    red = docker('inspect', '--format', '{{range $nombre, $_ := .NetworkSettings.Networks}}{{$nombre}} {{end}}',
+                 'abastored-postgres').stdout.split()
+    assert len(red) == 1 and red[0].endswith('_datos'), red
+    assert docker('network', 'inspect', '--format', '{{.Internal}}', red[0]).stdout.strip() == 'true'
+    # HTTP sólo redirige a HTTPS
+    r = requests.get(HOST.replace('https://', 'http://') + '/', allow_redirects=False, timeout=10)
+    assert r.status_code == 301 and r.headers['Location'].startswith('https://')
 
 
 def test_health_es_publico_y_reporta_dependencias():

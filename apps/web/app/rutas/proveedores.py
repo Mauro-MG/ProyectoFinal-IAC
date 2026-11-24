@@ -4,27 +4,27 @@ Proveedores.
 Para el comerciante: ¿quién me vende este producto, a qué precio, en qué
 cantidad y con qué condiciones?
 Para el proveedor: sus datos, zonas de entrega y catálogo mayorista.
+
+Las consultas leen de la base; los datos de la empresa y el catálogo mayorista
+los escribe ms-proveedores, y las cuentas de los operadores ms-seguridad.
 """
 from decimal import Decimal
 
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from redis.exceptions import RedisError
 
-from abasto_dominio import sesiones
 from app import app
 from abasto_dominio.extensiones import db
 from app.formularios import OfertaForm, OperadorForm, ProveedorForm
-from abasto_dominio.modelos import (CatalogoProveedor, InventarioComercio, PrecioMayoreo, ProductoMaestro, Proveedor,
-                                    Rol, Usuario, ZonaMunicipal)
+from app.microservicios import escribir
+from abasto_dominio.modelos import (CatalogoProveedor, InventarioComercio, ProductoMaestro, Proveedor, Usuario,
+                                    ZonaMunicipal)
 from app.permisos import permiso_requerido
 from app.rutas.inventario import comercios_del_usuario
-from abasto_dominio.servicios.auditoria import registrar_evento
-from abasto_dominio.servicios.cache import invalidar_analisis
-from abasto_dominio.servicios.notificaciones import notificar
 from abasto_dominio.servicios.precios import ofertas_producto
 
-CAMPOS_PROVEEDOR = ('nombre_empresa', 'rfc', 'pedido_minimo', 'tiempo_entrega_dias', 'condiciones_venta')
+CAMPOS_EMPRESA = ('nombre_empresa', 'rfc', 'descripcion', 'telefono_contacto', 'email_contacto', 'direccion',
+                  'municipio', 'latitud', 'longitud', 'pedido_minimo', 'tiempo_entrega_dias', 'condiciones_venta')
 
 
 def _comercio_seleccionado(comercios):
@@ -88,7 +88,15 @@ def proveedores_por_producto():
                            productos=ProductoMaestro.query.filter_by(activo=True).order_by(ProductoMaestro.nombre).all())
 
 
-# ---------------------------------------------------------------- lado del proveedor
+# ---------------------------------------------------------------- lado del proveedor (escribe ms-proveedores)
+
+def _empresa_json(form):
+    datos = {c: getattr(form, c).data for c in CAMPOS_EMPRESA}
+    datos = {k: (v.strip() or None) if isinstance(v, str) else v for k, v in datos.items()}
+    if datos['rfc']:
+        datos['rfc'] = datos['rfc'].upper()
+    return datos
+
 
 @app.route('/mi-empresa', methods=['GET', 'POST'])
 @login_required
@@ -104,23 +112,18 @@ def mi_empresa():
             form.email_contacto.data = current_user.email
 
     if form.validate_on_submit():
-        antes = {c: getattr(proveedor, c) for c in CAMPOS_PROVEEDOR} if proveedor else None
-        if not proveedor:
-            proveedor = Proveedor(usuario_id=current_user.id)
-            db.session.add(proveedor)
-        zonas_elegidas = [z for z in zonas if z.id in form.zonas.data]
-        del form.zonas  # la relación se asigna aparte
-        form.populate_obj(proveedor)
-        proveedor.zonas = zonas_elegidas
-        db.session.flush()
-        registrar_evento(current_user.id, 'ACTUALIZACION' if antes else 'CREACION', 'Proveedor', proveedor.id,
-                         f'Datos del proveedor {proveedor.nombre_empresa}', datos_anteriores=antes,
-                         datos_nuevos={**{c: getattr(proveedor, c) for c in CAMPOS_PROVEEDOR},
-                                       'zonas': [z.nombre for z in zonas_elegidas]})
-        db.session.commit()
-        invalidar_analisis()
-        flash('Datos guardados.', 'ok')
-        return redirect(url_for('mi_catalogo'))
+        datos = _empresa_json(form)
+        if proveedor:
+            guardado = escribir('proveedores', 'PATCH', f'/proveedores/{proveedor.id}', json=datos)
+        else:
+            # Queda PENDIENTE de verificación por la coordinación municipal
+            guardado = escribir('proveedores', 'POST', '/proveedores', json=datos)
+        if guardado is not None and sorted(form.zonas.data) != sorted(z['id'] for z in guardado['zonas']):
+            guardado = escribir('proveedores', 'PUT', f"/proveedores/{guardado['id']}/zonas",
+                                json={'zonas': form.zonas.data})
+        if guardado is not None:
+            flash('Datos guardados.', 'ok')
+            return redirect(url_for('mi_catalogo'))
     return render_template('proveedores/mi_empresa.html', form=form, proveedor=proveedor)
 
 
@@ -146,27 +149,11 @@ def mi_catalogo():
                                 if p.id not in ofrecidos]
 
     if form.validate_on_submit():
-        oferta = CatalogoProveedor.query.filter_by(proveedor_id=proveedor.id,
-                                                   producto_id=form.producto_id.data).first()
-        if not oferta:
-            oferta = CatalogoProveedor(proveedor_id=proveedor.id, producto_id=form.producto_id.data)
-            db.session.add(oferta)
-        oferta.activo = True
-        oferta.precio_mayoreo = form.precio_mayoreo.data
-        oferta.cantidad_minima = form.cantidad_minima.data
-        oferta.existencia_disponible = form.existencia_disponible.data or 0
-        db.session.flush()
-        db.session.add(PrecioMayoreo(proveedor_id=proveedor.id, producto_id=oferta.producto_id,
-                                     precio=oferta.precio_mayoreo))
-        registrar_evento(current_user.id, 'CREACION', 'CatalogoProveedor', oferta.id,
-                         f'{proveedor.nombre_empresa} ofrece {oferta.producto.nombre}',
-                         datos_nuevos={'precio_mayoreo': oferta.precio_mayoreo,
-                                       'cantidad_minima': oferta.cantidad_minima,
-                                       'existencia_disponible': oferta.existencia_disponible})
-        db.session.commit()
-        invalidar_analisis()
-        flash('Producto agregado a tu catálogo.', 'ok')
-        return redirect(url_for('mi_catalogo'))
+        if escribir('proveedores', 'POST', '/mi-catalogo', exito='Producto agregado a tu catálogo.', json={
+                'producto_id': form.producto_id.data, 'precio_mayoreo': form.precio_mayoreo.data,
+                'cantidad_minima': form.cantidad_minima.data,
+                'existencia_disponible': form.existencia_disponible.data or 0}) is not None:
+            return redirect(url_for('mi_catalogo'))
 
     ofertas = (CatalogoProveedor.query.filter_by(proveedor_id=proveedor.id, activo=True)
                .join(ProductoMaestro).order_by(ProductoMaestro.nombre).all())
@@ -182,40 +169,22 @@ def mi_catalogo_editar(id):
         abort(403)
 
     if request.form.get('accion') == 'retirar':
-        oferta.activo = False
-        registrar_evento(current_user.id, 'ELIMINACION', 'CatalogoProveedor', oferta.id,
-                         f'Se retiró {oferta.producto.nombre} del catálogo mayorista')
-        db.session.commit()
-        invalidar_analisis()
-        flash(f'{oferta.producto.nombre} ya no aparece en tu catálogo.', 'ok')
+        escribir('proveedores', 'DELETE', f'/mi-catalogo/{id}',
+                 exito=f'{oferta.producto.nombre} ya no aparece en tu catálogo.')
         return redirect(url_for('mi_catalogo'))
 
     try:
-        precio = Decimal(request.form['precio_mayoreo'])
-        minima = Decimal(request.form['cantidad_minima'])
-        existencia = Decimal(request.form['existencia_disponible'])
-        if precio <= 0 or minima <= 0 or existencia < 0:
-            raise ValueError
+        cambios = {campo: Decimal(request.form[campo])
+                   for campo in ('precio_mayoreo', 'cantidad_minima', 'existencia_disponible')}
     except (KeyError, ArithmeticError, ValueError):
         flash('Revisa los valores: precio y venta mínima deben ser mayores a cero.', 'error')
         return redirect(url_for('mi_catalogo'))
-
-    antes = {'precio_mayoreo': oferta.precio_mayoreo, 'cantidad_minima': oferta.cantidad_minima,
-             'existencia_disponible': oferta.existencia_disponible}
-    if precio != oferta.precio_mayoreo:
-        db.session.add(PrecioMayoreo(proveedor_id=oferta.proveedor_id, producto_id=oferta.producto_id, precio=precio))
-    oferta.precio_mayoreo, oferta.cantidad_minima, oferta.existencia_disponible = precio, minima, existencia
-    registrar_evento(current_user.id, 'ACTUALIZACION', 'CatalogoProveedor', oferta.id,
-                     f'Actualización de {oferta.producto.nombre}', datos_anteriores=antes,
-                     datos_nuevos={'precio_mayoreo': precio, 'cantidad_minima': minima,
-                                   'existencia_disponible': existencia})
-    db.session.commit()
-    invalidar_analisis()
-    flash(f'{oferta.producto.nombre} actualizado.', 'ok')
+    # Un cambio de precio entra al historial de precios de mayoreo en ms-proveedores
+    escribir('proveedores', 'PATCH', f'/mi-catalogo/{id}', json=cambios, exito=f'{oferta.producto.nombre} actualizado.')
     return redirect(url_for('mi_catalogo'))
 
 
-# ---------------------------------------------------------------- equipo del proveedor (operadores)
+# ---------------------------------------------------------------- equipo del proveedor (escribe ms-seguridad)
 
 @app.route('/mi-empresa/equipo', methods=['GET', 'POST'])
 @login_required
@@ -224,7 +193,7 @@ def mi_equipo():
     """
     El dueño da de alta a sus empleados con el perfil Operador de Proveedor:
     ven y atienden los pedidos de la empresa, pero no cambian precios, catálogo
-    ni datos de la empresa.
+    ni datos de la empresa. Las cuentas las crea ms-seguridad (dueño de usuarios).
     """
     proveedor = current_user.proveedor
     if not proveedor:
@@ -233,23 +202,12 @@ def mi_equipo():
     form = OperadorForm()
     if form.validate_on_submit():
         email = form.email.data.strip().lower()
-        if Usuario.query.filter(db.func.lower(Usuario.email) == email).first():
-            form.email.errors.append('Ya existe una cuenta con ese correo.')
-        else:
-            operador = Usuario(email=email, nombre=form.nombre.data.strip(),
-                               apellido_paterno=form.apellido_paterno.data.strip(),
-                               telefono=form.telefono.data or None, proveedor_id=proveedor.id,
-                               rol=Rol.query.filter_by(nombre='Operador de Proveedor').one())
-            operador.set_password(form.password.data)
-            db.session.add(operador)
-            db.session.flush()
-            registrar_evento(current_user.id, 'CREACION', 'Usuario', operador.id,
-                             f'Operador {email} agregado a {proveedor.nombre_empresa}')
-            db.session.commit()
-            notificar(operador.id, 'sistema', f'Bienvenido al equipo de {proveedor.nombre_empresa}',
-                      'Desde «Pedidos recibidos» puedes aceptar, preparar y despachar los pedidos de la empresa.',
-                      url='/pedidos', origen='web')
-            flash(f'{operador.nombre_completo} ya puede entrar con {email} y la contraseña temporal.', 'ok')
+        operador = escribir('seguridad', 'POST', '/operadores', json={
+            'email': email, 'password': form.password.data, 'nombre': form.nombre.data.strip(),
+            'apellido_paterno': form.apellido_paterno.data.strip(), 'telefono': form.telefono.data or None})
+        if operador is not None:
+            flash(f"{operador['nombre']} {operador['apellido']} ya puede entrar con {email} y la contraseña temporal.",
+                  'ok')
             return redirect(url_for('mi_equipo'))
     operadores = sorted(proveedor.operadores, key=lambda u: (not u.activo, u.nombre))
     return render_template('proveedores/equipo.html', proveedor=proveedor, operadores=operadores, form=form)
@@ -262,14 +220,8 @@ def mi_equipo_estado(id):
     operador = db.get_or_404(Usuario, id)
     if not current_user.proveedor or operador.proveedor_id != current_user.proveedor.id:
         abort(403)
-    operador.activo = not operador.activo
-    registrar_evento(current_user.id, 'CAMBIO_ESTADO', 'Usuario', operador.id,
-                     f'Operador {operador.email} {"reactivado" if operador.activo else "dado de baja"}')
-    db.session.commit()
-    if not operador.activo:
-        try:
-            sesiones.revocar_todas(operador.id)  # deja de poder entrar al web y a la API de inmediato
-        except RedisError:
-            pass
-    flash(f'{operador.nombre_completo} {"puede volver a entrar" if operador.activo else "ya no tiene acceso"}.', 'ok')
+    # Al darlo de baja, ms-seguridad cierra sus sesiones: deja de poder entrar al web y a la API
+    escribir('seguridad', 'PATCH', f'/operadores/{id}', json={'activo': not operador.activo},
+             exito=f'{operador.nombre_completo} ' + ('ya no tiene acceso.' if operador.activo
+                                                    else 'puede volver a entrar.'))
     return redirect(url_for('mi_equipo'))

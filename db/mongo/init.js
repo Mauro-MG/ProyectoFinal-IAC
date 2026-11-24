@@ -15,7 +15,8 @@ db.createCollection('notificaciones', {
     required: ['usuario_id', 'tipo', 'titulo', 'mensaje', 'leida', 'creada_en'],
     properties: {
       usuario_id: { bsonType: 'string' },
-      tipo: { enum: ['pedido', 'stock_bajo', 'precio_atipico', 'comercio', 'importacion', 'sistema'] },
+      tipo: { enum: ['pedido', 'stock_bajo', 'precio_atipico', 'comercio', 'importacion', 'sistema',
+                     'entrega', 'incidencia', 'cotizacion', 'recomendacion', 'venta', 'proveedor'] },
       titulo: { bsonType: 'string', maxLength: 200 },
       mensaje: { bsonType: 'string', maxLength: 1000 },
       prioridad: { enum: ['normal', 'alta'] },
@@ -60,5 +61,68 @@ db.createCollection('archivos.chunks');
 db['archivos.files'].createIndex({ 'metadata.entidad': 1, 'metadata.entidad_id': 1 });
 db['archivos.files'].createIndex({ 'metadata.categoria': 1, uploadDate: -1 });
 db['archivos.chunks'].createIndex({ files_id: 1, n: 1 }, { unique: true });
+
+// =============================================================== entrega final: servicios 8109-8124
+// --------------------------------------------------------------- ms-auditoria: bitácora centralizada
+// Copia de cada evento de auditoria_eventos con el servicio y el X-Correlation-ID (ver servicios/auditoria.py)
+db.createCollection('eventos_auditoria');
+db.eventos_auditoria.createIndex({ correlation_id: 1, fecha: 1 });
+db.eventos_auditoria.createIndex({ servicio: 1, fecha: -1 });
+db.eventos_auditoria.createIndex({ entidad: 1, entidad_id: 1, fecha: -1 });
+db.eventos_auditoria.createIndex({ usuario_id: 1, fecha: -1 });
+db.eventos_auditoria.createIndex({ id_postgres: 1 }, { unique: true, partialFilterExpression: { id_postgres: { $type: 'number' } } });
+
+// --------------------------------------------------------------- ms-sincronizacion: lotes offline
+db.createCollection('sincronizacion_lotes');
+db.sincronizacion_lotes.createIndex({ usuario_id: 1, recibido: -1 });
+db.sincronizacion_lotes.createIndex({ dispositivo_id: 1, lote_id: 1 }, { unique: true });
+db.createCollection('sincronizacion_operaciones');
+// Control de duplicados: la misma operación de un dispositivo se aplica una sola vez
+db.sincronizacion_operaciones.createIndex({ dispositivo_id: 1, operacion_id: 1 }, { unique: true });
+db.sincronizacion_operaciones.createIndex({ lote_id: 1 });
+db.sincronizacion_operaciones.createIndex({ estado: 1, actualizado: -1 });
+
+// --------------------------------------------------------------- ms-demanda
+db.createCollection('demanda_busquedas');
+db.demanda_busquedas.createIndex({ producto_id: 1, fecha: -1 });
+db.demanda_busquedas.createIndex({ zona_id: 1, encontrado: 1, fecha: -1 });
+db.demanda_busquedas.createIndex({ fecha: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 400 });   // poco más de un año
+
+// --------------------------------------------------------------- ms-recomendaciones
+db.createCollection('recomendaciones_emitidas');
+db.recomendaciones_emitidas.createIndex({ comercio_id: 1, emitida: -1 });
+db.recomendaciones_emitidas.createIndex({ comercio_id: 1, producto_id: 1, emitida: -1 });
+
+// --------------------------------------------------------------- ms-integraciones
+db.createCollection('integraciones_lotes');
+db.integraciones_lotes.createIndex({ usuario_id: 1, fecha: -1 });
+db.createCollection('integraciones_conectores');
+db.integraciones_conectores.createIndex({ propietario_id: 1, nombre: 1 }, { unique: true });
+
+// --------------------------------------------------------------- ms-monitoreo
+db.createCollection('alertas_infraestructura');
+db.alertas_infraestructura.createIndex({ activa: 1, fecha: -1 });
+db.alertas_infraestructura.createIndex({ servicio: 1, regla: 1, activa: 1 });
+
+// --------------------------------------------------------------- ms-reportes (archivos en GridFS, bucket "reportes")
+db.createCollection('reportes_programados');
+db.reportes_programados.createIndex({ usuario_id: 1 });
+db.reportes_programados.createIndex({ activo: 1, proxima_ejecucion: 1 });
+db.createCollection('reportes.files');
+db.createCollection('reportes.chunks');
+db['reportes.chunks'].createIndex({ files_id: 1, n: 1 }, { unique: true });
+db['reportes.files'].createIndex({ 'metadata.usuario_id': 1, uploadDate: -1 });
+db['reportes.files'].createIndex({ uploadDate: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
+
+// --------------------------------------------------------------- ms-notificaciones: preferencias, plantillas, dispositivos
+db.createCollection('preferencias_notificacion');
+db.preferencias_notificacion.createIndex({ usuario_id: 1 }, { unique: true });
+db.createCollection('plantillas_notificacion');
+db.plantillas_notificacion.createIndex({ clave: 1 }, { unique: true });
+db.createCollection('dispositivos_push');
+db.dispositivos_push.createIndex({ usuario_id: 1 });
+db.dispositivos_push.createIndex({ token: 1 }, { unique: true });
+db.createCollection('entregas_canal');
+db.entregas_canal.createIndex({ usuario_id: 1, fecha: -1 });
 
 print('MongoDB de AbastoRed inicializada');

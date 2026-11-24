@@ -76,7 +76,7 @@ class ZonaForm(FlaskForm):
     latitud_centro = DecimalField('Latitud del centro', places=7, validators=[DataRequired(), NumberRange(-90, 90)])
     longitud_centro = DecimalField('Longitud del centro', places=7,
                                    validators=[DataRequired(), NumberRange(-180, 180)])
-    radio_km = DecimalField('Radio (km)', places=2, validators=[DataRequired(), NumberRange(0.1, 50)])
+    radio_km = DecimalField('Radio (km)', places=2, validators=[DataRequired(), NumberRange(0.1, 20)])
     poblacion = IntegerField('Población estimada', validators=[DataRequired(), NumberRange(min=0)])
     activa = BooleanField('Activa', default=True)
 

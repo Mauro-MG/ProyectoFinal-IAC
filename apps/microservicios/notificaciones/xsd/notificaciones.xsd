@@ -6,13 +6,23 @@
   </xs:annotation>
   <!-- Elementos raíz: uno por petición o respuesta -->
   <xs:element name="contador" type="ContadorSalida"/>
+  <xs:element name="dispositivo" type="DispositivoSalida"/>
+  <xs:element name="dispositivo_entrada" type="DispositivoEntrada"/>
+  <xs:element name="dispositivos" type="DispositivosSalida"/>
+  <xs:element name="envio_plantilla_entrada" type="EnvioPlantillaEntrada"/>
   <xs:element name="error" type="ErrorSalida"/>
+  <xs:element name="historial" type="HistorialSalida"/>
   <xs:element name="lectura_entrada" type="LecturaEntrada"/>
   <xs:element name="lote" type="LoteSalida"/>
   <xs:element name="lote_entrada" type="LoteEntrada"/>
   <xs:element name="notificacion" type="NotificacionSalida"/>
   <xs:element name="notificacion_entrada" type="NotificacionEntrada"/>
   <xs:element name="notificaciones" type="NotificacionesSalida"/>
+  <xs:element name="plantilla" type="PlantillaSalida"/>
+  <xs:element name="plantilla_entrada" type="PlantillaEntrada"/>
+  <xs:element name="plantillas" type="PlantillasSalida"/>
+  <xs:element name="preferencias" type="PreferenciasSalida"/>
+  <xs:element name="preferencias_entrada" type="PreferenciasEntrada"/>
   <xs:element name="resultado" type="Resultado"/>
   <xs:element name="resumen" type="ResumenSalida"/>
   <xs:element name="salud" type="Salud"/>
@@ -38,6 +48,53 @@
       <xs:element name="tipo" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
+  <xs:complexType name="DispositivoEntrada">
+    <xs:all>
+      <xs:element name="token" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="20"/>
+            <xs:maxLength value="300"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="plataforma" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="android"/>
+            <xs:enumeration value="escritorio"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="nombre" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="80"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DispositivoSalida">
+    <xs:all>
+      <xs:element name="token_final" type="xs:string" minOccurs="1"/>
+      <xs:element name="plataforma" type="xs:string" minOccurs="1"/>
+      <xs:element name="nombre" type="xs:string" minOccurs="0"/>
+      <xs:element name="activo" type="xs:boolean" minOccurs="1"/>
+      <xs:element name="registrado" type="xs:dateTime" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DispositivosSalida">
+    <xs:all>
+      <xs:element name="dispositivos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dispositivo" maxOccurs="unbounded" type="DispositivoSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
   <xs:complexType name="Entidad">
     <xs:all>
       <xs:element name="tipo" minOccurs="1">
@@ -60,6 +117,42 @@
     <xs:all>
       <xs:element name="tipo" type="xs:string" minOccurs="1"/>
       <xs:element name="id" type="xs:string" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EntregaCanal">
+    <xs:all>
+      <xs:element name="notificacion_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="canal" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="detalle" type="xs:string" minOccurs="0"/>
+      <xs:element name="proveedor" type="xs:string" minOccurs="1"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EnvioPlantillaEntrada">
+    <xs:all>
+      <xs:element name="clave" type="xs:string" minOccurs="1"/>
+      <xs:element name="usuarios" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="usuario" maxOccurs="200" type="xs:string" minOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="variables" minOccurs="0">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="url" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="300"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="ErrorSalida">
@@ -89,6 +182,18 @@
       </xs:element>
     </xs:all>
   </xs:complexType>
+  <xs:complexType name="HistorialSalida">
+    <xs:all>
+      <xs:element name="total" type="xs:integer" minOccurs="1"/>
+      <xs:element name="entregas" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="entrega" maxOccurs="unbounded" type="EntregaCanal" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
   <xs:complexType name="LecturaEntrada">
     <xs:all>
       <xs:element name="leida" type="xs:boolean" minOccurs="1"/>
@@ -112,6 +217,12 @@
             <xs:enumeration value="comercio"/>
             <xs:enumeration value="importacion"/>
             <xs:enumeration value="sistema"/>
+            <xs:enumeration value="entrega"/>
+            <xs:enumeration value="incidencia"/>
+            <xs:enumeration value="cotizacion"/>
+            <xs:enumeration value="recomendacion"/>
+            <xs:enumeration value="venta"/>
+            <xs:enumeration value="proveedor"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -180,6 +291,12 @@
             <xs:enumeration value="comercio"/>
             <xs:enumeration value="importacion"/>
             <xs:enumeration value="sistema"/>
+            <xs:enumeration value="entrega"/>
+            <xs:enumeration value="incidencia"/>
+            <xs:enumeration value="cotizacion"/>
+            <xs:enumeration value="recomendacion"/>
+            <xs:enumeration value="venta"/>
+            <xs:enumeration value="proveedor"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -229,6 +346,12 @@
             <xs:enumeration value="comercio"/>
             <xs:enumeration value="importacion"/>
             <xs:enumeration value="sistema"/>
+            <xs:enumeration value="entrega"/>
+            <xs:enumeration value="incidencia"/>
+            <xs:enumeration value="cotizacion"/>
+            <xs:enumeration value="recomendacion"/>
+            <xs:enumeration value="venta"/>
+            <xs:enumeration value="proveedor"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -297,6 +420,118 @@
       </xs:element>
     </xs:all>
   </xs:complexType>
+  <xs:complexType name="PlantillaEntrada">
+    <xs:all>
+      <xs:element name="clave" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[a-z][a-z0-9_]{2,40}"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="tipo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="pedido"/>
+            <xs:enumeration value="stock_bajo"/>
+            <xs:enumeration value="precio_atipico"/>
+            <xs:enumeration value="comercio"/>
+            <xs:enumeration value="importacion"/>
+            <xs:enumeration value="sistema"/>
+            <xs:enumeration value="entrega"/>
+            <xs:enumeration value="incidencia"/>
+            <xs:enumeration value="cotizacion"/>
+            <xs:enumeration value="recomendacion"/>
+            <xs:enumeration value="venta"/>
+            <xs:enumeration value="proveedor"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="titulo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+            <xs:maxLength value="200"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="mensaje" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+            <xs:maxLength value="1000"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="prioridad" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="normal"/>
+            <xs:enumeration value="alta"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PlantillaSalida">
+    <xs:all>
+      <xs:element name="clave" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="1"/>
+      <xs:element name="titulo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="prioridad" type="xs:string" minOccurs="1"/>
+      <xs:element name="variables" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PlantillasSalida">
+    <xs:all>
+      <xs:element name="plantillas" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="plantilla" maxOccurs="unbounded" type="PlantillaSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PreferenciasEntrada">
+    <xs:all>
+      <xs:element name="canales" minOccurs="1">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="silencio" type="Silencio" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="PreferenciasSalida">
+    <xs:all>
+      <xs:element name="usuario_id" type="xs:string" minOccurs="1"/>
+      <xs:element name="canales" minOccurs="1">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="silencio" minOccurs="1">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="actualizado" type="xs:dateTime" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
   <xs:complexType name="Resultado">
     <xs:annotation>
       <xs:documentation>Respuesta de operaciones que no regresan un recurso (bajas, revocaciones, marcados).</xs:documentation>
@@ -341,6 +576,26 @@
             <xs:element name="dependencia" maxOccurs="unbounded" type="Dependencia" minOccurs="0"/>
           </xs:sequence>
         </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Silencio">
+    <xs:all>
+      <xs:element name="desde" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="23"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="hasta" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="23"/>
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
     </xs:all>
   </xs:complexType>

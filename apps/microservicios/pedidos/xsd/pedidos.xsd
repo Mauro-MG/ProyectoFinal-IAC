@@ -225,10 +225,10 @@
     <xs:all>
       <xs:element name="comercio_id" type="xs:string" minOccurs="1"/>
       <xs:element name="proveedor_id" type="xs:string" minOccurs="1"/>
-      <xs:element name="partidas" minOccurs="1">
+      <xs:element name="partidas" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="partida" maxOccurs="100" type="PartidaEntrada" minOccurs="1"/>
+            <xs:element name="partida" maxOccurs="100" type="PartidaEntrada" minOccurs="0"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>

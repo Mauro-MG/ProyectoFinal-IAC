@@ -44,6 +44,12 @@ class Comercio(db.Model):
     verificado_por = db.Column(UUID(as_uuid=True), db.ForeignKey('usuarios.id'))
     fecha_verificacion = db.Column(db.DateTime)
     foto_url = db.Column(db.String(255))
+    giro = db.Column(db.String(100))
+    # Datos fiscales opcionales (los comercios informales normalmente no los tienen)
+    rfc = db.Column(db.String(13))
+    razon_social = db.Column(db.String(255))
+    regimen_fiscal = db.Column(db.String(100))
+    email_contacto = db.Column(db.String(255))
     activo = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -52,6 +58,9 @@ class Comercio(db.Model):
     zona = db.relationship('ZonaMunicipal', back_populates='comercios')
     inventario = db.relationship('InventarioComercio', back_populates='comercio')
     pedidos = db.relationship('PedidoAbasto', back_populates='comercio')
+    responsables = db.relationship('ResponsableComercio', viewonly=True, order_by='ResponsableComercio.id',
+                                   primaryjoin='and_(Comercio.id == ResponsableComercio.comercio_id, '
+                                               'ResponsableComercio.activo.is_(True))')
 
     @property
     def sector(self):
@@ -64,3 +73,20 @@ class Comercio(db.Model):
     @property
     def tipo_legible(self):
         return TIPOS_COMERCIO.get(self.tipo_comercio, self.tipo_comercio)
+
+
+class ResponsableComercio(db.Model):
+    """Persona a cargo del comercio (dueño, encargado o empleado); puede o no tener cuenta."""
+    __tablename__ = 'responsables_comercio'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    comercio_id = db.Column(UUID(as_uuid=True), db.ForeignKey('comercios.id'), nullable=False)
+    nombre = db.Column(db.String(150), nullable=False)
+    puesto = db.Column(db.String(20), nullable=False, default='ENCARGADO')
+    telefono = db.Column(db.String(20))
+    email = db.Column(db.String(255))
+    usuario_id = db.Column(UUID(as_uuid=True), db.ForeignKey('usuarios.id'))
+    activo = db.Column(db.Boolean, nullable=False, default=True)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+    comercio = db.relationship('Comercio')

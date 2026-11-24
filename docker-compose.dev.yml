@@ -1,0 +1,49 @@
+# Sólo para desarrollo en la computadora del equipo (NO para publicar):
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+#
+# Publica los puertos de cada componente en 127.0.0.1 (no son alcanzables desde la red)
+# para depurar con un cliente de base de datos o llamar a un servicio sin pasar por el
+# gateway, y monta el código del web para ver cambios sin reconstruir la imagen.
+
+services:
+  abastored-web:
+    ports: ["127.0.0.1:5000:5000"]
+    volumes:
+      - ./apps/web:/app
+      - ./libs:/libs
+
+  ms-seguridad:        {ports: ["127.0.0.1:8101:8000"]}
+  ms-comercios:        {ports: ["127.0.0.1:8102:8000"]}
+  ms-catalogo:         {ports: ["127.0.0.1:8103:8000"]}
+  ms-inventario:       {ports: ["127.0.0.1:8104:8000"]}
+  ms-precios:          {ports: ["127.0.0.1:8105:8000"]}
+  ms-pedidos:          {ports: ["127.0.0.1:8106:8000"]}
+  ms-analisis:         {ports: ["127.0.0.1:8107:8000"]}
+  ms-notificaciones:   {ports: ["127.0.0.1:8108:8000"]}
+  ms-proveedores:      {ports: ["127.0.0.1:8109:8000"]}
+  ms-abastecimiento:   {ports: ["127.0.0.1:8110:8000"]}
+  ms-disponibilidad:   {ports: ["127.0.0.1:8111:8000"]}
+  ms-geolocalizacion:  {ports: ["127.0.0.1:8112:8000"]}
+  ms-sincronizacion:   {ports: ["127.0.0.1:8113:8000"]}
+  ms-documentos:       {ports: ["127.0.0.1:8114:8000"]}
+  ms-reportes:         {ports: ["127.0.0.1:8115:8000"]}
+  ms-recomendaciones:  {ports: ["127.0.0.1:8116:8000"]}
+  ms-demanda:          {ports: ["127.0.0.1:8117:8000"]}
+  ms-ventas:           {ports: ["127.0.0.1:8118:8000"]}
+  ms-entregas:         {ports: ["127.0.0.1:8119:8000"]}
+  ms-auditoria:        {ports: ["127.0.0.1:8120:8000"]}
+  ms-integraciones:    {ports: ["127.0.0.1:8121:8000"]}
+  ms-configuracion:    {ports: ["127.0.0.1:8122:8000"]}
+  ms-monitoreo:        {ports: ["127.0.0.1:8123:8000"]}
+  ms-busqueda:         {ports: ["127.0.0.1:8124:8000"]}
+
+  # La red «datos» es interna: para publicar un puerto las bases también entran a «publica»
+  abastored-postgres:
+    ports: ["127.0.0.1:5432:5432"]
+    networks: [datos, publica]
+  abastored-mongo:
+    ports: ["127.0.0.1:27017:27017"]
+    networks: [datos, publica]
+  abastored-redis:
+    ports: ["127.0.0.1:6379:6379"]
+    networks: [datos, publica]

@@ -1,5 +1,5 @@
 """
-Contratos JSON y XML de los ocho servicios: la respuesta XML de cada servicio
+Contratos JSON y XML de los microservicios: la respuesta XML de cada servicio
 valida contra su XSD publicado, trae los mismos datos que la JSON y los errores
 también cumplen el contrato.
 """
@@ -13,13 +13,21 @@ from apoyo import NS, PUERTOS, RAIZ, base, url
 # (servicio, rol o None si es público, ruta, elemento raíz esperado)
 CONSULTAS = [
     ('seguridad', 'admin', '/roles', 'roles'),
-    ('comercios', None, '/zonas', 'zonas'),
+    ('geolocalizacion', None, '/zonas', 'zonas'),
     ('catalogo', None, '/categorias', 'categorias'),
-    ('inventario', None, '/disponibilidad?por_pagina=5', 'disponibilidad'),
+    ('disponibilidad', None, '/disponibilidad?por_pagina=5', 'disponibilidad'),
     ('precios', 'analista', '/precios?por_pagina=5', 'precios'),
     ('pedidos', 'minorista', '/pedidos?por_pagina=5', 'pedidos'),
     ('analisis', 'analista', '/analisis/zonas', 'zonas'),
     ('notificaciones', 'minorista', '/notificaciones?por_pagina=5', 'notificaciones'),
+    ('proveedores', 'minorista', '/proveedores?por_pagina=5', 'proveedores'),
+    ('configuracion', None, '/parametros/publicos', 'publicos'),
+    ('busqueda', None, '/buscar?q=arroz', 'busqueda'),
+    ('auditoria', 'auditor', '/eventos?por_pagina=5', 'eventos'),
+    ('monitoreo', 'admin', '/bases-datos', 'bases_datos'),
+    ('demanda', 'analista', '/demanda/tendencias', 'tendencias'),
+    ('reportes', 'analista', '/reportes/tipos', 'tipos'),
+    ('sincronizacion', None, '/estado', 'estado'),
 ]
 
 

@@ -1,16 +1,19 @@
-"""Administración: usuarios, roles/permisos y parámetros del sistema."""
+"""
+Administración: usuarios, roles/permisos y parámetros del sistema.
+
+Las pantallas leen de la base (solo lectura) y los cambios van al servicio dueño:
+usuarios y roles a ms-seguridad, parámetros a ms-configuracion. Cada servicio
+valida, audita, cierra las sesiones afectadas e invalida sus cachés.
+"""
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from redis.exceptions import RedisError
 
-from abasto_dominio import sesiones
 from app import app
 from abasto_dominio.extensiones import db
 from app.formularios import UsuarioAdminForm
+from app.microservicios import escribir
 from abasto_dominio.modelos import ConfiguracionSistema, Rol, Usuario
 from app.permisos import PERMISOS, permiso_requerido
-from abasto_dominio.servicios.auditoria import registrar_evento
-from abasto_dominio.servicios.cache import invalidar_analisis
 
 
 @app.route('/admin/usuarios')
@@ -37,25 +40,16 @@ def usuario_editar(id):
     form = UsuarioAdminForm(obj=usuario)
     form.rol_id.choices = [(r.id, r.nombre) for r in Rol.query.filter_by(activo=True).order_by(Rol.id)]
     if form.validate_on_submit():
-        if usuario.id == current_user.id and (not form.activo.data or form.rol_id.data != usuario.rol_id):
-            flash('No puedes desactivarte ni cambiarte de rol a ti mismo.', 'error')
-            return redirect(url_for('usuario_editar', id=id))
-        antes = {'rol': usuario.rol.nombre, 'activo': usuario.activo}
-        form.populate_obj(usuario)
-        db.session.flush()
-        db.session.refresh(usuario, ['rol'])
-        registrar_evento(current_user.id, 'ACTUALIZACION', 'Usuario', usuario.id, f'Cuenta {usuario.email}',
-                         datos_anteriores=antes, datos_nuevos={'rol': usuario.rol.nombre, 'activo': usuario.activo})
-        db.session.commit()
-        # Sus tokens llevan el rol y los permisos anteriores: se cierran sus sesiones (web, API y servicios)
-        if antes != {'rol': usuario.rol.nombre, 'activo': usuario.activo}:
-            try:
-                cerradas = sesiones.revocar_todas(usuario.id)
-                flash(f'Usuario actualizado. Se cerraron {cerradas} sesiones abiertas.', 'ok')
-            except RedisError:
-                flash('Usuario actualizado, pero no se pudieron cerrar sus sesiones (Redis no responde).', 'alerta')
+        cambios = {k: v for k, v in (('rol_id', form.rol_id.data), ('activo', form.activo.data))
+                   if v != getattr(usuario, k)}
+        if not cambios:
+            flash('No hubo cambios.', 'ok')
             return redirect(url_for('usuarios_lista'))
-        flash('Usuario actualizado.', 'ok')
+        # ms-seguridad no deja que uno se cambie el rol o se desactive a sí mismo, y cierra las
+        # sesiones del usuario (sus tokens llevan el rol y los permisos anteriores)
+        if escribir('seguridad', 'PATCH', f'/usuarios/{id}', json=cambios,
+                    exito='Usuario actualizado. Se cerraron sus sesiones abiertas.') is None:
+            return redirect(url_for('usuario_editar', id=id))
         return redirect(url_for('usuarios_lista'))
     return render_template('admin/usuario_form.html', form=form, usuario=usuario)
 
@@ -72,12 +66,10 @@ def roles():
             # El administrador no puede quitarse a sí mismo la gestión de roles
             if rol.id == current_user.rol_id and 'roles.gestionar' not in nuevos:
                 nuevos.append('roles.gestionar')
-            if sorted(rol.permisos or []) != nuevos:
-                registrar_evento(current_user.id, 'ACTUALIZACION', 'Rol', rol.id, f'Permisos del rol {rol.nombre}',
-                                 datos_anteriores={'permisos': rol.permisos}, datos_nuevos={'permisos': nuevos})
-                rol.permisos = nuevos
+            if sorted(rol.permisos or []) != sorted(nuevos):
+                if escribir('seguridad', 'PUT', f'/roles/{rol.id}/permisos', json={'permisos': nuevos}) is None:
+                    return redirect(url_for('roles'))
                 cambios += 1
-        db.session.commit()
         flash(f'Permisos actualizados en {cambios} rol(es).' if cambios else 'No hubo cambios.', 'ok')
         return redirect(url_for('roles'))
     return render_template('admin/roles.html', roles=lista, permisos=PERMISOS)
@@ -94,20 +86,10 @@ def configuracion():
             valor = request.form.get(p.clave, '').strip()
             if valor == (p.valor or ''):
                 continue
-            if p.tipo_dato in ('int', 'float'):
-                try:
-                    float(valor)
-                except ValueError:
-                    flash(f'{p.clave}: debe ser un número.', 'error')
-                    db.session.rollback()
-                    return redirect(url_for('configuracion'))
-            registrar_evento(current_user.id, 'ACTUALIZACION', 'ConfiguracionSistema', p.clave,
-                             f'Parámetro {p.clave}', datos_anteriores={'valor': p.valor}, datos_nuevos={'valor': valor})
-            p.valor = valor
-            p.updated_by = current_user.id
+            # ms-configuracion valida el tipo y el rango, audita e invalida las cachés de parámetros y análisis
+            if escribir('configuracion', 'PUT', f'/parametros/{p.clave}', json={'valor': valor}) is None:
+                return redirect(url_for('configuracion'))
             cambios += 1
-        db.session.commit()
-        invalidar_analisis()
         flash(f'{cambios} parámetro(s) actualizados.' if cambios else 'No hubo cambios.', 'ok')
         return redirect(url_for('configuracion'))
     return render_template('admin/configuracion.html', parametros=parametros)

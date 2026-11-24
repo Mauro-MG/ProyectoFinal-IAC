@@ -61,3 +61,10 @@ Thumbs.db
 
 # Entorno virtual para pruebas (README)
 .venv/
+
+# Secretos generados por scripts/preparar_entorno.py (nunca al repositorio)
+secrets/
+# Certificado del gateway generado al arrancar
+infra/certs/
+# Reportes de pruebas generados
+reportes/

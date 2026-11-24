@@ -29,6 +29,7 @@ from functools import wraps
 from uuid import uuid4
 
 from flask import Flask, Response, g, jsonify, request, send_from_directory
+from werkzeug.middleware.proxy_fix import ProxyFix
 from pydantic import BaseModel
 from pydantic.json_schema import models_json_schema
 from pymongo.errors import PyMongoError
@@ -86,6 +87,9 @@ class Servicio:
         self.modelos = set()
 
         app = Flask(f'ms-{nombre}')
+        # Detrás del gateway: toma la IP, el esquema y el prefijo (/ms/<servicio>) de los encabezados
+        # X-Forwarded-* que pone nginx (un solo salto de confianza; el cliente no puede falsificarlos)
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1, x_prefix=1)
         app.config.from_object(Configuracion)
         app.json.ensure_ascii = False
         app.json.sort_keys = False
@@ -130,7 +134,7 @@ class Servicio:
                 'duracion_ms': duracion,
                 'usuario_id': claims.get('sub'),
                 'rol': claims.get('rol'),
-                'ip': request.headers.get('X-Forwarded-For', request.remote_addr),
+                'ip': request.remote_addr,
                 'formato': 'xml' if respuesta.mimetype == formatos.MIME_XML else 'json',
                 'correlation_id': g.correlation_id,
                 'fecha': datetime.now(timezone.utc),
@@ -187,7 +191,7 @@ class Servicio:
             @wraps(funcion)
             def vista(**kwargs):
                 claims = None if publico else autenticar(permisos or ())
-                sujeto = claims['sub'] if claims else request.headers.get('X-Forwarded-For', request.remote_addr)
+                sujeto = claims['sub'] if claims else request.remote_addr
                 self._limitar(sujeto, limite or self.app.config['RATE_LIMIT_POR_MINUTO'])
                 if consulta:
                     kwargs['q'] = consulta.model_validate(request.args.to_dict())
@@ -384,7 +388,7 @@ class Servicio:
         return {
             'openapi': '3.0.3',
             'info': {'title': f'AbastoRed · {self.titulo}', 'version': self.version, 'description': self.descripcion},
-            'servers': [{'url': '/', 'description': 'Este servicio'}],
+            'servers': [{'url': request.script_root or '/', 'description': 'Este servicio'}],
             'tags': [{'name': t} for t in dict.fromkeys(r['etiqueta'] for r in self.rutas)],
             'paths': rutas,
             'components': {
@@ -451,11 +455,11 @@ _ESQUEMA_ERROR = {
 _HTML_SWAGGER = """<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{titulo}} · Swagger</title>
-<link rel="stylesheet" href="/docs/static/swagger-ui.css"></head>
+<link rel="stylesheet" href="docs/static/swagger-ui.css"></head>
 <body><div id="swagger-ui"></div>
-<script src="/docs/static/swagger-ui-bundle.js"></script>
+<script src="docs/static/swagger-ui-bundle.js"></script>
 <script>
-window.ui = SwaggerUIBundle({url: '/openapi.json', dom_id: '#swagger-ui', persistAuthorization: true,
+window.ui = SwaggerUIBundle({url: 'openapi.json', dom_id: '#swagger-ui', persistAuthorization: true,
   displayRequestDuration: true, docExpansion: 'list', defaultModelsExpandDepth: 0});
 </script></body></html>"""
 
