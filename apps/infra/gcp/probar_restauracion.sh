@@ -29,7 +29,8 @@ trap limpiar EXIT
 
 gcloud storage cp "gs://$GCS_BUCKET/respaldos/$RESPALDO/*" "$TEMPORAL/" \
     --impersonate-service-account="$GCS_CUENTA_FIRMA" --quiet
-(cd "$TEMPORAL" && sha256sum -c SHA256SUMS)
+# Respaldos anteriores guardaban la ruta absoluta de su carpeta temporal: se verifica por nombre
+(cd "$TEMPORAL" && sed -E 's#  /.*/#  #' SHA256SUMS | sha256sum -c -)
 
 echo "== PostgreSQL -> base $PRUEBA"
 "${COMPOSE[@]}" exec -T abastored-postgres sh -c "dropdb -U \"\$POSTGRES_USER\" --if-exists $PRUEBA; \

@@ -19,7 +19,8 @@ COMPOSE=(docker compose -p abastored -f docker-compose.yml -f docker-compose.gcp
 
 gcloud storage cp "gs://$GCS_BUCKET/respaldos/$RESPALDO/*" "$TEMPORAL/" \
     --impersonate-service-account="$GCS_CUENTA_FIRMA" --quiet
-(cd "$TEMPORAL" && sha256sum -c SHA256SUMS)
+# Respaldos anteriores guardaban la ruta absoluta de su carpeta temporal: se verifica por nombre
+(cd "$TEMPORAL" && sed -E 's#  /.*/#  #' SHA256SUMS | sha256sum -c -)
 
 read -r -p "Se reemplazarán los datos actuales con el respaldo $RESPALDO. Escribe RESTAURAR para continuar: " ok
 [ "$ok" = RESTAURAR ] || { echo "Cancelado."; exit 1; }

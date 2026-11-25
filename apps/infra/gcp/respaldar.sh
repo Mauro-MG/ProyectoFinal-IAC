@@ -20,7 +20,7 @@ COMPOSE=(docker compose -p abastored -f docker-compose.yml -f docker-compose.gcp
 "${COMPOSE[@]}" exec -T abastored-mongo sh -c \
     'mongodump --quiet --archive --gzip -u "$MONGO_INITDB_ROOT_USERNAME" -p "$(cat /run/secrets/mongo_password)" --authenticationDatabase admin' \
     > "$TEMPORAL/mongo.archive.gz"
-sha256sum "$TEMPORAL"/* > "$TEMPORAL/SHA256SUMS"
+(cd "$TEMPORAL" && sha256sum postgres.dump mongo.archive.gz > SHA256SUMS)   # nombres relativos
 gcloud storage cp "$TEMPORAL"/* "gs://$GCS_BUCKET/respaldos/$FECHA/" \
     --impersonate-service-account="$GCS_CUENTA_FIRMA" --quiet
 echo "$(date -u) respaldo $FECHA: $(du -ch "$TEMPORAL" | tail -1 | cut -f1)"
