@@ -1,0 +1,262 @@
+{
+  "fecha": "2026-11-25T17:11:41",
+  "host": "https://34.135.84.31",
+  "procesos": {
+    "1. Alta de comercio": [
+      {
+        "actor": "comerciante nuevo",
+        "cliente": "Android (JSON)",
+        "paso": "Registro simplificado",
+        "metodo": "POST",
+        "ruta": "/ms/seguridad/api/v1/auth/registro",
+        "status": 201,
+        "correlation_id": "a2a3befc621d4d36b9e627d057bcd681",
+        "resultado": ""
+      },
+      {
+        "actor": "comerciante",
+        "cliente": "Android (JSON)",
+        "paso": "Alta del comercio con la ubicación del teléfono",
+        "metodo": "POST",
+        "ruta": "/ms/comercios/api/v1/comercios",
+        "status": 201,
+        "correlation_id": "fbecab510c9c4af8b9a497c278674d64",
+        "resultado": "zona 1 asignada por ubicación; queda PENDIENTE"
+      },
+      {
+        "actor": "comerciante",
+        "cliente": "Android (JSON)",
+        "paso": "Foto del local (ms-documentos -> bucket)",
+        "metodo": "POST",
+        "ruta": "/ms/documentos/api/v1/documentos",
+        "status": 201,
+        "correlation_id": "2805360f1ca14e24afd105d50c689bf4",
+        "resultado": ""
+      },
+      {
+        "actor": "comerciante",
+        "cliente": "Android (JSON)",
+        "paso": "Fija la foto principal (ms-comercios verifica con ms-documentos)",
+        "metodo": "PUT",
+        "ruta": "/ms/comercios/api/v1/comercios/b6209bb6-a059-4a7f-8024-8c0f4d670faa/foto",
+        "status": 200,
+        "correlation_id": "1503d01d602b48f2aef29def7e13aa92",
+        "resultado": ""
+      },
+      {
+        "actor": "coordinador municipal",
+        "cliente": "Escritorio (XML)",
+        "paso": "Valida el comercio",
+        "metodo": "PATCH",
+        "ruta": "/ms/comercios/api/v1/comercios/b6209bb6-a059-4a7f-8024-8c0f4d670faa/validacion",
+        "status": 200,
+        "correlation_id": "826db1b91923469b9cbeda97bf4e2202",
+        "resultado": ""
+      },
+      {
+        "actor": "comerciante",
+        "cliente": "Android (JSON)",
+        "paso": "Recibe el aviso de validación",
+        "metodo": "GET",
+        "ruta": "/ms/notificaciones/api/v1/notificaciones/contador",
+        "status": 200,
+        "correlation_id": "47eed792b51f4809ac7ea38cc6139df4",
+        "resultado": "Puesto Rosa proceso: verificado"
+      },
+      {
+        "actor": "comerciante",
+        "cliente": "navegador",
+        "paso": "Descarga la foto con URL firmada",
+        "metodo": "GET",
+        "ruta": "/abastored-archivos-integracion-505802/foto_comercio/comercio/b6209bb6-a059-4a7f-8024-8c0f4d670faa/6b076b23b2bb263553661f14.png",
+        "status": 200,
+        "correlation_id": null,
+        "resultado": "67 bytes desde storage.googleapis.com"
+      },
+      {
+        "actor": "auditor",
+        "cliente": "Web (JSON)",
+        "paso": "Historial del comercio en la bitácora centralizada",
+        "metodo": "GET",
+        "ruta": "/ms/auditoria/api/v1/entidades/Comercio/b6209bb6-a059-4a7f-8024-8c0f4d670faa/historial",
+        "status": 200,
+        "correlation_id": "d9b5dff793ba422ba8738a767f51b8ed",
+        "resultado": "3 eventos de ['ms-comercios']"
+      }
+    ],
+    "2. Abasto": [
+      {
+        "actor": "minorista",
+        "cliente": "Android (JSON)",
+        "paso": "Recomendaciones de abasto para su comercio",
+        "metodo": "GET",
+        "ruta": "/ms/recomendaciones/api/v1/recomendaciones/874a46c4-3697-40bd-a666-1b8b9c44cf94",
+        "status": 200,
+        "correlation_id": "de53a4762ece4c1ebdda208a2d418f2b",
+        "resultado": ""
+      },
+      {
+        "actor": "minorista",
+        "cliente": "Android (JSON)",
+        "paso": "Ofertas de proveedores que surten su zona",
+        "metodo": "GET",
+        "ruta": "/ms/proveedores/api/v1/ofertas",
+        "status": 200,
+        "correlation_id": "d3cdd48a44a84f5494ff095f449712ed",
+        "resultado": "Distribuidora Regia de Abarrotes: $25.75 (mín. 12.0)"
+      },
+      {
+        "actor": "minorista",
+        "cliente": "Android (JSON)",
+        "paso": "Crea el pedido",
+        "metodo": "POST",
+        "ruta": "/ms/pedidos/api/v1/pedidos",
+        "status": 201,
+        "correlation_id": "4ea7d57213d6409d8f13fcb07926a743",
+        "resultado": ""
+      },
+      {
+        "actor": "minorista",
+        "cliente": "Android (JSON)",
+        "paso": "Envía el pedido al proveedor",
+        "metodo": "POST",
+        "ruta": "/ms/pedidos/api/v1/pedidos/a6059e16-519b-48f9-91b8-9501a20e3621/acciones/enviar",
+        "status": 200,
+        "correlation_id": "ed63c1dbc8b2412cb63465315dd72b5c",
+        "resultado": "aviso al equipo del proveedor: Pedido PED-00024: enviado al proveedor"
+      },
+      {
+        "actor": "proveedor",
+        "cliente": "Web (JSON)",
+        "paso": "Acepta el pedido",
+        "metodo": "POST",
+        "ruta": "/ms/pedidos/api/v1/pedidos/a6059e16-519b-48f9-91b8-9501a20e3621/acciones/aceptar",
+        "status": 200,
+        "correlation_id": "c3cc2847805f49348dfc5812ec1990a0",
+        "resultado": ""
+      },
+      {
+        "actor": "proveedor",
+        "cliente": "Web (JSON)",
+        "paso": "Programa la entrega",
+        "metodo": "POST",
+        "ruta": "/ms/entregas/api/v1/entregas",
+        "status": 201,
+        "correlation_id": "eee3557f301b4ed9815a063e055659af",
+        "resultado": ""
+      },
+      {
+        "actor": "proveedor",
+        "cliente": "Web (JSON)",
+        "paso": "Salida de bodega (descuenta su existencia)",
+        "metodo": "POST",
+        "ruta": "/ms/entregas/api/v1/entregas/b785523f-9eec-4365-a785-0f5362406b90/salida",
+        "status": 200,
+        "correlation_id": "d2964c5b6aa2474fad775b389908c2a2",
+        "resultado": ""
+      },
+      {
+        "actor": "minorista",
+        "cliente": "Android (JSON)",
+        "paso": "Confirma la recepción escaneando el QR del repartidor",
+        "metodo": "POST",
+        "ruta": "/ms/entregas/api/v1/entregas/b785523f-9eec-4365-a785-0f5362406b90/confirmacion",
+        "status": 200,
+        "correlation_id": "a3c711c159024b5c84062612c1889d29",
+        "resultado": ""
+      },
+      {
+        "actor": "minorista",
+        "cliente": "Android (JSON)",
+        "paso": "Ve el inventario actualizado",
+        "metodo": "GET",
+        "ruta": "/ms/inventario/api/v1/inventario/10",
+        "status": 200,
+        "correlation_id": "cb1a403648ee4051b938fe5976f79f10",
+        "resultado": "Arroz blanco 1 kg: 78.0 -> 102.0"
+      },
+      {
+        "actor": "auditor",
+        "cliente": "Web (JSON)",
+        "paso": "Historial del pedido en la bitácora centralizada",
+        "metodo": "GET",
+        "ruta": "/ms/auditoria/api/v1/entidades/PedidoAbasto/a6059e16-519b-48f9-91b8-9501a20e3621/historial",
+        "status": 200,
+        "correlation_id": "33a120c40d764197b96076a6b3ced8dc",
+        "resultado": "7 eventos de ['ms-pedidos']"
+      }
+    ],
+    "3. Importación, análisis y reporte": [
+      {
+        "actor": "minorista",
+        "cliente": "Web (JSON)",
+        "paso": "Importa su inventario en CSV (el archivo va al bucket)",
+        "metodo": "POST",
+        "ruta": "/ms/inventario/api/v1/comercios/874a46c4-3697-40bd-a666-1b8b9c44cf94/importaciones",
+        "status": 201,
+        "correlation_id": "b1630ef71fb14ced8197288e7ae2a21e",
+        "resultado": "3 filas aplicadas; errores: 0"
+      },
+      {
+        "actor": "minorista",
+        "cliente": "Web (JSON)",
+        "paso": "Recibe el aviso de la importación",
+        "metodo": "GET",
+        "ruta": "/ms/notificaciones/api/v1/notificaciones/contador",
+        "status": 200,
+        "correlation_id": "46b12d8816c44a57bee58f8cba6f8279",
+        "resultado": "Importación de inventario terminada"
+      },
+      {
+        "actor": "analista",
+        "cliente": "Escritorio (XML)",
+        "paso": "Brechas de surtido de la canasta básica",
+        "metodo": "GET",
+        "ruta": "/ms/analisis/api/v1/analisis/brechas",
+        "status": 200,
+        "correlation_id": "6c1ef3edae694ec89501157200687760",
+        "resultado": ""
+      },
+      {
+        "actor": "analista",
+        "cliente": "Escritorio (XML)",
+        "paso": "Concentraciones comerciales (DBSCAN)",
+        "metodo": "GET",
+        "ruta": "/ms/analisis/api/v1/analisis/agrupamientos",
+        "status": 200,
+        "correlation_id": "442603d200654f8a804d3b57fc11d23e",
+        "resultado": "0 concentraciones"
+      },
+      {
+        "actor": "analista",
+        "cliente": "Escritorio (XML)",
+        "paso": "Genera el reporte de brechas en PDF (al bucket)",
+        "metodo": "POST",
+        "ruta": "/ms/reportes/api/v1/reportes",
+        "status": 201,
+        "correlation_id": "18788ea6cae143528ea483ec7cc61fa0",
+        "resultado": ""
+      },
+      {
+        "actor": "analista",
+        "cliente": "Escritorio",
+        "paso": "Descarga el PDF con URL firmada",
+        "metodo": "GET",
+        "ruta": "/abastored-archivos-integracion-505802/reportes/de8d8bc4-0108-4476-8712-f27cc1fda5cc/6b076b2e4e24b13906e8fea0.pdf",
+        "status": 200,
+        "correlation_id": null,
+        "resultado": "19404 bytes desde storage.googleapis.com"
+      },
+      {
+        "actor": "auditor",
+        "cliente": "Web (JSON)",
+        "paso": "Rastro de la importación en la bitácora centralizada",
+        "metodo": "GET",
+        "ruta": "/ms/auditoria/api/v1/eventos",
+        "status": 200,
+        "correlation_id": "3cb6b882554649678da2bfd917603703",
+        "resultado": ""
+      }
+    ]
+  }
+}
