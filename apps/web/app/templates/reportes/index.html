@@ -105,7 +105,7 @@
 
 {% block scripts %}
 {% if datos.tendencia is defined %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.8/highcharts.js"></script>
 <script>
 Highcharts.setOptions({ credits: { enabled: false }, colors: ['#25609e', '#c27c0e', '#1f6f4a', '#5b3f8c', '#b3322a', '#7d8a84'] });
 {% if datos.tendencia and datos.tendencia.series %}
@@ -125,7 +125,7 @@ Highcharts.chart('grafica-pedidos', {
 </script>
 {% endif %}
 {% if datos.desempeno and datos.desempeno|length > 1 %}
-{% if datos.tendencia is not defined %}<script src="https://code.highcharts.com/highcharts.js"></script>{% endif %}
+{% if datos.tendencia is not defined %}<script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.8/highcharts.js"></script>{% endif %}
 <script>
 const desempeno = {{ datos.desempeno|tojson }};
 Highcharts.chart('grafica-desempeno', {
