@@ -44,7 +44,8 @@ def python_del_venv():
     # Dentro del contenedor de pruebas las dependencias ya vienen instaladas en la imagen
     if os.environ.get('PRUEBAS_SIN_VENV') == '1':
         return Path(sys.executable)
-    for candidato in (VENV / 'Scripts' / 'python.exe', VENV / 'bin' / 'python'):
+    # Windows (python.org), Linux/macOS y Python de MSYS2 en Windows (bin/python.exe)
+    for candidato in (VENV / 'Scripts' / 'python.exe', VENV / 'bin' / 'python', VENV / 'bin' / 'python.exe'):
         if candidato.exists():
             return candidato
     return None

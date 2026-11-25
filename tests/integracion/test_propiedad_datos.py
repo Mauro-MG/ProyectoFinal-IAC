@@ -133,7 +133,10 @@ def test_un_servicio_no_puede_escribir_en_una_tabla_ajena(sql):
 
 
 def test_los_servicios_se_conectan_con_su_propio_usuario(sql):
-    sesion_de('comerciante').get('ventas', '/ventas')   # abre la conexión de ms-ventas si aún no la tiene
+    # Una consulta real a ms-ventas (con su comercio) abre su conexión aunque ninguna prueba anterior lo haya usado
+    comerciante = sesion_de('comerciante')
+    comercio = comerciante.get('comercios', '/comercios').json()['items'][0]
+    assert comerciante.get('ventas', '/ventas', params={'comercio_id': comercio['id']}).status_code == 200
     usuarios = {f[0] for f in sql("SELECT DISTINCT usename FROM pg_stat_activity "
                                   "WHERE datname = current_database()")}  # procesos internos: sin base
     assert 'ms_ventas' in usuarios
