@@ -4,8 +4,9 @@
 <div class="encabezado">
     <div>
         <h1>Estado de los servicios</h1>
-        <p>Salud de cada microservicio y de sus bases de datos, y actividad registrada en la bitácora de peticiones
-           (MongoDB). {{ arriba }} de {{ estados|length }} servicios en línea.</p>
+        <p>Salud de cada microservicio y de sus dependencias (PostgreSQL, Redis, MongoDB y el bucket de Cloud
+           Storage), verificada automáticamente cada {{ disponibilidad.intervalo_segundos if disponibilidad else 30 }} s,
+           y actividad registrada en la bitácora de peticiones. {{ arriba }} de {{ estados|length }} servicios en línea.</p>
     </div>
     <form method="get" class="acciones">
         <select name="horas" data-autoenviar aria-label="Periodo">
@@ -15,20 +16,34 @@
     </form>
 </div>
 
+{% if disponibilidad %}
+<p class="tenue">Última verificación automática: {{ disponibilidad.ultima_verificacion|fecha }}
+   · fuente: {{ {'historial': 'historial (MongoDB)', 'ultima_verificacion': 'última verificación (Redis)', 'en_vivo': 'revisión en vivo'}[disponibilidad.fuente] }}
+   · {{ disponibilidad.ok }} ok, {{ disponibilidad.degradados }} degradados, {{ disponibilidad.caidos }} caídos</p>
+{% for aviso in disponibilidad.avisos %}<div class="mensaje alerta">{{ aviso }}</div>{% endfor %}
+{% else %}
+<div class="mensaje alerta">ms-monitoreo no respondió: se muestra solo la revisión en vivo, sin historial.</div>
+{% endif %}
 <div class="tabla-contenedor">
     <table>
-        <thead><tr><th>Servicio</th><th>Estado</th><th>PostgreSQL</th><th>Redis</th><th>MongoDB</th><th class="num">Respuesta</th><th></th></tr></thead>
+        <thead><tr><th>Servicio</th><th>Estado</th><th>Responsable</th><th>PostgreSQL</th><th>Redis</th><th>MongoDB</th><th>Bucket</th>
+            <th class="num">Latencia</th><th class="num">Disponib. 24 h</th><th>Último error</th><th></th></tr></thead>
         <tbody>
         {% for nombre, e in estados.items() %}
         {% set deps = {} %}{% for d in e.dependencias %}{% set _ = deps.update({d.nombre: d}) %}{% endfor %}
+        {% set v = disponibilidad.por_servicio.get(nombre, {}) if disponibilidad else {} %}
         <tr>
             <td><strong>ms-{{ nombre }}</strong>{% if e.version %} <small>v{{ e.version }}</small>{% endif %}</td>
             <td><span class="etiqueta-estado {{ {'ok': 'ok', 'degradado': 'alerta'}.get(e.estado, 'critico') }}">{{ e.estado|replace('_', ' ') }}</span></td>
-            {% for base in ('postgres', 'redis', 'mongodb') %}
-            <td>{% if base in deps %}<span class="etiqueta-estado {{ 'ok' if deps[base].estado == 'ok' else 'critico' }}">{{ deps[base].estado }}</span>
+            <td>{{ v.responsable or '—' }}</td>
+            {% for base in ('postgres', 'redis', 'mongodb', 'storage') %}
+            <td>{% if base in deps %}<span class="etiqueta-estado {{ 'ok' if deps[base].estado == 'ok' else ('critico' if deps[base].critica else 'alerta') }}">{{ deps[base].estado }}</span>
                 {% if deps[base].latencia_ms is not none %}<small>{{ deps[base].latencia_ms }} ms</small>{% endif %}{% else %}<span class="tenue">—</span>{% endif %}</td>
             {% endfor %}
             <td class="num">{{ e.tiempo_ms ~ ' ms' if e.tiempo_ms is defined else '—' }}</td>
+            <td class="num">{% if v.disponibilidad_24h_pct is not none and v.disponibilidad_24h_pct is defined %}{{ v.disponibilidad_24h_pct }} %
+                <br><small>{{ v.fallas_24h }} fallas / {{ v.verificaciones_24h }}</small>{% else %}—{% endif %}</td>
+            <td><small>{% if v.ultimo_error %}{{ v.ultimo_error[:120] }}{% if v.ultimo_error_fecha %}<br><span class="tenue">{{ v.ultimo_error_fecha|fecha }}</span>{% endif %}{% else %}—{% endif %}</small></td>
             <td><small><a href="{{ docs[nombre] }}" target="_blank" rel="noopener">Swagger</a></small></td>
         </tr>
         {% endfor %}

@@ -282,6 +282,20 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_entregas
     secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_entregas]
 
+  # Verificación automática de salud cada MONITOREO_INTERVALO_SEGUNDOS: misma imagen y mismo usuario de base que
+  # ms-monitoreo, pero sin servidor HTTP (verificador.py). Guarda el historial y evalúa las alertas.
+  monitor-verificador:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/monitoreo/Dockerfile}
+    container_name: monitor-verificador
+    command: ["python", "verificador.py"]
+    healthcheck: {disable: true}
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_monitoreo
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_monitoreo
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_monitoreo]
+
   ms-auditoria:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/auditoria/Dockerfile}

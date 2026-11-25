@@ -69,6 +69,16 @@ def servicios_estado():
     if horas not in (1, 24, 168):
         horas = 24
     estados = salud_todos()
+    # Verificación automática (monitor-verificador): estado, latencia, disponibilidad de 24 h, último error y la
+    # dependencia responsable. Si ms-monitoreo no responde, la tabla se arma solo con la revisión en vivo.
+    disponibilidad = None
+    try:
+        respuesta = llamar('monitoreo', 'GET', '/disponibilidad', timeout=10)
+        if respuesta.ok:
+            disponibilidad = respuesta.datos
+            disponibilidad['por_servicio'] = {s['servicio'].removeprefix('ms-'): s for s in respuesta.datos['servicios']}
+    except ServicioNoDisponible:
+        pass
     actividad = []
     try:
         # Métricas de ms-monitoreo (agregación de bitacora_peticiones + contadores del día en Redis)
@@ -93,5 +103,6 @@ def servicios_estado():
     # Swagger de cada servicio a través del gateway (misma dirección que el web)
     docs = {s: f'/ms/{s}/docs' for s in SERVICIOS}
     return render_template('admin/servicios.html', estados=estados, actividad=actividad, horas=horas,
+                           disponibilidad=disponibilidad,
                            rastreo=rastreo, correlation_id=correlation_id, docs=docs,
                            arriba=sum(1 for e in estados.values() if e.get('estado') == 'ok'))

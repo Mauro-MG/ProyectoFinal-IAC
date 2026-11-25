@@ -26,7 +26,9 @@ class AlertaCierre(BaseEntrada):
 class DependenciaEstado(Salida):
     nombre: str
     estado: str
+    critica: bool | None = None
     latencia_ms: float | None = None
+    detalle: str | None = None
     error: str | None = None
 
 
@@ -39,7 +41,62 @@ class ServicioEstado(Salida):
     tiempo_ms: float | None = None
     version: str | None = None
     dependencias: list[DependenciaEstado]
+    responsable: str | None = Field(None, description='Dependencia caída que explica el estado (p. ej. storage)')
     error: str | None = None
+
+
+class DisponibilidadServicio(Salida):
+    servicio: str
+    estado: str
+    ultima_verificacion: datetime | None = None
+    latencia_ms: float | None = None
+    responsable: str | None = None
+    disponibilidad_24h_pct: float | None = None
+    verificaciones_24h: int = 0
+    fallas_24h: int = 0
+    ultimo_error: str | None = None
+    ultimo_error_fecha: datetime | None = None
+
+
+class DisponibilidadSalida(Salida):
+    fuente: Literal['historial', 'ultima_verificacion', 'en_vivo'] = Field(
+        description='historial (MongoDB); ultima_verificacion (Redis, si MongoDB no responde); en_vivo (sin ninguna)')
+    ultima_verificacion: datetime | None = None
+    intervalo_segundos: int
+    ok: int
+    degradados: int
+    caidos: int
+    servicios: list[DisponibilidadServicio]
+    avisos: list[str] = []
+
+
+class PuntoHistorial(Salida):
+    fecha: datetime
+    estado: str
+    latencia_ms: float | None = None
+    responsable: str | None = None
+    error: str | None = None
+
+
+class HistorialSalida(Salida):
+    servicio: str
+    horas: int
+    puntos: list[PuntoHistorial]
+
+
+class VerificacionSalida(Salida):
+    revisado: datetime
+    servicios: int
+    ok: int
+    degradados: int
+    caidos: int
+    guardado_en: list[str]
+    alertas_nuevas: int | None = None
+
+
+class HistorialConsulta(BaseConsulta):
+    servicio: str = Field(min_length=2, max_length=40)
+    horas: int = Field(24, ge=1, le=720)
 
 
 class EstadoGeneral(Salida):
@@ -132,4 +189,5 @@ CONTRATOS_XML = {
     'alerta_cierre': AlertaCierre,
     'estado': EstadoGeneral, 'servicio': ServicioEstado, 'bases_datos': BasesDatosSalida, 'metricas': MetricasSalida,
     'serie': SerieSalida, 'alertas': AlertasSalida, 'alerta': Alerta, 'evaluacion': EvaluacionSalida,
+    'disponibilidad': DisponibilidadSalida, 'historial': HistorialSalida, 'verificacion': VerificacionSalida,
 }
