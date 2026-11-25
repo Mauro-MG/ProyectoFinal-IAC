@@ -1,0 +1,5 @@
+fecha: 2026-11-25T16:52:20-06:00
+commit: dcb0892 6 archivos sin commit
+escenario: recuperacion · 100 usuarios · 20/s · 4m · 
+equipo: 16 CPU, 16720224256 bytes de memoria para Docker, Docker Desktop
+contenedores: 31 en ejecución

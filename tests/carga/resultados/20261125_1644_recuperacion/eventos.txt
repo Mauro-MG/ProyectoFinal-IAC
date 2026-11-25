@@ -1,0 +1,5 @@
+1795646687 16:44:47 inicio
+1795646742 16:45:42 detener ms-inventario
+1795646774 16:46:14 arrancar ms-inventario
+1795646834 16:47:14 detener abastored-redis
+1795646865 16:47:45 arrancar abastored-redis

@@ -1,0 +1,5 @@
+fecha: 2026-11-25T16:26:45-06:00
+commit: dcb0892 2 archivos sin commit
+escenario: carga_post_optimizacion · 100 usuarios · 10/s · 5m · 
+equipo: 16 CPU, 16720224256 bytes de memoria para Docker, Docker Desktop
+contenedores: 31 en ejecución

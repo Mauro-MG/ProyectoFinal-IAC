@@ -1,0 +1,5 @@
+fecha: 2026-11-25T16:32:00-06:00
+commit: dcb0892 2 archivos sin commit
+escenario: estres · 400 usuarios · 2/s · 6m · 
+equipo: 16 CPU, 16720224256 bytes de memoria para Docker, Docker Desktop
+contenedores: 31 en ejecución
