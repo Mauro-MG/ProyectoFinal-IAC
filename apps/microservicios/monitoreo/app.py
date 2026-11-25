@@ -35,7 +35,8 @@ from esquemas import AlertaCierre, AlertasConsulta, CONTRATOS_XML, MetricasConsu
 srv = Servicio('monitoreo', 'Monitoreo',
                'Estado de los microservicios, comprobaciones de salud y disponibilidad, métricas operativas (fallas y '
                'latencia), disponibilidad de las bases de datos y alertas de infraestructura.',
-               xsd=Path(__file__).parent / 'xsd' / 'monitoreo.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'monitoreo.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 

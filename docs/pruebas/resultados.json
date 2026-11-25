@@ -1,146 +1,150 @@
 {
   "ambiente": {
-    "fecha": "2026-11-15T03:14:57",
+    "fecha": "2026-11-24T23:04:22",
     "comando": "python scripts/ejecutar_pruebas.py",
     "sistema_operativo": "Windows 11 (AMD64)",
     "python": "Python 3.12.9",
     "pytest": "pytest 8.3.3",
     "docker": "Docker version 29.8.1, build 4a63305",
     "docker_compose": "5.5.1",
-    "git_rama": "feature/entrega-final",
-    "git_commit": "a1c066a",
-    "git_cambios_sin_commit": 18,
+    "git_rama": "feature/entrega-final-completa",
+    "git_commit": "5dd8916",
+    "git_cambios_sin_commit": 51,
     "modo_pruebas": "gateway",
     "host_pruebas": "https://localhost",
     "contenedores": [
       {
         "nombre": "abastored-gateway",
-        "estado": "Up About a minute (healthy)"
+        "estado": "Up 9 minutes (healthy)"
+      },
+      {
+        "nombre": "abastored-gcs-emulador",
+        "estado": "Up 3 minutes"
       },
       {
         "nombre": "abastored-mongo",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 10 minutes (healthy)"
       },
       {
         "nombre": "abastored-postgres",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 10 minutes (healthy)"
       },
       {
         "nombre": "abastored-redis",
-        "estado": "Up 31 minutes (healthy)"
+        "estado": "Up 10 minutes (healthy)"
       },
       {
         "nombre": "abastored-web",
-        "estado": "Up 31 minutes (healthy)"
+        "estado": "Up 25 seconds (healthy)"
       },
       {
         "nombre": "ms-abastecimiento",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 25 seconds (healthy)"
       },
       {
         "nombre": "ms-analisis",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 27 seconds (healthy)"
       },
       {
         "nombre": "ms-auditoria",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 26 seconds (healthy)"
       },
       {
         "nombre": "ms-busqueda",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 28 seconds (healthy)"
       },
       {
         "nombre": "ms-catalogo",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 24 seconds (healthy)"
       },
       {
         "nombre": "ms-comercios",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 22 seconds (healthy)"
       },
       {
         "nombre": "ms-configuracion",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 21 seconds (healthy)"
       },
       {
         "nombre": "ms-demanda",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 24 seconds (healthy)"
       },
       {
         "nombre": "ms-disponibilidad",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 23 seconds (healthy)"
       },
       {
         "nombre": "ms-documentos",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 3 minutes (healthy)"
       },
       {
         "nombre": "ms-entregas",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 28 seconds (healthy)"
       },
       {
         "nombre": "ms-geolocalizacion",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 21 seconds (healthy)"
       },
       {
         "nombre": "ms-integraciones",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 23 seconds (healthy)"
       },
       {
         "nombre": "ms-inventario",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 23 seconds (healthy)"
       },
       {
         "nombre": "ms-monitoreo",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 22 seconds (healthy)"
       },
       {
         "nombre": "ms-notificaciones",
-        "estado": "Up 31 minutes (healthy)"
+        "estado": "Up 27 seconds (healthy)"
       },
       {
         "nombre": "ms-pedidos",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 26 seconds (healthy)"
       },
       {
         "nombre": "ms-precios",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 25 seconds (healthy)"
       },
       {
         "nombre": "ms-proveedores",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 20 seconds (healthy)"
       },
       {
         "nombre": "ms-recomendaciones",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 21 seconds (healthy)"
       },
       {
         "nombre": "ms-reportes",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 3 minutes (healthy)"
       },
       {
         "nombre": "ms-seguridad",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 28 seconds (healthy)"
       },
       {
         "nombre": "ms-sincronizacion",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 27 seconds (healthy)"
       },
       {
         "nombre": "ms-ventas",
-        "estado": "Up 42 minutes (healthy)"
+        "estado": "Up 26 seconds (healthy)"
       }
     ]
   },
   "resumen": {
-    "aprobada": 295,
-    "fallida": 0,
+    "aprobada": 302,
+    "fallida": 1,
     "error": 0,
     "omitida": 0,
-    "no_aplica": 0,
-    "total": 295,
-    "ejecutadas": 295,
-    "duracion_s": 184.4,
-    "codigo_salida": 0
+    "no_aplica": 1,
+    "total": 304,
+    "ejecutadas": 303,
+    "duracion_s": 159.8,
+    "codigo_salida": 1
   },
   "pruebas": [
     {
@@ -157,7 +161,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.043
+      "duracion_s": 0.039
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[analisis]",
@@ -165,7 +169,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.03
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[auditoria]",
@@ -173,7 +177,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.034
+      "duracion_s": 0.032
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[busqueda]",
@@ -189,7 +193,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.029
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[comercios]",
@@ -197,7 +201,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.04
+      "duracion_s": 0.074
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[configuracion]",
@@ -205,7 +209,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.025
+      "duracion_s": 0.02
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[demanda]",
@@ -213,7 +217,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.03
+      "duracion_s": 0.027
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[disponibilidad]",
@@ -221,7 +225,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.027
+      "duracion_s": 0.024
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[documentos]",
@@ -229,7 +233,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.016
+      "duracion_s": 0.018
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[entregas]",
@@ -237,7 +241,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.085
+      "duracion_s": 0.028
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[geolocalizacion]",
@@ -245,7 +249,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.046
+      "duracion_s": 0.032
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[integraciones]",
@@ -253,7 +257,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.042
+      "duracion_s": 0.033
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[inventario]",
@@ -261,7 +265,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.056
+      "duracion_s": 0.042
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[monitoreo]",
@@ -269,7 +273,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.033
+      "duracion_s": 0.024
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[notificaciones]",
@@ -277,7 +281,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.035
+      "duracion_s": 0.032
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[pedidos]",
@@ -285,7 +289,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.034
+      "duracion_s": 0.024
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[precios]",
@@ -293,7 +297,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.051
+      "duracion_s": 0.038
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[proveedores]",
@@ -301,7 +305,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.064
+      "duracion_s": 0.045
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[recomendaciones]",
@@ -309,7 +313,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.023
+      "duracion_s": 0.02
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[reportes]",
@@ -317,7 +321,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.028
+      "duracion_s": 0.019
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[seguridad]",
@@ -325,7 +329,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.093
+      "duracion_s": 0.08
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[sincronizacion]",
@@ -333,7 +337,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.034
+      "duracion_s": 0.024
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_guardado_coincide_con_los_modelos[ventas]",
@@ -341,7 +345,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.037
+      "duracion_s": 0.025
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[abastecimiento]",
@@ -349,7 +353,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.003
+      "duracion_s": 0.002
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[analisis]",
@@ -357,7 +361,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[auditoria]",
@@ -365,7 +369,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[busqueda]",
@@ -381,7 +385,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[comercios]",
@@ -389,7 +393,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[configuracion]",
@@ -405,7 +409,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[disponibilidad]",
@@ -469,7 +473,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.001
+      "duracion_s": 0.002
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[pedidos]",
@@ -477,7 +481,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[precios]",
@@ -485,7 +489,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_xsd_es_un_esquema_valido[proveedores]",
@@ -541,7 +545,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.034
+      "duracion_s": 0.026
     },
     {
       "id": "tests/unitarias/test_contratos.py::test_pedido_entrada_valida_y_rechaza_cantidad_negativa",
@@ -565,7 +569,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.003
     },
     {
       "id": "tests/unitarias/test_contratos_escritorio.py::test_lista_vacia",
@@ -621,7 +625,7 @@
       "descripcion": "Regresión: {\"categorias\": [...]} con raíz \"categorias\" debe quedar como el XSD lo define.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.01
+      "duracion_s": 0.007
     },
     {
       "id": "tests/unitarias/test_formatos.py::test_compatible_json",
@@ -789,7 +793,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.001
+      "duracion_s": 0.0
     },
     {
       "id": "tests/unitarias/test_reglas_negocio.py::test_numero_obligatorio",
@@ -821,7 +825,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.004
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_reglas_negocio.py::test_bloqueo_se_libera_aunque_falle_la_operacion",
@@ -829,7 +833,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_reglas_negocio.py::test_bloqueo_ajeno_no_se_borra",
@@ -845,7 +849,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.009
+      "duracion_s": 0.006
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_exito_xml_entrada_y_salida",
@@ -853,7 +857,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.004
+      "duracion_s": 0.002
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_formato_por_parametro",
@@ -861,7 +865,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.004
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_sin_token_401",
@@ -869,7 +873,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.003
+      "duracion_s": 0.002
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_sin_permiso_403",
@@ -877,7 +881,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.003
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_validacion_422_con_detalle_por_campo",
@@ -893,7 +897,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.003
+      "duracion_s": 0.002
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_json_mal_formado_400",
@@ -901,7 +905,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.003
+      "duracion_s": 0.002
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_tipo_no_soportado_415",
@@ -909,7 +913,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.003
+      "duracion_s": 0.002
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_regla_de_negocio_409",
@@ -917,7 +921,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.003
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_no_encontrado_404_en_xml",
@@ -925,7 +929,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.003
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_ruta_inexistente_responde_error_estandar",
@@ -933,7 +937,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.002
+      "duracion_s": 0.001
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_limite_de_peticiones_429",
@@ -941,7 +945,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.007
+      "duracion_s": 0.005
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_correlation_id_se_propaga",
@@ -949,7 +953,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.003
+      "duracion_s": 0.002
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_token_revocado_401",
@@ -957,7 +961,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.003
+      "duracion_s": 0.002
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_openapi_documenta_la_ruta_y_sus_errores",
@@ -965,7 +969,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.156
+      "duracion_s": 0.18
     },
     {
       "id": "tests/unitarias/test_servicio.py::test_health_live",
@@ -1005,7 +1009,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.01
+      "duracion_s": 0.007
     },
     {
       "id": "tests/unitarias/test_sesiones.py::test_token_expirado",
@@ -1013,7 +1017,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.008
+      "duracion_s": 0.006
     },
     {
       "id": "tests/unitarias/test_sesiones.py::test_token_mal_formado[no-es-un-jwt]",
@@ -1021,7 +1025,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.006
+      "duracion_s": 0.007
     },
     {
       "id": "tests/unitarias/test_sesiones.py::test_token_mal_formado[a.b.c]",
@@ -1029,7 +1033,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.008
+      "duracion_s": 0.006
     },
     {
       "id": "tests/unitarias/test_sesiones.py::test_token_firmado_con_otro_secreto",
@@ -1037,7 +1041,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.008
+      "duracion_s": 0.006
     },
     {
       "id": "tests/unitarias/test_sesiones.py::test_refresh_se_rota_y_no_se_reutiliza",
@@ -1045,7 +1049,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.01
+      "duracion_s": 0.008
     },
     {
       "id": "tests/unitarias/test_sesiones.py::test_cerrar_sesion_tambien_anula_el_refresh",
@@ -1053,7 +1057,7 @@
       "descripcion": "Sin esto, alguien con el refresh podría sacar tokens nuevos después del logout.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.008
+      "duracion_s": 0.007
     },
     {
       "id": "tests/unitarias/test_sesiones.py::test_revocar_todas_las_sesiones_de_un_usuario",
@@ -1061,7 +1065,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.013
+      "duracion_s": 0.009
     },
     {
       "id": "tests/unitarias/test_sesiones.py::test_token_de_servicio_es_corto_y_tiene_permisos_acotados",
@@ -1088,12 +1092,84 @@
       "duracion_s": 0.006
     },
     {
+      "id": "tests/integracion/test_almacenamiento.py::test_salud_del_bucket",
+      "archivo": "tests/integracion/test_almacenamiento.py",
+      "descripcion": "",
+      "estado": "aprobada",
+      "detalle": "",
+      "duracion_s": 0.029
+    },
+    {
+      "id": "tests/integracion/test_almacenamiento.py::test_metadatos_en_la_base_y_contenido_en_el_bucket",
+      "archivo": "tests/integracion/test_almacenamiento.py",
+      "descripcion": "",
+      "estado": "aprobada",
+      "detalle": "",
+      "duracion_s": 0.347
+    },
+    {
+      "id": "tests/integracion/test_almacenamiento.py::test_acceso_denegado_inexistente_e_invalido",
+      "archivo": "tests/integracion/test_almacenamiento.py",
+      "descripcion": "",
+      "estado": "aprobada",
+      "detalle": "",
+      "duracion_s": 0.263
+    },
+    {
+      "id": "tests/integracion/test_almacenamiento.py::test_el_bucket_no_es_publico_ni_acepta_escrituras",
+      "archivo": "tests/integracion/test_almacenamiento.py",
+      "descripcion": "",
+      "estado": "aprobada",
+      "detalle": "",
+      "duracion_s": 0.099
+    },
+    {
+      "id": "tests/integracion/test_almacenamiento.py::test_borrar_quita_el_objeto_y_conserva_el_registro_para_auditoria",
+      "archivo": "tests/integracion/test_almacenamiento.py",
+      "descripcion": "",
+      "estado": "aprobada",
+      "detalle": "",
+      "duracion_s": 0.297
+    },
+    {
+      "id": "tests/integracion/test_almacenamiento.py::test_reporte_en_el_bucket_con_url_firmada",
+      "archivo": "tests/integracion/test_almacenamiento.py",
+      "descripcion": "",
+      "estado": "aprobada",
+      "detalle": "",
+      "duracion_s": 0.318
+    },
+    {
+      "id": "tests/integracion/test_almacenamiento.py::test_caida_del_almacenamiento_no_deja_registros_a_medias",
+      "archivo": "tests/integracion/test_almacenamiento.py",
+      "descripcion": "",
+      "estado": "aprobada",
+      "detalle": "",
+      "duracion_s": 21.554
+    },
+    {
+      "id": "tests/integracion/test_almacenamiento.py::test_migracion_de_gridfs_no_destructiva",
+      "archivo": "tests/integracion/test_almacenamiento.py",
+      "descripcion": "Se crea un archivo «anterior» en GridFS, se sirve por el servicio, se migra y queda en el bucket con el mismo id y la misma huella; el original de GridFS se conserva.",
+      "estado": "aprobada",
+      "detalle": "",
+      "duracion_s": 3.961
+    },
+    {
+      "id": "tests/integracion/test_almacenamiento.py::test_url_firmada_vence_en_el_bucket_real",
+      "archivo": "tests/integracion/test_almacenamiento.py",
+      "descripcion": "",
+      "estado": "no_aplica",
+      "detalle": "No aplica: la expiración solo se comprueba contra el bucket real (PRUEBAS_GCS_REAL=1)",
+      "duracion_s": 0.0
+    },
+    {
       "id": "tests/integracion/test_app_escritorio.py::test_login_xml_y_permisos_del_rol",
       "archivo": "tests/integracion/test_app_escritorio.py",
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.14
+      "duracion_s": 0.096
     },
     {
       "id": "tests/integracion/test_app_escritorio.py::test_errores_llegan_como_contrato_xml",
@@ -1101,7 +1177,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.026
+      "duracion_s": 0.017
     },
     {
       "id": "tests/integracion/test_app_escritorio.py::test_validar_un_comercio_en_xml",
@@ -1109,7 +1185,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.138
+      "duracion_s": 0.128
     },
     {
       "id": "tests/integracion/test_app_escritorio.py::test_reporte_pdf_se_descarga",
@@ -1117,7 +1193,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.139
+      "duracion_s": 0.138
     },
     {
       "id": "tests/integracion/test_app_escritorio.py::test_importacion_simulada_del_catalogo",
@@ -1125,7 +1201,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.199
+      "duracion_s": 0.179
     },
     {
       "id": "tests/integracion/test_app_escritorio.py::test_el_token_vencido_se_renueva_solo",
@@ -1133,7 +1209,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.214
+      "duracion_s": 0.245
     },
     {
       "id": "tests/integracion/test_app_escritorio.py::test_cada_rol_ve_sus_modulos_y_cargan_sin_errores[coordinador@test.mx-modulos0]",
@@ -1141,7 +1217,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 1.553
+      "duracion_s": 1.873
     },
     {
       "id": "tests/integracion/test_app_escritorio.py::test_cada_rol_ve_sus_modulos_y_cargan_sin_errores[proveedor@test.mx-modulos1]",
@@ -1149,7 +1225,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.532
+      "duracion_s": 0.507
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[seguridad]",
@@ -1157,7 +1233,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.084
+      "duracion_s": 0.035
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[geolocalizacion]",
@@ -1173,7 +1249,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.015
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[disponibilidad]",
@@ -1181,7 +1257,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.051
+      "duracion_s": 0.064
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[precios]",
@@ -1189,7 +1265,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.094
+      "duracion_s": 4.187
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[pedidos]",
@@ -1197,7 +1273,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.109
+      "duracion_s": 0.111
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[analisis]",
@@ -1205,7 +1281,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.036
+      "duracion_s": 0.032
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[notificaciones]",
@@ -1213,7 +1289,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.038
+      "duracion_s": 0.032
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[proveedores]",
@@ -1221,7 +1297,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.085
+      "duracion_s": 0.043
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[configuracion]",
@@ -1229,7 +1305,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.04
+      "duracion_s": 0.098
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[busqueda]",
@@ -1237,7 +1313,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.076
+      "duracion_s": 0.09
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[auditoria]",
@@ -1245,7 +1321,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.075
+      "duracion_s": 0.037
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[monitoreo]",
@@ -1253,7 +1329,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.033
+      "duracion_s": 0.046
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[demanda]",
@@ -1261,7 +1337,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.044
+      "duracion_s": 0.07
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[reportes]",
@@ -1269,7 +1345,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.013
+      "duracion_s": 0.027
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_respuesta_xml_valida_contra_el_xsd[sincronizacion]",
@@ -1277,7 +1353,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.072
+      "duracion_s": 0.099
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[seguridad]",
@@ -1285,7 +1361,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.058
+      "duracion_s": 0.039
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[geolocalizacion]",
@@ -1293,7 +1369,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.044
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[catalogo]",
@@ -1301,7 +1377,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.048
+      "duracion_s": 0.045
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_json_y_xml_traen_lo_mismo[disponibilidad]",
@@ -1309,7 +1385,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.055
+      "duracion_s": 0.05
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[abastecimiento]",
@@ -1317,7 +1393,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.038
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[analisis]",
@@ -1325,7 +1401,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.024
+      "duracion_s": 0.013
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[auditoria]",
@@ -1333,7 +1409,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.016
+      "duracion_s": 0.022
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[busqueda]",
@@ -1349,7 +1425,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.04
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[comercios]",
@@ -1357,7 +1433,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.043
+      "duracion_s": 0.023
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[configuracion]",
@@ -1365,7 +1441,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.033
+      "duracion_s": 0.037
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[demanda]",
@@ -1373,7 +1449,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.019
+      "duracion_s": 0.023
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[disponibilidad]",
@@ -1381,7 +1457,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.025
+      "duracion_s": 0.031
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[documentos]",
@@ -1389,7 +1465,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.034
+      "duracion_s": 0.028
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[entregas]",
@@ -1397,7 +1473,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.021
+      "duracion_s": 0.039
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[geolocalizacion]",
@@ -1405,7 +1481,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.034
+      "duracion_s": 0.022
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[integraciones]",
@@ -1413,7 +1489,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.037
+      "duracion_s": 0.032
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[inventario]",
@@ -1421,7 +1497,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.041
+      "duracion_s": 0.039
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[monitoreo]",
@@ -1429,7 +1505,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.016
+      "duracion_s": 0.044
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[notificaciones]",
@@ -1437,7 +1513,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.027
+      "duracion_s": 0.03
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[pedidos]",
@@ -1445,7 +1521,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.026
+      "duracion_s": 0.022
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[precios]",
@@ -1453,7 +1529,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.03
+      "duracion_s": 0.015
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[proveedores]",
@@ -1461,7 +1537,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.013
+      "duracion_s": 0.039
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[recomendaciones]",
@@ -1469,7 +1545,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.044
+      "duracion_s": 0.048
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[reportes]",
@@ -1477,7 +1553,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.012
+      "duracion_s": 0.032
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[seguridad]",
@@ -1485,7 +1561,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.038
+      "duracion_s": 0.031
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[sincronizacion]",
@@ -1493,7 +1569,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.029
+      "duracion_s": 0.036
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_error_en_xml_cumple_el_contrato[ventas]",
@@ -1501,7 +1577,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.035
+      "duracion_s": 0.031
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[abastecimiento]",
@@ -1509,7 +1585,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.026
+      "duracion_s": 0.01
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[analisis]",
@@ -1517,7 +1593,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.027
+      "duracion_s": 0.01
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[auditoria]",
@@ -1525,7 +1601,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.011
+      "duracion_s": 0.029
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[busqueda]",
@@ -1533,7 +1609,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.016
+      "duracion_s": 0.029
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[catalogo]",
@@ -1541,7 +1617,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.011
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[comercios]",
@@ -1549,7 +1625,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.029
+      "duracion_s": 0.033
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[configuracion]",
@@ -1557,7 +1633,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.032
+      "duracion_s": 0.031
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[demanda]",
@@ -1565,7 +1641,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.03
+      "duracion_s": 0.029
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[disponibilidad]",
@@ -1573,7 +1649,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.01
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[documentos]",
@@ -1581,7 +1657,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.034
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[entregas]",
@@ -1589,7 +1665,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.042
+      "duracion_s": 0.03
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[geolocalizacion]",
@@ -1597,7 +1673,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.029
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[integraciones]",
@@ -1605,7 +1681,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.012
+      "duracion_s": 0.031
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[inventario]",
@@ -1613,7 +1689,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.011
+      "duracion_s": 0.013
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[monitoreo]",
@@ -1621,7 +1697,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.028
+      "duracion_s": 0.014
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[notificaciones]",
@@ -1629,7 +1705,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.023
+      "duracion_s": 0.014
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[pedidos]",
@@ -1637,7 +1713,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.029
+      "duracion_s": 0.013
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[precios]",
@@ -1645,7 +1721,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.03
+      "duracion_s": 0.013
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[proveedores]",
@@ -1653,7 +1729,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.01
+      "duracion_s": 0.012
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[recomendaciones]",
@@ -1661,7 +1737,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.047
+      "duracion_s": 0.01
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[reportes]",
@@ -1669,7 +1745,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.022
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xsd_publicado_es_el_del_repositorio[seguridad]",
@@ -1693,7 +1769,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.028
+      "duracion_s": 0.03
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_detalle_de_comercio_en_json_y_xml",
@@ -1701,7 +1777,7 @@
       "descripcion": "Regresión: el detalle incluye horarios (time) y respondía 500.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.032
+      "duracion_s": 0.026
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xml_que_no_cumple_el_xsd_es_400",
@@ -1709,7 +1785,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.093
+      "duracion_s": 0.115
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_xml_con_raiz_equivocada_es_400",
@@ -1717,7 +1793,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.061
+      "duracion_s": 0.052
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[abastecimiento]",
@@ -1725,7 +1801,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.191
+      "duracion_s": 0.197
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[analisis]",
@@ -1733,7 +1809,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.142
+      "duracion_s": 0.149
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[auditoria]",
@@ -1741,7 +1817,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.164
+      "duracion_s": 0.179
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[busqueda]",
@@ -1749,7 +1825,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.117
+      "duracion_s": 0.114
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[catalogo]",
@@ -1757,7 +1833,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.224
+      "duracion_s": 0.191
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[comercios]",
@@ -1765,7 +1841,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.171
+      "duracion_s": 0.162
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[configuracion]",
@@ -1773,7 +1849,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.161
+      "duracion_s": 0.142
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[demanda]",
@@ -1781,7 +1857,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.171
+      "duracion_s": 0.164
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[disponibilidad]",
@@ -1789,7 +1865,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.134
+      "duracion_s": 0.116
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[documentos]",
@@ -1797,7 +1873,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.147
+      "duracion_s": 0.138
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[entregas]",
@@ -1805,7 +1881,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.205
+      "duracion_s": 0.192
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[geolocalizacion]",
@@ -1813,7 +1889,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.168
+      "duracion_s": 0.205
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[integraciones]",
@@ -1821,7 +1897,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.122
+      "duracion_s": 0.113
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[inventario]",
@@ -1829,7 +1905,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.247
+      "duracion_s": 0.201
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[monitoreo]",
@@ -1837,7 +1913,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.124
+      "duracion_s": 0.123
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[notificaciones]",
@@ -1845,7 +1921,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.182
+      "duracion_s": 0.204
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[pedidos]",
@@ -1853,7 +1929,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.176
+      "duracion_s": 0.147
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[precios]",
@@ -1861,7 +1937,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.216
+      "duracion_s": 0.226
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[proveedores]",
@@ -1869,7 +1945,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.248
+      "duracion_s": 0.232
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[recomendaciones]",
@@ -1877,7 +1953,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.141
+      "duracion_s": 0.121
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[reportes]",
@@ -1885,7 +1961,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.126
+      "duracion_s": 0.154
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[seguridad]",
@@ -1893,7 +1969,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.212
+      "duracion_s": 0.217
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[sincronizacion]",
@@ -1901,7 +1977,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.136
+      "duracion_s": 0.141
     },
     {
       "id": "tests/integracion/test_contratos_xml.py::test_openapi_valido_y_swagger[ventas]",
@@ -1909,7 +1985,7 @@
       "descripcion": "El documento debe cumplir OpenAPI 3.0 (la versión que lee Swagger UI 4), no sólo existir.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.135
+      "duracion_s": 0.119
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_01_comercio_e_inventario",
@@ -1917,7 +1993,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.061
+      "duracion_s": 0.073
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_02_venta_deja_stock_bajo_y_avisa",
@@ -1925,7 +2001,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.104
+      "duracion_s": 0.125
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_03_vender_mas_de_lo_que_hay_es_error_de_negocio",
@@ -1933,7 +2009,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.055
+      "duracion_s": 0.05
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_04_aparece_en_faltantes",
@@ -1941,7 +2017,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.023
+      "duracion_s": 0.101
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_05_crear_pedido_en_xml",
@@ -1949,7 +2025,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.085
+      "duracion_s": 0.062
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_06_mismo_pedido_en_json",
@@ -1957,7 +2033,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.01
+      "duracion_s": 0.018
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_07_enviar_avisa_al_equipo_del_proveedor",
@@ -1965,7 +2041,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 49.146
+      "duracion_s": 0.115
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_08_operador_acepta_y_prepara",
@@ -1981,7 +2057,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.01
+      "duracion_s": 0.009
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_10_dueno_despacha",
@@ -1989,7 +2065,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.111
+      "duracion_s": 0.142
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_11_proveedor_no_puede_recibir",
@@ -2005,7 +2081,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.065
+      "duracion_s": 0.081
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_13_historial_postgres_y_eventos_mongodb",
@@ -2013,7 +2089,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.013
+      "duracion_s": 0.011
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_14_estadisticas_por_agregacion",
@@ -2021,7 +2097,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.034
+      "duracion_s": 0.033
     },
     {
       "id": "tests/integracion/test_proceso_abasto.py::test_15_rastreo_por_correlation_id",
@@ -2029,7 +2105,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.028
+      "duracion_s": 0.007
     },
     {
       "id": "tests/integracion/test_propiedad_datos.py::test_cada_tabla_la_escribe_solo_su_servicio_dueno",
@@ -2037,7 +2113,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.249
+      "duracion_s": 0.237
     },
     {
       "id": "tests/integracion/test_propiedad_datos.py::test_auditoria_es_de_solo_insercion",
@@ -2045,7 +2121,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.672
+      "duracion_s": 0.628
     },
     {
       "id": "tests/integracion/test_propiedad_datos.py::test_el_web_es_de_solo_lectura",
@@ -2053,7 +2129,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.663
+      "duracion_s": 0.643
     },
     {
       "id": "tests/integracion/test_propiedad_datos.py::test_un_servicio_no_puede_escribir_en_una_tabla_ajena",
@@ -2061,7 +2137,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.875
+      "duracion_s": 0.839
     },
     {
       "id": "tests/integracion/test_propiedad_datos.py::test_los_servicios_se_conectan_con_su_propio_usuario",
@@ -2069,7 +2145,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.278
+      "duracion_s": 0.332
     },
     {
       "id": "tests/integracion/test_redis_mongodb.py::test_cache_de_disponibilidad_se_invalida_al_mover_inventario",
@@ -2077,7 +2153,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.187
+      "duracion_s": 0.2
     },
     {
       "id": "tests/integracion/test_redis_mongodb.py::test_cache_de_zonas",
@@ -2085,15 +2161,15 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.055
+      "duracion_s": 0.057
     },
     {
       "id": "tests/integracion/test_redis_mongodb.py::test_snapshot_diario_de_precios_es_idempotente",
       "archivo": "tests/integracion/test_redis_mongodb.py",
       "descripcion": "Upsert sobre el índice único (fecha, comercio, producto): correr dos veces no duplica documentos.",
-      "estado": "aprobada",
-      "detalle": "",
-      "duracion_s": 0.105
+      "estado": "fallida",
+      "detalle": "api = <function sesion_de at 0x00000210FFC44220>\n\n    def test_snapshot_diario_de_precios_es_idempotente(api):\n        \"\"\"Upsert sobre el índice único (fecha, comercio, producto): correr dos veces no duplica documentos.\"\"\"\n        analista = api('analista')\n        primero = analista.post('precios', '/precios/snapshots')\n        segundo = analista.post('precios', '/precios/snapshots')\n        assert primero.status_code == segundo.status_code == 201\n>       assert primero.json()['documentos'] == segundo.json()['documentos'] > 0\nE       assert 0 > 0\n\ntests\\integracion\\test_redis_mongodb.py:39: AssertionError",
+      "duracion_s": 0.019
     },
     {
       "id": "tests/integracion/test_redis_mongodb.py::test_ejecucion_de_analisis_y_evolucion",
@@ -2101,7 +2177,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.023
+      "duracion_s": 0.03
     },
     {
       "id": "tests/integracion/test_redis_mongodb.py::test_resumen_de_notificaciones_por_agregacion",
@@ -2109,7 +2185,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.008
+      "duracion_s": 0.006
     },
     {
       "id": "tests/integracion/test_redis_mongodb.py::test_marcar_leida_actualiza_el_contador_de_redis",
@@ -2117,7 +2193,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.067
+      "duracion_s": 0.066
     },
     {
       "id": "tests/integracion/test_redis_mongodb.py::test_notificacion_ajena_no_se_ve",
@@ -2125,7 +2201,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.013
+      "duracion_s": 0.012
     },
     {
       "id": "tests/integracion/test_redis_mongodb.py::test_actividad_de_servicios_desde_la_bitacora",
@@ -2133,7 +2209,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.038
+      "duracion_s": 0.009
     },
     {
       "id": "tests/integracion/test_resiliencia.py::test_aviso_no_se_pierde_con_notificaciones_caido",
@@ -2141,7 +2217,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 5.573
+      "duracion_s": 5.623
     },
     {
       "id": "tests/integracion/test_resiliencia.py::test_salud_reporta_dependencia_caida",
@@ -2149,7 +2225,7 @@
       "descripcion": "Con Redis detenido, /health de un servicio lo reporta y las rutas protegidas responden 503 (no 500).",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 8.926
+      "duracion_s": 8.865
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[seguridad-/auth/sesion]",
@@ -2157,7 +2233,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.025
+      "duracion_s": 0.023
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[comercios-/comercios]",
@@ -2165,7 +2241,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.03
+      "duracion_s": 0.013
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[inventario-/comercios/00000000-0000-0000-0000-000000000000/inventario]",
@@ -2173,7 +2249,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.029
+      "duracion_s": 0.032
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[precios-/precios]",
@@ -2181,7 +2257,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.029
+      "duracion_s": 0.031
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[pedidos-/pedidos]",
@@ -2189,7 +2265,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.03
+      "duracion_s": 0.01
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[analisis-/analisis/zonas]",
@@ -2197,7 +2273,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.032
+      "duracion_s": 0.033
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[notificaciones-/notificaciones]",
@@ -2205,7 +2281,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.012
+      "duracion_s": 0.029
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_sin_token_401_en_todos[proveedores-/mi-catalogo]",
@@ -2213,7 +2289,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.014
+      "duracion_s": 0.03
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_token_basura_401",
@@ -2221,7 +2297,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.033
+      "duracion_s": 0.028
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_token_firmado_por_otro_401",
@@ -2229,7 +2305,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.011
+      "duracion_s": 0.03
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_token_expirado_401",
@@ -2237,7 +2313,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.031
+      "duracion_s": 0.03
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_token_bien_firmado_sin_sesion_en_redis_401",
@@ -2245,7 +2321,7 @@
       "descripcion": "Aunque la firma sea correcta, sin sesión registrada en Redis el token no sirve.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.03
+      "duracion_s": 0.033
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_logout_revoca_el_token_en_todos_los_servicios",
@@ -2253,7 +2329,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.156
+      "duracion_s": 0.212
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_refresh_rota_y_el_anterior_deja_de_servir",
@@ -2261,7 +2337,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.135
+      "duracion_s": 0.141
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_credenciales_incorrectas_401",
@@ -2269,7 +2345,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.014
+      "duracion_s": 0.035
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_rol_sin_permiso_403",
@@ -2285,7 +2361,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.019
+      "duracion_s": 0.015
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_administrador_cierra_las_sesiones_de_un_usuario",
@@ -2293,7 +2369,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.093
+      "duracion_s": 0.107
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_limite_de_peticiones_429",
@@ -2301,7 +2377,7 @@
       "descripcion": "120 peticiones por minuto por usuario y servicio (RATE_LIMIT_POR_MINUTO); lo aplica el microservicio.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 47.74
+      "duracion_s": 40.724
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_gateway_limita_rafagas_por_ip",
@@ -2309,7 +2385,7 @@
       "descripcion": "El gateway corta ráfagas de una misma IP (30/s, 60 de margen) con el mismo formato de error JSON.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 3.499
+      "duracion_s": 3.439
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_solo_el_gateway_esta_expuesto",
@@ -2317,7 +2393,7 @@
       "descripcion": "Sólo el gateway publica puertos; las bases, el web y los servicios quedan dentro de las redes de Docker.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.622
+      "duracion_s": 0.576
     },
     {
       "id": "tests/integracion/test_seguridad.py::test_health_es_publico_y_reporta_dependencias",
@@ -2325,7 +2401,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.683
+      "duracion_s": 0.655
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_monitoreo_ve_los_24_servicios_arriba",
@@ -2333,7 +2409,7 @@
       "descripcion": "El registro único tiene 24 servicios y todos responden su /health con sus tres bases.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.057
+      "duracion_s": 0.061
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_monitoreo_bases_y_metricas",
@@ -2341,7 +2417,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.102
+      "duracion_s": 0.136
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_venta_descuenta_inventario_y_se_rastrea",
@@ -2349,7 +2425,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.342
+      "duracion_s": 0.493
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_venta_sin_existencia_no_se_registra",
@@ -2357,7 +2433,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.092
+      "duracion_s": 0.11
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_reserva_impide_vender_lo_apartado",
@@ -2373,7 +2449,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.194
+      "duracion_s": 0.304
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_documento_valida_tipo_real_y_control_de_acceso",
@@ -2381,7 +2457,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.261
+      "duracion_s": 0.267
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_geocodificacion_y_cercanos",
@@ -2389,7 +2465,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.087
+      "duracion_s": 0.143
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_busqueda_unificada_y_demanda_no_satisfecha",
@@ -2397,7 +2473,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.169
+      "duracion_s": 0.155
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_estimacion_de_demanda",
@@ -2405,7 +2481,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.021
+      "duracion_s": 0.009
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_configuracion_valida_rango_y_publica_parametros",
@@ -2413,7 +2489,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.064
+      "duracion_s": 0.074
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_reporte_excel_del_inventario",
@@ -2421,7 +2497,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.113
+      "duracion_s": 0.099
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_importacion_simulada_reporta_errores_por_fila",
@@ -2429,7 +2505,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.055
+      "duracion_s": 0.059
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_cotizacion_consolidada_hasta_pedido",
@@ -2437,7 +2513,7 @@
       "descripcion": "Solicitud consolidada -> cotización del proveedor -> comparación -> adjudicación -> orden -> pedido.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.417
+      "duracion_s": 0.592
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_proveedor_no_verificado_no_aparece_a_comercios",
@@ -2445,7 +2521,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.025
+      "duracion_s": 0.032
     },
     {
       "id": "tests/integracion/test_servicios_nuevos.py::test_entrega_con_qr_mueve_existencias_en_los_servicios_duenos",
@@ -2453,7 +2529,7 @@
       "descripcion": "Pedido aceptado -> entrega programada -> salida (ms-proveedores descuenta su existencia) -> confirmación con el código QR (ms-pedidos recibe y ms-inventario da la entrada) -> evaluación del proveedor.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.929
+      "duracion_s": 1.021
     },
     {
       "id": "tests/integracion/test_web_por_apis.py::test_login_del_web_lo_valida_ms_seguridad",
@@ -2461,7 +2537,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.259
+      "duracion_s": 0.594
     },
     {
       "id": "tests/integracion/test_web_por_apis.py::test_registro_comercio_inventario_y_precio_los_escriben_los_servicios_duenos",
@@ -2469,7 +2545,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 1.11
+      "duracion_s": 1.306
     },
     {
       "id": "tests/integracion/test_web_por_apis.py::test_pedido_completo_desde_el_web_lo_coordina_ms_pedidos",
@@ -2477,7 +2553,7 @@
       "descripcion": "Comerciante, operador y dueño del proveedor usan el web; ms-pedidos aplica cada transición y, al despachar y recibir, pide el cambio de existencias a ms-proveedores y a ms-inventario.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 1.025
+      "duracion_s": 1.389
     },
     {
       "id": "tests/integracion/test_web_por_apis.py::test_equipo_del_proveedor_lo_administra_ms_seguridad",
@@ -2485,7 +2561,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 42.977
+      "duracion_s": 42.079
     },
     {
       "id": "tests/integracion/test_web_por_apis.py::test_parametro_del_sistema_lo_cambia_ms_configuracion",
@@ -2493,7 +2569,7 @@
       "descripcion": "",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.248
+      "duracion_s": 0.262
     },
     {
       "id": "tests/integracion/test_web_por_apis.py::test_si_el_servicio_rechaza_el_cambio_el_web_muestra_el_motivo",
@@ -2501,7 +2577,7 @@
       "descripcion": "La regla de negocio vive en el servicio: el web solo muestra su respuesta.",
       "estado": "aprobada",
       "detalle": "",
-      "duracion_s": 0.186
+      "duracion_s": 0.172
     }
   ]
 }

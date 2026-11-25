@@ -16,12 +16,15 @@
   <xs:element name="resultado" type="Resultado"/>
   <xs:element name="salud" type="Salud"/>
   <xs:element name="tipos" type="TiposSalida"/>
+  <xs:element name="url_firmada" type="UrlFirmadaSalida"/>
   <!-- Tipos -->
   <xs:complexType name="Dependencia">
     <xs:all>
       <xs:element name="nombre" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="critica" type="xs:boolean" minOccurs="0"/>
       <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="detalle" type="xs:string" minOccurs="0"/>
       <xs:element name="error" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
@@ -236,6 +239,7 @@
       <xs:element name="expira" type="xs:dateTime" minOccurs="1"/>
       <xs:element name="url_archivo" type="xs:string" minOccurs="1"/>
       <xs:element name="programado_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="sha256" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="ReportesSalida">
@@ -268,6 +272,15 @@
       <xs:element name="version" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
       <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="activo_segundos" type="xs:integer" minOccurs="0"/>
+      <xs:element name="tiempo_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="dependencias_caidas" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="dependencias" minOccurs="1">
         <xs:complexType>
           <xs:sequence>
@@ -306,6 +319,16 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="UrlFirmadaSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:string" minOccurs="1"/>
+      <xs:element name="url" type="xs:string" minOccurs="1"/>
+      <xs:element name="expira" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="minutos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="tipo_mime" type="xs:string" minOccurs="1"/>
+      <xs:element name="sha256" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
 </xs:schema>

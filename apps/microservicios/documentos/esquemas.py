@@ -40,7 +40,27 @@ class DocumentoSalida(Salida):
     sha256: str | None = None
     visibilidad: Visibilidad
     subido_en: datetime
-    url_contenido: str | None = None
+    almacenamiento: Literal['gcs', 'gridfs'] = Field('gcs', description='gridfs: archivo anterior aún sin migrar')
+    url_contenido: str | None = Field(None, description='Descarga a través del servicio (siempre disponible)')
+
+
+class UrlConsulta(BaseConsulta):
+    minutos: int = Field(10, ge=1, le=60, description='Vigencia de la URL firmada')
+
+
+class UrlFirmadaSalida(Salida):
+    id: str
+    url: str = Field(description='URL firmada V4 de solo lectura del objeto en Cloud Storage')
+    expira: datetime
+    minutos: int
+    tipo_mime: str
+    sha256: str | None = None
+
+
+class MigracionSalida(Salida):
+    migrados: int
+    pendientes: int
+    errores: int
 
 
 class DocumentosSalida(Salida):
@@ -70,4 +90,5 @@ class LimitesSalida(Salida):
 CONTRATOS_XML = {
     'documento_cambio': DocumentoCambio,
     'documento': DocumentoSalida, 'documentos': DocumentosSalida, 'uso': UsoSalida, 'limites': LimitesSalida,
+    'url_firmada': UrlFirmadaSalida, 'migracion': MigracionSalida,
 }

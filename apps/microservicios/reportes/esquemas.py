@@ -33,6 +33,10 @@ class ProgramadoEntrada(BaseEntrada):
     hora: int = Field(7, ge=0, le=23, description='Hora de Monterrey en que se genera')
 
 
+class UrlConsulta(BaseConsulta):
+    minutos: int = Field(10, ge=1, le=60, description='Vigencia de la URL firmada')
+
+
 class ReportesConsulta(BaseConsulta):
     limite: int = Field(20, ge=1, le=100)
 
@@ -62,6 +66,16 @@ class ReporteSalida(Salida):
     expira: datetime
     url_archivo: str
     programado_id: str | None = None
+    sha256: str | None = None
+
+
+class UrlFirmadaSalida(Salida):
+    id: str
+    url: str = Field(description='URL firmada V4 de solo lectura del objeto en Cloud Storage')
+    expira: datetime
+    minutos: int
+    tipo_mime: str
+    sha256: str | None = None
 
 
 class ReportesSalida(Salida):
@@ -98,5 +112,5 @@ class EjecucionSalida(Salida):
 CONTRATOS_XML = {
     'reporte_entrada': ReporteEntrada, 'programado_entrada': ProgramadoEntrada,
     'tipos': TiposSalida, 'reporte': ReporteSalida, 'reportes': ReportesSalida, 'programado': ProgramadoSalida,
-    'programados': ProgramadosSalida, 'ejecucion': EjecucionSalida,
+    'programados': ProgramadosSalida, 'ejecucion': EjecucionSalida, 'url_firmada': UrlFirmadaSalida,
 }

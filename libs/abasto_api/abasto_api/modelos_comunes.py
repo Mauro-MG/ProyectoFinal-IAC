@@ -35,16 +35,21 @@ class ErrorSalida(Salida):
 
 class Dependencia(Salida):
     nombre: str
-    estado: str
+    estado: str = Field(description='ok o caido')
+    critica: bool = Field(True, description='false: si cae, el servicio queda degradado pero sigue atendiendo')
     latencia_ms: float | None = None
+    detalle: str | None = None
     error: str | None = None
 
 
 class Salud(Salida):
     servicio: str
     version: str
-    estado: str = Field(description='ok o caido')
+    estado: str = Field(description='ok, degradado (cayó una dependencia opcional) o caido (cayó una crítica: HTTP 503)')
     fecha: datetime
+    activo_segundos: int | None = None
+    tiempo_ms: float | None = None
+    dependencias_caidas: list[str] = []
     dependencias: list[Dependencia]
 
 

@@ -45,7 +45,8 @@ srv = Servicio('integraciones', 'Integraciones',
                'Importación y exportación de información externa: conectores con proveedores, procesamiento de '
                'archivos CSV, JSON y XML, validación de esquemas, transformación y mapeo de datos y control de errores '
                'por lote.',
-               xsd=Path(__file__).parent / 'xsd' / 'integraciones.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'integraciones.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 MODELOS = {'catalogo_proveedor': FilaCatalogo, 'inventario': FilaInventario, 'precios': FilaPrecio}

@@ -28,6 +28,7 @@ from werkzeug.exceptions import HTTPException
 
 from abasto_dominio.extensiones import db
 from abasto_dominio.servicios import ReglaNegocioError
+from abasto_dominio.servicios.almacenamiento import AlmacenamientoNoDisponible
 from abasto_dominio.sesiones import ErrorSesion
 
 from abasto_api.formatos import responder
@@ -89,6 +90,15 @@ def registrar_manejadores(app):
     def _negocio(error):
         db.session.rollback()
         return _respuesta(409, 'regla_negocio', str(error))
+
+    @app.errorhandler(AlmacenamientoNoDisponible)
+    def _almacenamiento(error):
+        # Cloud Storage no respondió: el código de archivos no deja registros a medias, así que basta un 503 claro
+        db.session.rollback()
+        app.logger.error('Cloud Storage no disponible: %s', error)
+        return _respuesta(503, 'almacenamiento_no_disponible',
+                          'El almacenamiento de archivos no está disponible en este momento; intenta más tarde. '
+                          'No se guardó ningún cambio.', headers={'Retry-After': '30'})
 
     @app.errorhandler(ErrorSesion)
     def _sesion(error):

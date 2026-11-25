@@ -75,8 +75,14 @@ def _ruta_openapi(regla):
 
 class Servicio:
     def __init__(self, nombre, titulo, descripcion, version='1.0.0', dependencias=('postgres', 'redis', 'mongodb'),
-                 xsd=None, contratos=None):
+                 xsd=None, contratos=None, opcionales=('mongodb',)):
+        """`dependencias`: lo que se revisa en /health/ready. `opcionales`: las que, si caen, dejan el servicio
+        «degradado» (sigue atendiendo, HTTP 200); si cae una no opcional queda «caido» (HTTP 503) y el gateway/monitor
+        lo saca. Por omisión MongoDB es opcional (bitácora y avisos); los servicios dueños de colecciones de Mongo o
+        del bucket la declaran crítica."""
         self.nombre = nombre
+        self.opcionales = set(opcionales) - {'postgres', 'redis'}   # sin Redis no se validan sesiones: siempre crítico
+        self.inicio = time.time()
         self.xsd = xsd
         self.contratos = contratos or {}
         self.titulo = titulo
@@ -252,19 +258,36 @@ class Servicio:
                 extensiones.redis_client.ping()
             elif dependencia == 'mongodb':
                 extensiones.mongo_client.admin.command('ping')
-            return {'nombre': dependencia, 'estado': 'ok',
+            elif dependencia == 'storage':
+                from abasto_dominio.servicios import almacenamiento
+                r = almacenamiento.salud()
+                if r['estado'] != 'ok':
+                    raise RuntimeError(r['detalle'])
+                return {'nombre': 'storage', 'estado': 'ok', 'latencia_ms': r['tiempo_ms'], 'detalle': r['detalle'],
+                        'critica': dependencia not in self.opcionales}
+            return {'nombre': dependencia, 'estado': 'ok', 'critica': dependencia not in self.opcionales,
                     'latencia_ms': round((time.perf_counter() - inicio) * 1000, 1)}
         except Exception as error:  # noqa: BLE001 - se reporta cualquier falla de la dependencia
-            extensiones.db.session.rollback()
-            return {'nombre': dependencia, 'estado': 'caido', 'error': str(error).splitlines()[0][:200]}
+            try:
+                extensiones.db.session.rollback()
+            except Exception:  # noqa: BLE001 - con PostgreSQL caído el rollback también falla
+                pass
+            return {'nombre': dependencia, 'estado': 'caido', 'critica': dependencia not in self.opcionales,
+                    'latencia_ms': round((time.perf_counter() - inicio) * 1000, 1),
+                    'error': (str(error).splitlines() or [error.__class__.__name__])[0][:200]}
 
     def _salud(self, dependencias):
+        inicio = time.perf_counter()
         resultados = [self.comprobar(d) for d in dependencias]
-        caidas = [r for r in resultados if r['estado'] != 'ok']
-        estado = 'ok' if not caidas else 'caido'
+        criticas = [r['nombre'] for r in resultados if r['estado'] != 'ok' and r['critica']]
+        opcionales = [r['nombre'] for r in resultados if r['estado'] != 'ok' and not r['critica']]
+        estado = 'caido' if criticas else 'degradado' if opcionales else 'ok'
         cuerpo = {'servicio': f'ms-{self.nombre}', 'version': self.version, 'estado': estado,
-                  'fecha': datetime.now(timezone.utc).isoformat(timespec='seconds'), 'dependencias': resultados}
-        return formatos.responder(cuerpo, 200 if estado == 'ok' else 503, 'salud')
+                  'fecha': datetime.now(timezone.utc).isoformat(timespec='seconds'),
+                  'activo_segundos': int(time.time() - self.inicio),
+                  'tiempo_ms': round((time.perf_counter() - inicio) * 1000, 1),
+                  'dependencias_caidas': criticas + opcionales, 'dependencias': resultados}
+        return formatos.responder(cuerpo, 503 if criticas else 200, 'salud')
 
     def _rutas_tecnicas(self):
         app = self.app
@@ -275,7 +298,9 @@ class Servicio:
 
         @app.get('/health/live')
         def health_live():
-            return jsonify(servicio=f'ms-{self.nombre}', estado='ok')
+            # Liveness: el proceso responde. No revisa dependencias (si una base cae no hay que reiniciar el servicio)
+            return jsonify(servicio=f'ms-{self.nombre}', estado='ok', version=self.version,
+                           activo_segundos=int(time.time() - self.inicio))
 
         @app.get('/health/ready')
         def health_ready():
@@ -292,6 +317,14 @@ class Servicio:
         @app.get('/health/mongodb')
         def health_mongodb():
             return self._salud(['mongodb'])
+
+        @app.get('/health/storage')
+        def health_storage():
+            # Bucket de Cloud Storage. Solo lo revisan de verdad los servicios que guardan archivos
+            if 'storage' not in self.dependencias:
+                return jsonify(servicio=f'ms-{self.nombre}', estado='no_aplica',
+                               detalle='Este servicio no guarda archivos en Cloud Storage.')
+            return self._salud(['storage'])
 
         @app.get('/openapi.json')
         def openapi():

@@ -28,7 +28,8 @@ from esquemas import (BusquedaEntrada, CONTRATOS_XML, EstimacionConsulta, Histor
 srv = Servicio('demanda', 'Demanda',
                'Registro y análisis de demanda histórica, tendencias y estacionalidad; productos buscados y no '
                'disponibles; estimaciones de demanda; agregaciones por región, producto y periodo.',
-               xsd=Path(__file__).parent / 'xsd' / 'demanda.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'demanda.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 LECTORES = ['demanda.ver', 'analisis.ver', 'recomendaciones.ver']

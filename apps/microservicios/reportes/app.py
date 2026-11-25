@@ -1,8 +1,9 @@
 """
 ms-reportes: reportes operativos y gerenciales en PDF, CSV, Excel y JSON.
 
-Es DUEÑO del bucket GridFS `reportes` (los archivos generados, 30 días) y de la colección
-`reportes_programados`. Los datos se LEEN (consultas de sólo lectura y funciones de análisis del
+Es DUEÑO de los objetos reportes/ del bucket privado de Cloud Storage (archivos generados, 30 días),
+de su colección de metadatos `reportes_generados` y de `reportes_programados`. El archivo se descarga
+por el servicio o con una URL firmada que vence (GET /reportes/{id}/url). Los datos se LEEN (consultas de sólo lectura y funciones de análisis del
 dominio); nunca escribe en tablas de negocio.
 
 - Tipos: inventario, ventas, precios, pedidos, proveedores, cobertura y brechas. Cada tipo revisa
@@ -18,7 +19,10 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import UUID
 
+import hashlib
+
 import gridfs
+import gridfs.errors
 from bson import ObjectId
 from flask import Response, g, request
 from sqlalchemy import text
@@ -26,17 +30,19 @@ from sqlalchemy import text
 from abasto_api import ErrorApi, Servicio, no_encontrado, prohibido, tiene
 from abasto_dominio import extensiones
 from abasto_dominio.extensiones import db
+from abasto_dominio.servicios import almacenamiento
 from abasto_dominio.servicios.auditoria import registrar_evento
 from abasto_dominio.servicios.notificaciones import notificar
 
-from esquemas import CONTRATOS_XML, ProgramadoEntrada, ReporteEntrada, ReportesConsulta
+from esquemas import CONTRATOS_XML, ProgramadoEntrada, ReporteEntrada, ReportesConsulta, UrlConsulta
 from formatos_archivo import GENERADORES, TIPOS_MIME
 from generadores import TIPOS
 
 srv = Servicio('reportes', 'Reportes',
                'Generación de reportes operativos y gerenciales de inventario, precios, ventas, pedidos, proveedores, '
                'cobertura y brechas, con filtros, exportación a PDF, CSV y Excel, y programación periódica.',
-               xsd=Path(__file__).parent / 'xsd' / 'reportes.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'reportes.xsd', contratos=CONTRATOS_XML,
+               dependencias=('postgres', 'redis', 'mongodb', 'storage'), opcionales=())
 app = srv.app
 
 MONTERREY = timezone(timedelta(hours=-6))
@@ -44,7 +50,13 @@ VIGENCIA_DIAS = 30
 FRECUENCIAS = {'diaria': timedelta(days=1), 'semanal': timedelta(weeks=1), 'mensual': timedelta(days=30)}
 
 
-def _bucket():
+def _generados():
+    """Metadatos de cada reporte; el archivo está en el bucket (reportes/<usuario>/<id>.<formato>)."""
+    return extensiones.mongo_db()['reportes_generados']
+
+
+def _gridfs_anterior():
+    """Reportes generados antes de Cloud Storage: solo lectura hasta que venzan (30 días)."""
     return gridfs.GridFS(extensiones.mongo_db(), collection='reportes')
 
 
@@ -52,40 +64,62 @@ def _programados():
     return extensiones.mongo_db()['reportes_programados']
 
 
-def reporte_a_dict(archivo):
+def reporte_a_dict(doc):
+    return {'id': str(doc['_id']), 'tipo': doc.get('tipo'), 'titulo': doc.get('titulo'), 'formato': doc.get('formato'),
+            'nombre_archivo': doc['nombre_archivo'], 'tamano_bytes': doc['tamano_bytes'],
+            'renglones': doc.get('renglones', 0), 'filtros': doc.get('filtros') or {}, 'generado': doc['generado'],
+            'expira': doc['generado'] + timedelta(days=VIGENCIA_DIAS),
+            'url_archivo': f'{request.script_root}/api/v1/reportes/{doc["_id"]}/archivo' if request else '',
+            'programado_id': doc.get('programado_id'), 'sha256': doc.get('sha256')}
+
+
+def _de_gridfs(archivo):
     m = archivo.metadata or {}
-    return {'id': str(archivo._id), 'tipo': m.get('tipo'), 'titulo': m.get('titulo'), 'formato': m.get('formato'),
-            'nombre_archivo': archivo.filename, 'tamano_bytes': archivo.length, 'renglones': m.get('renglones', 0),
-            'filtros': m.get('filtros') or {}, 'generado': archivo.upload_date,
-            'expira': archivo.upload_date + timedelta(days=VIGENCIA_DIAS),
-            'url_archivo': f'{request.script_root}/api/v1/reportes/{archivo._id}/archivo' if request else '',
-            'programado_id': m.get('programado_id')}
+    return {'_id': archivo._id, 'usuario_id': m.get('usuario_id'), 'tipo': m.get('tipo'), 'titulo': m.get('titulo'),
+            'formato': m.get('formato'), 'nombre_archivo': archivo.filename, 'tamano_bytes': archivo.length,
+            'renglones': m.get('renglones', 0), 'filtros': m.get('filtros'), 'generado': archivo.upload_date,
+            'programado_id': m.get('programado_id'), 'objeto': None}
 
 
 def generar(tipo, formato, filtros, programado_id=None):
-    """Arma el reporte con los permisos de g.claims y lo guarda en GridFS."""
+    """Arma el reporte con los permisos de g.claims, lo sube al bucket y registra sus metadatos."""
     funcion = TIPOS[tipo][0]
     titulo, columnas, filas, resumen = funcion({k: v for k, v in filtros.items() if v is not None})
     contenido = GENERADORES[formato](titulo, columnas, filas, resumen)
     nombre = f"{tipo}_{datetime.now(MONTERREY):%Y%m%d_%H%M}.{formato}"
-    archivo_id = _bucket().put(contenido, filename=nombre, contentType=TIPOS_MIME[formato], metadata={
-        'usuario_id': g.claims['sub'], 'tipo': tipo, 'titulo': titulo, 'formato': formato, 'filtros': filtros,
-        'renglones': len(filas), 'programado_id': programado_id})
-    registrar_evento(UUID(g.claims['sub']), 'LECTURA', 'Reporte', str(archivo_id),
+    reporte_id = ObjectId()
+    objeto = f"reportes/{g.claims['sub']}/{reporte_id}.{formato}"
+    sha256 = hashlib.sha256(contenido).hexdigest()
+    almacenamiento.subir(objeto, contenido, TIPOS_MIME[formato], {'sha256': sha256, 'tipo': tipo})
+    doc = {'_id': reporte_id, 'usuario_id': g.claims['sub'], 'tipo': tipo, 'titulo': titulo, 'formato': formato,
+           'filtros': filtros, 'renglones': len(filas), 'programado_id': programado_id, 'nombre_archivo': nombre,
+           'tamano_bytes': len(contenido), 'sha256': sha256, 'objeto': objeto, 'generado': datetime.now(timezone.utc)}
+    try:
+        _generados().insert_one(doc)
+    except Exception:
+        almacenamiento.borrar(objeto)
+        raise
+    registrar_evento(UUID(g.claims['sub']), 'LECTURA', 'Reporte', str(reporte_id),
                      f'Reporte {tipo} en {formato.upper()}: {titulo} ({len(filas)} renglones)',
                      datos_nuevos={'filtros': filtros, 'formato': formato})
     db.session.commit()
-    return _bucket().get(archivo_id)
+    return doc
 
 
 def _mi_reporte(id):
     try:
-        archivo = _bucket().get(ObjectId(id))
-    except Exception:  # noqa: BLE001 - id inválido o inexistente
+        oid = ObjectId(id)
+    except Exception:  # noqa: BLE001 - id inválido
         raise no_encontrado('El reporte')
-    if (archivo.metadata or {}).get('usuario_id') != g.claims['sub'] and not tiene('servicios.monitorear'):
+    doc = _generados().find_one({'_id': oid})
+    if not doc:
+        try:
+            doc = _de_gridfs(_gridfs_anterior().get(oid))
+        except gridfs.errors.NoFile:
+            raise no_encontrado('El reporte')
+    if doc.get('usuario_id') != g.claims['sub'] and not tiene('servicios.monitorear'):
         raise prohibido('El reporte es de otro usuario.')
-    return archivo
+    return doc
 
 
 # ---------------------------------------------------------------- reportes bajo demanda
@@ -110,8 +144,8 @@ def crear(datos):
           permisos=['reportes.ver', 'inventario.gestionar', 'pedidos.atender'], consulta=ReportesConsulta,
           raiz_xml='reportes')
 def listar(q):
-    archivos = list(_bucket().find({'metadata.usuario_id': g.claims['sub']}).sort('uploadDate', -1).limit(q.limite))
-    return {'total': len(archivos), 'reportes': [reporte_a_dict(a) for a in archivos]}
+    docs = list(_generados().find({'usuario_id': g.claims['sub']}).sort('generado', -1).limit(q.limite))
+    return {'total': len(docs), 'reportes': [reporte_a_dict(d) for d in docs]}
 
 
 @srv.ruta('/reportes/<id>', 'GET', resumen='Datos de un reporte', etiqueta='Reportes',
@@ -123,9 +157,29 @@ def detalle(id):
 @srv.ruta('/reportes/<id>/archivo', 'GET', resumen='Descargar el archivo', etiqueta='Reportes',
           permisos=['reportes.ver', 'inventario.gestionar', 'pedidos.atender'], errores=(401, 403, 404))
 def descargar(id):
-    archivo = _mi_reporte(id)
-    return Response(archivo.read(), mimetype=TIPOS_MIME.get((archivo.metadata or {}).get('formato'), 'application/octet-stream'),
-                    headers={'Content-Disposition': f'attachment; filename="{archivo.filename}"'})
+    doc = _mi_reporte(id)
+    if doc.get('objeto'):
+        contenido = almacenamiento.descargar(doc['objeto'])
+    else:
+        contenido = _gridfs_anterior().get(doc['_id']).read()
+    if contenido is None:
+        raise ErrorApi(404, 'contenido_no_encontrado', 'El reporte venció o ya no está en el almacenamiento.')
+    return Response(contenido, mimetype=TIPOS_MIME.get(doc.get('formato'), 'application/octet-stream'),
+                    headers={'Content-Disposition': f'attachment; filename="{doc["nombre_archivo"]}"'})
+
+
+@srv.ruta('/reportes/<id>/url', 'GET', resumen='URL firmada temporal del archivo', etiqueta='Reportes',
+          permisos=['reportes.ver', 'inventario.gestionar', 'pedidos.atender'], consulta=UrlConsulta,
+          raiz_xml='url_firmada', errores=(401, 403, 404, 409, 503))
+def url_firmada(id, q):
+    """Solo para el dueño del reporte. Descarga directa del bucket privado; vence en `minutos`."""
+    doc = _mi_reporte(id)
+    if not doc.get('objeto'):
+        raise ErrorApi(409, 'sin_url_directa', 'Reporte anterior a Cloud Storage: descárgalo con /archivo.')
+    url, expira = almacenamiento.url_firmada(doc['objeto'], doc['nombre_archivo'], TIPOS_MIME[doc['formato']],
+                                             q.minutos)
+    return {'id': id, 'url': url, 'expira': expira, 'minutos': q.minutos, 'tipo_mime': TIPOS_MIME[doc['formato']],
+            'sha256': doc.get('sha256')}
 
 
 # ---------------------------------------------------------------- programados
@@ -215,12 +269,12 @@ def ejecutar():
             if not claims:
                 raise ErrorApi(409, 'usuario_inactivo', 'El dueño del programado ya no está activo.')
             g.claims = claims
-            archivo = generar(p['tipo'], p['formato'], p['filtros'], programado_id=str(p['_id']))
-            cambios.update(ultimo_reporte_id=str(archivo._id), ultimo_error=None)
-            generados.append(reporte_a_dict(archivo))
+            reporte = generar(p['tipo'], p['formato'], p['filtros'], programado_id=str(p['_id']))
+            cambios.update(ultimo_reporte_id=str(reporte['_id']), ultimo_error=None)
+            generados.append(reporte_a_dict(reporte))
             notificar(p['usuario_id'], 'sistema', f"Tu reporte «{p['nombre']}» está listo",
-                      f"{(archivo.metadata or {}).get('titulo')} ({p['formato'].upper()}).",
-                      url=f"/ms/reportes/api/v1/reportes/{archivo._id}/archivo", origen='reportes')
+                      f"{reporte['titulo']} ({p['formato'].upper()}).",
+                      url=f"/ms/reportes/api/v1/reportes/{reporte['_id']}/archivo", origen='reportes')
         except ErrorApi as error:
             db.session.rollback()
             errores += 1

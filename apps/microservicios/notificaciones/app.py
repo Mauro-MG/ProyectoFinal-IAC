@@ -32,7 +32,8 @@ import canales
 srv = Servicio('notificaciones', 'Notificaciones',
                'Notificaciones internas: alta individual y por lote (entre servicios), consulta paginada con filtros, '
                'marcado de lectura, borrado, contador de no leídas en Redis y resumen con agregaciones de MongoDB.',
-               xsd=Path(__file__).parent / 'xsd' / 'notificaciones.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'notificaciones.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 

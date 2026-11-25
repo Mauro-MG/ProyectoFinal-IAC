@@ -28,7 +28,8 @@ srv = Servicio('analisis', 'Análisis territorial',
                'Cobertura por zona, índice de acceso a la canasta básica y ranking de zonas, detección de brechas '
                'de surtido, zonas desatendidas, estadísticas territoriales por municipio, oportunidades de abasto, '
                'historial de ejecuciones y datos listos para Highcharts.',
-               xsd=Path(__file__).parent / 'xsd' / 'analisis.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'analisis.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 

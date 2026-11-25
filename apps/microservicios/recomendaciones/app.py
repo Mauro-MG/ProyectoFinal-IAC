@@ -38,7 +38,8 @@ from esquemas import CONTRATOS_XML, RecomendacionesConsulta, RespuestaEntrada, R
 srv = Servicio('recomendaciones', 'Recomendaciones',
                'Recomendación de productos y surtido por zona según demanda, historial de ventas, inventario y '
                'precios; priorización, explicación de cada recomendación y medición de resultados.',
-               xsd=Path(__file__).parent / 'xsd' / 'recomendaciones.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'recomendaciones.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 

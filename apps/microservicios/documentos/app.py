@@ -1,9 +1,17 @@
 """
-ms-documentos: archivos del sistema en MongoDB GridFS (bucket "archivos").
+ms-documentos: archivos del sistema en Google Cloud Storage.
 
-Es DUEÑO del bucket `archivos` (archivos.files y archivos.chunks); antes estas rutas vivían
-en ms-comercios. Ningún otro servicio escribe en GridFS: ms-entregas, por ejemplo, sube aquí
-la foto de la entrega y guarda sólo el id.
+Es DUEÑO del bucket privado de archivos y de la colección `archivos_metadatos` (MongoDB): el
+contenido va al bucket y la base guarda solo identificador, objeto, tipo, tamaño, SHA-256,
+propietario, entidad, privacidad, estado y fechas. Otros servicios (ms-entregas, ms-comercios,
+el web) suben aquí el archivo y guardan solo su id.
+
+- Acceso al contenido, siempre después de revisar el permiso sobre el recurso:
+    GET /documentos/{id}/url        URL firmada V4 que vence en 1 a 60 minutos (el bucket NO es público)
+    GET /documentos/{id}/contenido  descarga a través del servicio (compatibilidad y archivos sin migrar)
+- Si Cloud Storage no responde: 503 almacenamiento_no_disponible y no queda ningún registro a medias.
+- Archivos anteriores en GridFS: se siguen sirviendo con el mismo id hasta migrarlos con
+  POST /documentos/migracion (no destructiva: copia, verifica el SHA-256 y conserva el original).
 
 - Carga (multipart/form-data) de imágenes, CSV, comprobantes, documentos y evidencias.
 - Validación del tipo REAL: se revisan los primeros bytes del archivo (firma), no sólo el
@@ -18,24 +26,25 @@ la foto de la entrega y guarda sólo el id.
 from pathlib import Path
 from uuid import UUID
 
-from bson import ObjectId
 from flask import Response, g, request
 from sqlalchemy import text
 
 from abasto_api import ErrorApi, Servicio, no_encontrado, prohibido, sobre_lista, tiene
-from abasto_dominio import extensiones
 from abasto_dominio.extensiones import db
 from abasto_dominio.servicios import archivos
 from abasto_dominio.servicios.auditoria import registrar_evento
 from abasto_dominio.servicios.parametros import parametro
 
-from esquemas import CONTRATOS_XML, DocumentoCambio, DocumentosConsulta
+from esquemas import CONTRATOS_XML, DocumentoCambio, DocumentosConsulta, UrlConsulta
 
 srv = Servicio('documentos', 'Documentos',
                'Carga, consulta y administración de imágenes, archivos CSV, comprobantes, documentos de comercio y '
-               'evidencias en GridFS, con validación de tipo y tamaño, metadatos y control de acceso.',
-               xsd=Path(__file__).parent / 'xsd' / 'documentos.xsd', contratos=CONTRATOS_XML)
+               'evidencias en Google Cloud Storage (bucket privado y URLs firmadas), con validación del tipo real y '
+               'del tamaño, metadatos y control de acceso por recurso.',
+               xsd=Path(__file__).parent / 'xsd' / 'documentos.xsd', contratos=CONTRATOS_XML,
+               dependencias=('postgres', 'redis', 'mongodb', 'storage'), opcionales=())
 app = srv.app
+
 
 # Firma (primeros bytes) de cada tipo permitido
 FIRMAS = {
@@ -133,7 +142,8 @@ def tipo_real(contenido, declarado):
 
 
 def con_url(meta):
-    return {**meta, 'url_contenido': f'{request.script_root}/api/v1/documentos/{meta["id"]}/contenido'}
+    return {**{k: v for k, v in meta.items() if k not in ('objeto', 'estado')},
+            'url_contenido': f'{request.script_root}/api/v1/documentos/{meta["id"]}/contenido'}
 
 
 def _documento(id, para_editar=False):
@@ -238,12 +248,48 @@ def metadatos(id):
           permisos=['archivos.gestionar', 'comercios.ver_todos', 'pedidos.atender', 'entregas.gestionar',
                     'ventas.registrar', 'pedidos.crear'], errores=(401, 403, 404))
 def contenido(id):
-    """Responde el archivo con su tipo y su SHA-256 en `X-Contenido-SHA256` para comprobar integridad."""
+    """Responde el archivo con su tipo y su SHA-256 en `X-Contenido-SHA256` para comprobar integridad.
+    Para archivos grandes conviene GET /documentos/{id}/url: el cliente descarga directo del bucket."""
     meta = _documento(id)
-    _, archivo = archivos.abrir(id)
-    return Response(archivo.read(), mimetype=meta['tipo_mime'],
+    datos = archivos.leer(meta)
+    if datos is None:
+        raise ErrorApi(404, 'contenido_no_encontrado', 'El registro existe pero el archivo ya no está en el almacenamiento.')
+    return Response(datos, mimetype=meta['tipo_mime'],
                     headers={'Content-Disposition': f'inline; filename="{meta["nombre"]}"',
                              'X-Contenido-SHA256': meta.get('sha256') or '', 'Cache-Control': 'private, max-age=300'})
+
+
+@srv.ruta('/documentos/<id>/url', 'GET', resumen='URL firmada temporal', etiqueta='Documentos',
+          permisos=['archivos.gestionar', 'comercios.ver_todos', 'pedidos.atender', 'entregas.gestionar',
+                    'ventas.registrar', 'pedidos.crear'], consulta=UrlConsulta, raiz_xml='url_firmada',
+          errores=(401, 403, 404, 409, 503))
+def url_firmada(id, q):
+    """Solo después de comprobar que el usuario puede ver ESTE documento. La URL es de solo lectura, sirve para ese
+    objeto y vence en `minutos`; después Cloud Storage responde 403. Cada emisión queda en la auditoría."""
+    meta = _documento(id)
+    url, expira = archivos.url_temporal(meta, q.minutos)
+    if not url:
+        raise ErrorApi(409, 'sin_url_directa', 'El archivo aún está en GridFS; descárgalo con /contenido o migra los '
+                                               'archivos con POST /documentos/migracion.')
+    registrar_evento(UUID(g.claims['sub']), 'LECTURA', 'Documento', id,
+                     f'URL temporal ({q.minutos} min) de {meta["nombre"]}', datos_nuevos={'expira': expira.isoformat()})
+    db.session.commit()
+    return {'id': id, 'url': url, 'expira': expira, 'minutos': q.minutos, 'tipo_mime': meta['tipo_mime'],
+            'sha256': meta.get('sha256')}
+
+
+@srv.ruta('/documentos/migracion', 'POST', resumen='Migrar archivos de GridFS a Cloud Storage', etiqueta='Administración',
+          permisos=['servicios.monitorear'], raiz_xml='migracion')
+def migrar():
+    """No destructiva y repetible: copia cada archivo pendiente al bucket con el mismo id, comprueba el SHA-256 de la
+    copia y solo entonces registra sus metadatos. GridFS no se borra."""
+    resultado = archivos.migrar_desde_gridfs()
+    registrar_evento(UUID(g.claims['sub']), 'ACTUALIZACION', 'Documento', 'migracion',
+                     f"Migración GridFS -> Cloud Storage: {resultado['migrados']} archivos",
+                     datos_nuevos={'migrados': resultado['migrados'], 'errores': resultado['errores'][:20]})
+    db.session.commit()
+    return {'migrados': resultado['migrados'], 'pendientes': archivos.pendientes_de_migrar(),
+            'errores': len(resultado['errores'])}
 
 
 @srv.ruta('/documentos/<id>', 'PATCH', resumen='Cambiar descripción o visibilidad', etiqueta='Documentos',
@@ -256,8 +302,7 @@ def cambiar(id, datos):
         raise ErrorApi(422, 'sin_cambios', 'Indica descripcion o visibilidad.')
     if cambios.get('visibilidad') == 'publica' and meta['entidad'] != 'producto' and not tiene('catalogos.gestionar'):
         raise ErrorApi(422, 'visibilidad_invalida', 'Sólo las fotos de productos pueden ser públicas.')
-    extensiones.mongo_db()['archivos.files'].update_one(
-        {'_id': ObjectId(id)}, {'$set': {f'metadata.{k}': v for k, v in cambios.items()}})
+    archivos.cambiar(id, cambios)
     registrar_evento(UUID(g.claims['sub']), 'ACTUALIZACION', 'Documento', id, f'Cambio de {meta["nombre"]}',
                      datos_anteriores={k: meta.get(k) for k in cambios}, datos_nuevos=cambios)
     db.session.commit()
@@ -278,9 +323,8 @@ def eliminar(id):
 @srv.ruta('/documentos/uso', 'GET', resumen='Espacio usado por categoría (agregación)', etiqueta='Administración',
           permisos=['servicios.monitorear'], raiz_xml='uso')
 def uso():
-    filas = list(extensiones.mongo_db()['archivos.files'].aggregate([
-        {'$group': {'_id': '$metadata.categoria', 'archivos': {'$sum': 1}, 'bytes': {'$sum': '$length'}}},
-        {'$sort': {'bytes': -1}}]))
+    filas = archivos.uso_por_categoria()
     mb = lambda b: round(b / (1024 * 1024), 3)  # noqa: E731
     return {'total_archivos': sum(f['archivos'] for f in filas), 'total_megabytes': mb(sum(f['bytes'] for f in filas)),
-            'categorias': [{'categoria': f['_id'], 'archivos': f['archivos'], 'megabytes': mb(f['bytes'])} for f in filas]}
+            'categorias': [{'categoria': f['categoria'], 'archivos': f['archivos'], 'megabytes': mb(f['bytes'])}
+                           for f in filas]}
