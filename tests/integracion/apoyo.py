@@ -21,10 +21,15 @@ NS = 'https://abastored.mx/esquemas/v1'
 PUERTOS = {nombre: puerto for nombre, (puerto, _) in registro_servicios.SERVICIOS.items()}
 MODO = os.environ.get('PRUEBAS_MODO', 'gateway')
 HOST = os.environ.get('PRUEBAS_HOST', 'https://localhost')
+# Sistema en este equipo (Docker local) o remoto (p. ej. la VM de Google Cloud). Con uno remoto, las pruebas que
+# detienen contenedores o consultan la base con `docker exec` no aplican: actuarían sobre el Docker local.
+LOCAL = MODO != 'gateway' or HOST.split('://')[-1].split(':')[0].split('/')[0] in ('localhost', '127.0.0.1')
 WEB = {'gateway': HOST, 'directo': 'http://localhost:5000', 'interno': 'http://abastored-web:5000'}[MODO]
 
 # El gateway usa un certificado autofirmado: se confía en él explícitamente (no se desactiva la verificación)
 _CERTIFICADO = RAIZ / 'infra' / 'certs' / 'abastored.crt'
+if os.environ.get('PRUEBAS_CA'):
+    _CERTIFICADO = Path(os.environ['PRUEBAS_CA'])     # certificado del gateway remoto (público)
 if MODO == 'gateway' and _CERTIFICADO.exists():
     os.environ.setdefault('REQUESTS_CA_BUNDLE', str(_CERTIFICADO))
 

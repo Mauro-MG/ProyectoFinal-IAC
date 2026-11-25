@@ -37,6 +37,7 @@ data class Comercio(
     val sector: String? = null,
     val municipio: String? = null,
     val zona: String? = null,
+    @SerialName("zona_id") val zonaId: Int? = null,
     @SerialName("estado_registro") val estadoRegistro: String? = null,
 )
 
@@ -160,3 +161,115 @@ data class CuerpoError(
 
 @Serializable
 data class SobreError(val error: CuerpoError)
+
+// ---------------------------------------------------------------- funciones de la entrega final
+
+@Serializable
+data class Perfil(
+    val id: String,
+    val email: String,
+    val nombre: String,
+    val apellido: String? = null,
+    val telefono: String? = null,
+    val rol: String,
+    val permisos: List<String> = emptyList(),
+)
+
+@Serializable
+data class Producto(
+    val id: Int,
+    val nombre: String,
+    val categoria: String? = null,
+    @SerialName("unidad_medida") val unidad: String = "pieza",
+    @SerialName("codigo_barras") val codigoBarras: String? = null,
+    @SerialName("es_canasta_basica") val canasta: Boolean = false,
+)
+
+@Serializable
+data class ListaProductos(val productos: List<Producto> = emptyList())
+
+@Serializable
+data class FactorExplicacion(val factor: String, val detalle: String)
+
+@Serializable
+data class Recomendacion(
+    @SerialName("producto_id") val productoId: Int,
+    val producto: String,
+    val prioridad: String,
+    val puntaje: Int = 0,
+    val motivo: String? = null,
+    val explicacion: List<FactorExplicacion> = emptyList(),
+)
+
+@Serializable
+data class ListaRecomendaciones(val zona: String? = null, val recomendaciones: List<Recomendacion> = emptyList())
+
+@Serializable
+data class ProveedorSugerido(
+    val id: String,
+    @SerialName("nombre_empresa") val nombre: String,
+    val municipio: String? = null,
+    @SerialName("pedido_minimo") val pedidoMinimo: Double = 0.0,
+    @SerialName("tiempo_entrega_dias") val diasEntrega: Int = 1,
+    @SerialName("condiciones_venta") val condiciones: String? = null,
+)
+
+@Serializable
+data class ListaProveedores(val proveedores: List<ProveedorSugerido> = emptyList())
+
+@Serializable
+data class Oferta(
+    val id: Int,
+    @SerialName("proveedor_id") val proveedorId: String,
+    val proveedor: String,
+    @SerialName("producto_id") val productoId: Int,
+    val producto: String,
+    @SerialName("unidad_medida") val unidad: String = "pieza",
+    @SerialName("precio_mayoreo") val precio: Double,
+    @SerialName("cantidad_minima") val minima: Double = 1.0,
+    @SerialName("existencia_disponible") val existencia: Double = 0.0,
+    @SerialName("cubre_zona") val cubreZona: Boolean = true,
+    @SerialName("pedido_minimo") val pedidoMinimo: Double = 0.0,
+    @SerialName("tiempo_entrega_dias") val diasEntrega: Int = 1,
+)
+
+@Serializable
+data class ListaOfertas(val ofertas: List<Oferta> = emptyList())
+
+@Serializable
+data class Notificacion(
+    val id: String,
+    val tipo: String,
+    val titulo: String,
+    val mensaje: String,
+    val leida: Boolean = false,
+    val prioridad: String = "normal",
+    @SerialName("creada_en") val creada: String? = null,
+)
+
+@Serializable
+data class ListaNotificaciones(val notificaciones: List<Notificacion> = emptyList(),
+                               @SerialName("no_leidas") val noLeidas: Int = 0)
+
+@Serializable
+data class Contador(@SerialName("no_leidas") val noLeidas: Int = 0)
+
+@Serializable
+data class Dispositivo(val token: String? = null, val plataforma: String? = null, val nombre: String? = null)
+
+@Serializable
+data class ListaDispositivos(val dispositivos: List<Dispositivo> = emptyList())
+
+@Serializable
+data class Entrega(
+    val id: String,
+    @SerialName("folio_pedido") val folio: String? = null,
+    val proveedor: String? = null,
+    val estado: String,
+)
+
+@Serializable
+data class ListaEntregas(val entregas: List<Entrega> = emptyList())
+
+@Serializable
+data class Documento(val id: String, val nombre: String)

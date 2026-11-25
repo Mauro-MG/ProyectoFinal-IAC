@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -96,6 +97,31 @@ class ClienteApi(
             true
         } catch (_: ErrorApi) {
             false
+        }
+    }
+
+    /** multipart/form-data (fotos para ms-documentos). Mismo manejo de token y errores que `peticion`. */
+    suspend fun subir(servicio: String, ruta: String, campos: Map<String, String>, nombreArchivo: String,
+                      tipo: String, contenido: ByteArray): String = withContext(Dispatchers.IO) {
+        val tokens = almacen.leer()
+        val cuerpo = MultipartBody.Builder().setType(MultipartBody.FORM).apply {
+            campos.forEach { (k, v) -> addFormDataPart(k, v) }
+            addFormDataPart("archivo", nombreArchivo, contenido.toRequestBody(tipo.toMediaType()))
+        }.build()
+        val solicitud = Request.Builder().url("${gateway.trimEnd('/')}/ms/$servicio/api/v1$ruta")
+            .header("Accept", "application/json")
+            .header("X-Correlation-ID", "android-${UUID.randomUUID().toString().take(20)}")
+            .apply { tokens?.let { header("Authorization", "Bearer ${it.accessToken}") } }
+            .post(cuerpo).build()
+        val respuesta = try {
+            http.newCall(solicitud).execute()
+        } catch (e: IOException) {
+            throw ErrorApi(0, "sin_conexion", "Sin conexión con el servidor.")
+        }
+        respuesta.use {
+            val texto = it.body?.string().orEmpty()
+            if (!it.isSuccessful) throw error(it.code, texto)
+            texto
         }
     }
 

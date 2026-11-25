@@ -15,7 +15,7 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 import requests
 
-from apoyo import MODO, sesion_de, url
+from apoyo import LOCAL, MODO, sesion_de, url
 
 PNG = (b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89'
        b'\x00\x00\x00\rIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82')
@@ -117,7 +117,7 @@ def test_reporte_en_el_bucket_con_url_firmada(comerciante, comercio):
 
 @pytest.fixture
 def docker():
-    if MODO != 'gateway' or not _docker('version').stdout:
+    if MODO != 'gateway' or not LOCAL or not _docker('version').stdout:
         pytest.skip('No aplica: requiere el CLI de Docker en el equipo anfitrión para detener el almacenamiento')
     if 'abastored-gcs-emulador' not in _docker('ps', '--format', '{{.Names}}').stdout:
         pytest.skip('No aplica: la caída se simula deteniendo el emulador local (no se detiene un bucket real)')

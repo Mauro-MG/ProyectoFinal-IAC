@@ -18,7 +18,7 @@ import subprocess
 
 import pytest
 
-from apoyo import MODO, RAIZ, sesion_de
+from apoyo import LOCAL, MODO, RAIZ, sesion_de
 
 # Especificación: tabla -> servicio dueño (el único que escribe). Debe coincidir con docs/propiedad_de_datos.md
 DUENOS = {
@@ -72,6 +72,8 @@ def sql():
 
     if not shutil.which('docker'):
         pytest.skip('No aplica: requiere el CLI de Docker en el equipo anfitrión para consultar PostgreSQL')
+    if not LOCAL:
+        pytest.skip('No aplica: el sistema es remoto; los permisos de la base se revisan en el equipo donde corre')
 
     def ejecutar(consulta, usuario='abastored_web'):
         r = subprocess.run(['docker', 'exec', 'abastored-postgres', 'psql', '-U', usuario, '-d', base, '-v',

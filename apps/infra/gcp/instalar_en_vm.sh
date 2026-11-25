@@ -43,20 +43,22 @@ tar -xzf "$PAQUETE" -C "$DESTINO"
 PROYECTO=$(curl -fs -H 'Metadata-Flavor: Google' $METADATOS/project/project-id)
 IP=$(curl -fs -H 'Metadata-Flavor: Google' $METADATOS/instance/network-interfaces/0/access-configs/0/external-ip)
 
-# Configuración compartida entre versiones
-if [ ! -f "$COMPARTIDO/.env" ]; then
-    cp "$DESTINO/.env.example" "$COMPARTIDO/.env"
-    sed -i \
-        -e "s|^ENTORNO=.*|ENTORNO=produccion|" \
-        -e "s|^COOKIES_SEGURAS=.*|COOKIES_SEGURAS=true|" \
-        -e "s|^GCS_BUCKET=.*|GCS_BUCKET=abastored-archivos-$PROYECTO|" \
-        -e "s|^GCS_PROYECTO=.*|GCS_PROYECTO=$PROYECTO|" \
-        -e "s|^STORAGE_EMULATOR_HOST=.*|STORAGE_EMULATOR_HOST=|" \
-        -e "s|^GCS_URL_PUBLICA=.*|GCS_URL_PUBLICA=|" \
-        -e "s|^GCS_CUENTA_FIRMA=.*|GCS_CUENTA_FIRMA=abastored-archivos@$PROYECTO.iam.gserviceaccount.com|" \
-        "$COMPARTIDO/.env"
-    echo "GATEWAY_SAN=IP:$IP" >> "$COMPARTIDO/.env"
-fi
+# Configuración compartida entre versiones: se crea la primera vez y en cada despliegue se asegura la configuración
+# de Google Cloud (una variable que falte haría que los servicios usaran los valores locales del emulador)
+[ -f "$COMPARTIDO/.env" ] || cp "$DESTINO/.env.example" "$COMPARTIDO/.env"
+fijar() {   # clave valor: reemplaza la línea o la agrega
+    if grep -q "^$1=" "$COMPARTIDO/.env"; then sed -i "s|^$1=.*|$1=$2|" "$COMPARTIDO/.env"
+    else echo "$1=$2" >> "$COMPARTIDO/.env"; fi
+}
+fijar ENTORNO produccion
+fijar COOKIES_SEGURAS true
+fijar GCS_BUCKET "abastored-archivos-$PROYECTO"
+fijar GCS_PROYECTO "$PROYECTO"
+fijar STORAGE_EMULATOR_HOST ""
+fijar GCS_URL_PUBLICA ""
+fijar GCS_CUENTA_FIRMA "abastored-archivos@$PROYECTO.iam.gserviceaccount.com"
+fijar GATEWAY_SAN "IP:$IP"
+sed -i '/^GCS_BUCKET_NAME=/d' "$COMPARTIDO/.env"
 ln -sfn "$COMPARTIDO/.env" "$DESTINO/.env"
 ln -sfn "$COMPARTIDO/certs" "$DESTINO/infra/certs"
 [ -d "$COMPARTIDO/secrets" ] && ln -sfn "$COMPARTIDO/secrets" "$DESTINO/secrets"
