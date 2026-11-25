@@ -9,8 +9,10 @@ que solo se emite después de revisar el permiso sobre el recurso.
 Configuración (variables de entorno):
     GCS_BUCKET              nombre del bucket (obligatorio)
     GCS_PROYECTO            proyecto de GCP
-    GCS_CUENTA_FIRMA        cuenta de servicio con la que se firman las URLs en Compute Engine
-                            (se firma con IAM signBlob: no hay llaves descargadas en el servidor)
+    GCS_CUENTA_FIRMA        cuenta de servicio DEDICADA (solo tiene permiso sobre el bucket). En Compute Engine
+                            los servicios la suplantan con las credenciales de la VM (impersonation): tanto las
+                            operaciones del bucket como la firma de URLs (IAM signBlob) se hacen como esa
+                            cuenta, sin llaves descargadas en el servidor.
     GOOGLE_APPLICATION_CREDENTIALS
                             alternativa: archivo de llave de una cuenta de servicio (montado como secreto)
     STORAGE_EMULATOR_HOST   solo desarrollo y pruebas: fake-gcs-server. El código es el mismo cliente de GCS;
@@ -54,8 +56,27 @@ def cliente():
                 _cliente = storage.Client(project=_config('GCS_PROYECTO', 'abastored-local'),
                                           credentials=AnonymousCredentials())
             else:
-                _cliente = storage.Client(project=_config('GCS_PROYECTO'))
+                _cliente = storage.Client(project=_config('GCS_PROYECTO'), credentials=_credenciales())
         return _cliente
+
+
+_creds = None
+
+
+def _credenciales():
+    """Credenciales de la cuenta dedicada (suplantada) si GCS_CUENTA_FIRMA está definida; si no, las de la VM o la
+    llave de GOOGLE_APPLICATION_CREDENTIALS. La cuenta de la VM solo necesita poder suplantar a la dedicada
+    (roles/iam.serviceAccountTokenCreator sobre ella); los permisos del bucket los tiene solo la dedicada."""
+    global _creds
+    if _creds is None:
+        import google.auth
+        from google.auth import impersonated_credentials
+        base, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/cloud-platform'])
+        cuenta = _config('GCS_CUENTA_FIRMA')
+        _creds = impersonated_credentials.Credentials(
+            source_credentials=base, target_principal=cuenta,
+            target_scopes=['https://www.googleapis.com/auth/devstorage.read_write'], lifetime=3600) if cuenta else base
+    return _creds
 
 
 _bucket_listo = False
@@ -136,17 +157,12 @@ def existe(objeto):
 # ---------------------------------------------------------------- URLs firmadas
 
 def _credenciales_firma():
-    """Credenciales capaces de firmar: llave de cuenta de servicio, o la cuenta de la VM vía IAM signBlob."""
-    import google.auth
-    from google.auth.transport.requests import Request
-    credenciales, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/cloud-platform'])
-    if hasattr(credenciales, 'sign_bytes') and getattr(credenciales, 'signer', None) is not None:
+    """Credenciales capaces de firmar V4: la cuenta suplantada (firma con IAM signBlob) o una llave de cuenta de
+    servicio. Las credenciales de usuario o de la VM sin suplantar no pueden firmar."""
+    credenciales = _credenciales()
+    if hasattr(credenciales, 'sign_bytes'):
         return {'credentials': credenciales}
-    credenciales.refresh(Request())
-    cuenta = _config('GCS_CUENTA_FIRMA') or getattr(credenciales, 'service_account_email', None)
-    if not cuenta or cuenta == 'default':
-        raise AlmacenamientoNoDisponible('No hay cuenta de servicio para firmar URLs (GCS_CUENTA_FIRMA).')
-    return {'service_account_email': cuenta, 'access_token': credenciales.token}
+    raise AlmacenamientoNoDisponible('No hay cuenta de servicio para firmar URLs: define GCS_CUENTA_FIRMA.')
 
 
 def _firmante_desarrollo():

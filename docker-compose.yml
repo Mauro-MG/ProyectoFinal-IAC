@@ -55,6 +55,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      GATEWAY_SAN: ${GATEWAY_SAN:-}           # nombres o IP públicas extra para el certificado (Google Cloud)
     volumes:
       - ./infra/certs:/etc/nginx/certs        # certificado autofirmado generado al primer arranque
     depends_on:

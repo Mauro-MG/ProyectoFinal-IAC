@@ -1,0 +1,21 @@
+# Despliegue en Google Cloud (Compute Engine). Se combina con docker-compose.yml:
+#   docker compose -p abastored -f docker-compose.yml -f docker-compose.gcp.yml up -d
+# (lo hace apps/infra/gcp/instalar_en_vm.sh).
+#
+# - Archivos en el bucket real de Cloud Storage: el emulador local no se levanta y .env deja vacío
+#   STORAGE_EMULATOR_HOST. Los servicios suplantan a la cuenta abastored-archivos desde la VM.
+# - El certificado del gateway incluye la IP pública (GATEWAY_SAN en .env).
+# - Reinicio automático de todo al arrancar la VM.
+
+x-siempre: &siempre
+  restart: always
+
+services:
+  gcs-emulador:
+    scale: 0
+  gateway: *siempre
+  abastored-web: *siempre
+  abastored-postgres: *siempre
+  abastored-mongo: *siempre
+  abastored-redis: *siempre
+  monitor-verificador: *siempre
