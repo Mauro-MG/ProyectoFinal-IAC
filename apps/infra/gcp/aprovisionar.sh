@@ -57,6 +57,11 @@ JSON
 hacer gcloud storage buckets update "gs://$BUCKET" --versioning --lifecycle-file="$REGLAS"
 
 paso "2. Cuenta de servicio dedicada $CUENTA"
+# La suplantación (firma de URLs sin llaves) usa la API IAM Service Account Credentials
+hacer gcloud services enable iamcredentials.googleapis.com
+# legacyBucketReader: leer los metadatos del bucket para /health/storage (objectAdmin no lo incluye)
+hacer gcloud storage buckets add-iam-policy-binding "gs://$BUCKET" \
+    --member "serviceAccount:$CUENTA" --role roles/storage.legacyBucketReader
 if gcloud iam service-accounts describe "$CUENTA" >/dev/null 2>&1; then
     echo "   ya existe"
 else
