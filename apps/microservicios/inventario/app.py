@@ -11,7 +11,7 @@ ms-sincronizacion aplican sus movimientos con POST /comercios/{id}/movimientos/l
 - Prevención de inventarios negativos: CHECK (existencia >= 0) en la tabla, SELECT ... FOR
   UPDATE al mover y validación contra lo reservado (RN-009, RN-017).
 - Idempotencia: un movimiento con `referencia` repetida no se aplica dos veces (RN-018).
-- Importación CSV (MongoDB guarda el resultado y GridFS el archivo).
+- Importación CSV (MongoDB guarda el resultado; el archivo, en Cloud Storage).
 Redis: bloqueo `bloqueo:importacion:{comercio}` y `bloqueo:inventario-lote:{referencia}`.
 La disponibilidad pública se consulta en ms-disponibilidad.
 """
