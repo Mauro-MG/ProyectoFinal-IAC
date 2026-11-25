@@ -88,8 +88,13 @@ for _ in $(seq 1 90); do
     [ "$(docker ps --filter health=starting -q | wc -l)" = 0 ] && break
     sleep 5
 done
-"${COMPOSE[@]}" exec -T abastored-postgres sh -c \
-    'psql -q -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f /docker-entrypoint-initdb.d/07_entrega_final.sql' || true
+# Migraciones idempotentes (07 en adelante) sobre la base existente, en orden. Si una falla se avisa y no se
+# detiene el despliegue: los servicios ya están arriba con la versión nueva.
+for migracion in 07_entrega_final.sql 08_indices_volumen.sql; do
+    "${COMPOSE[@]}" exec -T abastored-postgres sh -c \
+        "psql -q -v ON_ERROR_STOP=1 -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\" -f /docker-entrypoint-initdb.d/$migracion" \
+        || echo "AVISO: la migración $migracion falló; revísala antes de seguir"
+done
 docker ps --format '{{.Names}}\t{{.Status}}' | sort
 echo "Versión $COMMIT desplegada en https://$IP/"
 
