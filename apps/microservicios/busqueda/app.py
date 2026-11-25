@@ -126,7 +126,7 @@ def reportar_a_demanda(q, encontrados):
         llamar('demanda', 'POST', '/api/v1/demanda/busquedas', permisos_servicio=['demanda.registrar'],
                json={'texto': q.q[:120], 'zona_id': q.zona_id, 'resultados': encontrados, 'origen': 'busqueda',
                      'producto_id': None}, timeout=1)
-    except ErrorApi:
+    except (ErrorApi, RedisError):          # llamar() usa Redis (correlación/servicio): si falta, se omite
         current_app.logger.info('ms-demanda no registró la búsqueda (no disponible).')
 
 

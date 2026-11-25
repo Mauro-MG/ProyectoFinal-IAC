@@ -45,6 +45,10 @@ x-microservicio: &microservicio
     abastored-redis:
       condition: service_healthy
   networks: [publica, datos]
+  # Si un contenedor está detenido, su nombre deja de existir y el DNS interno de Docker pregunta afuera:
+  # sin esto cada llamada a Redis o a otro servicio caído esperaba hasta ~11 s (medido en
+  # tests/carga/recuperacion.sh). Con 1 s y un intento falla rápido y el servicio responde su 503.
+  dns_opt: ["timeout:1", "attempts:1"]
 
 services:
   # ------------------------------------------------------------------ entrada única
@@ -70,6 +74,7 @@ services:
       dockerfile: apps/web/Dockerfile
     container_name: abastored-web
     restart: unless-stopped
+    dns_opt: ["timeout:1", "attempts:1"]        # ver x-microservicio
     env_file: .env
     environment:
       <<: *secretos-entorno
