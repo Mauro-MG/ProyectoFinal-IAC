@@ -30,8 +30,15 @@ WEB = {'gateway': HOST, 'directo': 'http://localhost:5000', 'interno': 'http://a
 _CERTIFICADO = RAIZ / 'infra' / 'certs' / 'abastored.crt'
 if os.environ.get('PRUEBAS_CA'):
     _CERTIFICADO = Path(os.environ['PRUEBAS_CA'])     # certificado del gateway remoto (público)
-if MODO == 'gateway' and _CERTIFICADO.exists():
-    os.environ.setdefault('REQUESTS_CA_BUNDLE', str(_CERTIFICADO))
+if MODO == 'gateway' and _CERTIFICADO.exists() and 'REQUESTS_CA_BUNDLE' not in os.environ:
+    # Autoridades públicas (certifi) + el certificado del gateway: así también se verifican las descargas
+    # directas del bucket real (storage.googleapis.com) con las URL firmadas
+    import certifi
+    import tempfile
+    _paquete = Path(tempfile.gettempdir()) / 'abastored_pruebas_ca.pem'
+    _paquete.write_text(Path(certifi.where()).read_text(encoding='utf-8') + '\n'
+                        + _CERTIFICADO.read_text(encoding='utf-8'), encoding='utf-8')
+    os.environ['REQUESTS_CA_BUNDLE'] = str(_paquete)
 
 USUARIOS = {
     'admin': ('admin@abastored.mx', 'Admin123!'),

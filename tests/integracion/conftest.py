@@ -41,6 +41,9 @@ def secreto_jwt():
     """Para fabricar un token con la firma correcta (expirado o sin sesión): se lee del secreto local."""
     if os.environ.get('JWT_SECRET_KEY'):
         return os.environ['JWT_SECRET_KEY']
+    if not LOCAL:
+        pytest.skip('No aplica: el sistema es remoto y su secreto JWT no está en este equipo (pásalo en '
+                    'JWT_SECRET_KEY para correrlas)')
     for archivo in (RAIZ / 'secrets' / 'jwt_secret_key.txt', '/run/secrets/jwt_secret_key'):
         try:
             with open(archivo, encoding='utf-8') as f:

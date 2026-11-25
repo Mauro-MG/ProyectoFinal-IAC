@@ -201,7 +201,7 @@ def test_equipo_del_proveedor_lo_administra_ms_seguridad():
 
     r = dueno.enviar('/mi-empresa/equipo', {}, ruta_post=f"/mi-empresa/equipo/{operador['id']}/estado")
     assert r.status_code == 302
-    r = requests.post(url('seguridad', '/auth/login'), json={'email': email, 'password': 'Temporal2026'}, timeout=10)
+    r = _intentar_login(email, 'Temporal2026')
     assert r.status_code == 401   # ya no puede entrar
     assert _servicios('Usuario', operador['id']) == {'ms-seguridad'}
 
@@ -231,12 +231,18 @@ def test_si_el_servicio_rechaza_el_cambio_el_web_muestra_el_motivo():
     assert r.status_code == 200 and 'Ya existe esa categoría' in r.text
 
 
-def _login(email, clave):
+def _intentar_login(email, clave):
+    """Login respetando el límite por minuto de ms-seguridad (espera lo que indica Retry-After)."""
     for _ in range(3):
         r = requests.post(url('seguridad', '/auth/login'), json={'email': email, 'password': clave}, timeout=10)
         if r.status_code != 429:
             break
         time.sleep(int(r.headers.get('Retry-After', 30)) + 1)
+    return r
+
+
+def _login(email, clave):
+    r = _intentar_login(email, clave)
     assert r.status_code == 200, r.text[:200]
     return r.json()
 
