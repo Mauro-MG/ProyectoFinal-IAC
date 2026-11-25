@@ -1,0 +1,10 @@
+1 REGISTRO OK movil2ae193@prueba.mx
+2 COMERCIO OK ['Comercio registrado en la zona Monterrey Centro. Queda pendiente de validación.']
+3 PRODUCTO OK
+4 OFERTAS ['Bodega 14 - Mercado de Abastos Estrella: $19.05 · mín. 5']
+4 PEDIDO ENVIADO
+5 AVISOS ['0 sin leer · toca un aviso para marcarlo como leído', 'No tienes avisos.', 'Avisos', 'Inventario']
+5b REAPERTURA: la sesión se mantiene
+6 DISPOSITIVOS EN EL SERVIDOR [('android', 'Google sdk_gphone64_x86_64', '5_WIONV0')]
+  revocado 200
+6 REVOCACION: la app volvió al inicio de sesión
