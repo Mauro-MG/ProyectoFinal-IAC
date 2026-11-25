@@ -25,7 +25,9 @@ cd "$RAIZ"
 echo "Empaquetando $COMMIT ..."
 git archive --format=tar.gz -o "/tmp/$PAQUETE" "$COMMIT"
 SSH=(gcloud compute ssh "$VM" --project "$PROYECTO" --zone "$ZONA" --tunnel-through-iap --quiet)
-gcloud compute scp "/tmp/$PAQUETE" apps/infra/gcp/instalar_en_vm.sh "$VM:/tmp/" \
+# El instalador sale del mismo commit y con fin de línea LF, no de la copia de trabajo
+git show "$COMMIT:apps/infra/gcp/instalar_en_vm.sh" | tr -d '\r' > /tmp/instalar_en_vm.sh
+gcloud compute scp "/tmp/$PAQUETE" /tmp/instalar_en_vm.sh "$VM:/tmp/" \
     --project "$PROYECTO" --zone "$ZONA" --tunnel-through-iap --quiet
 "${SSH[@]}" --command "sudo bash /tmp/instalar_en_vm.sh /tmp/$PAQUETE $COMMIT"
 rm -f "/tmp/$PAQUETE"
