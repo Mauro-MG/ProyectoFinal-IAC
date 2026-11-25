@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -12,8 +14,10 @@ val gatewayUrl = (project.findProperty("gatewayUrl") as String?) ?: "https://loc
 
 // El certificado autofirmado del gateway (infra/certs, fuera de git) se copia a los recursos: la app confía
 // SOLO en él (y en las autoridades del sistema), no acepta cualquier certificado.
+// -PcertificadoGateway=ruta.crt para otro servidor (p. ej. apps/infra/gcp/certificado_gateway_gcp.crt)
+val certificadoGateway = (project.findProperty("certificadoGateway") as String?) ?: "../../infra/certs/abastored.crt"
 val copiarCertificado by tasks.registering(Copy::class) {
-    from(rootProject.file("../../infra/certs/abastored.crt"))
+    from(rootProject.file(certificadoGateway))
     into(layout.projectDirectory.dir("src/main/res/raw"))
     rename { "abastored_gateway.crt" }
 }
@@ -33,8 +37,21 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Firma de distribución: llave propia del equipo, FUERA de git (firma/abastored.jks y firma/firma.properties, ver
+    // README). Sin esos archivos el APK de release se genera sin firmar.
+    val firma = rootProject.file("firma/firma.properties")
+    signingConfigs {
+        if (firma.exists()) create("equipo") {
+            val datos = Properties().apply { firma.inputStream().use { load(it) } }
+            storeFile = rootProject.file("firma/abastored.jks")
+            storePassword = datos.getProperty("storePassword")
+            keyAlias = datos.getProperty("keyAlias")
+            keyPassword = datos.getProperty("keyPassword")
+        }
+    }
     buildTypes {
         release {
+            if (firma.exists()) signingConfig = signingConfigs.getByName("equipo")
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -77,6 +94,11 @@ dependencies {
 
     // Sesión (tokens) en DataStore, privada de la app
     implementation("androidx.datastore:datastore-preferences:1.1.7")
+
+    // Lector de códigos de barras y QR con la cámara (ZXing, sin servicios de Google)
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    // Revisión periódica de avisos de negocio en segundo plano
+    implementation("androidx.work:work-runtime-ktx:2.10.3")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")

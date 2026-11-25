@@ -255,7 +255,9 @@ data class ListaNotificaciones(val notificaciones: List<Notificacion> = emptyLis
 data class Contador(@SerialName("no_leidas") val noLeidas: Int = 0)
 
 @Serializable
-data class Dispositivo(val token: String? = null, val plataforma: String? = null, val nombre: String? = null)
+/** El servidor nunca devuelve el token completo: solo sus últimos 8 caracteres (`token_final`). */
+data class Dispositivo(@SerialName("token_final") val tokenFinal: String? = null, val plataforma: String? = null,
+                       val nombre: String? = null)
 
 @Serializable
 data class ListaDispositivos(val dispositivos: List<Dispositivo> = emptyList())

@@ -47,7 +47,7 @@ data class EstadoApp(
     val noLeidas: Int = 0,
 )
 
-class AppViewModel(private val repo: Repositorio) : ViewModel() {
+class AppViewModel(private val repo: Repositorio, val contexto: android.content.Context) : ViewModel() {
     private val _estado = MutableStateFlow(EstadoApp())
     val estado: StateFlow<EstadoApp> = _estado.asStateFlow()
     val pendientes: StateFlow<List<OperacionPendiente>> =

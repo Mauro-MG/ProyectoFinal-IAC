@@ -84,7 +84,7 @@ class Repositorio(
 
     suspend fun dispositivoVigente(): Boolean {
         val token = sesion.tokenDispositivo()
-        return api.get<ListaDispositivos>("notificaciones", "/dispositivos").dispositivos.any { it.token == token }
+        return api.get<ListaDispositivos>("notificaciones", "/dispositivos").dispositivos.any { it.tokenFinal == token.takeLast(8) }
     }
 
     // ------------------------------------------------------------ perfil y comercio
