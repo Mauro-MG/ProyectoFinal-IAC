@@ -231,11 +231,22 @@ def mis_dispositivos():
 @srv.ruta('/dispositivos/<path:token>', 'DELETE', resumen='Dar de baja un dispositivo', etiqueta='Push',
           raiz_xml='resultado')
 def baja_dispositivo(token):
-    resultado = extensiones.mongo_db()['dispositivos_push'].update_one({'token': token, 'usuario_id': _yo()},
-                                                                       {'$set': {'activo': False}})
+    """
+    Acepta el token completo (lo manda la app al cerrar sesión) o los últimos 8 caracteres que devuelve la lista
+    (así se revoca desde el web sin exponer el token). Con el final solo se buscan los dispositivos activos de la
+    propia cuenta y debe coincidir exactamente uno.
+    """
+    coleccion = extensiones.mongo_db()['dispositivos_push']
+    filtro = {'token': token, 'usuario_id': _yo()}
+    if len(token) == 8:
+        candidatos = [d['token'] for d in coleccion.find({'usuario_id': _yo(), 'activo': True}, {'token': 1})
+                      if d['token'].endswith(token)]
+        if len(candidatos) == 1:
+            filtro['token'] = candidatos[0]
+    resultado = coleccion.update_one(filtro, {'$set': {'activo': False}})
     if not resultado.matched_count:
         raise no_encontrado('El dispositivo')
-    return {'mensaje': 'Dispositivo dado de baja', 'id': token[-8:]}
+    return {'mensaje': 'Dispositivo dado de baja', 'id': filtro['token'][-8:]}
 
 
 @srv.ruta('/notificaciones/historial', 'GET', resumen='Historial de entregas por canal', etiqueta='Push',

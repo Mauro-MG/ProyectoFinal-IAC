@@ -240,3 +240,19 @@ def _login(email, clave):
     assert r.status_code == 200, r.text[:200]
     return r.json()
 
+
+
+def test_revocar_dispositivo_desde_el_web_lo_hace_ms_notificaciones():
+    """El usuario ve sus teléfonos con la app (solo el final del token) y revoca uno; la app lo detecta al abrirse."""
+    token = 'android-' + uuid.uuid4().hex + uuid.uuid4().hex
+    api = sesion_de('minorista')
+    assert api.post('notificaciones', '/dispositivos',
+                    json={'token': token, 'plataforma': 'android', 'nombre': 'Telefono web'}).status_code == 201
+    web = Navegador()
+    web.enviar('/login', {'email': 'minorista@test.mx', 'password': 'Password123!'})
+    pagina = web.abrir('/notificaciones/dispositivos').text
+    assert 'Telefono web' in pagina and token[-8:] in pagina and token[:-8] not in pagina
+    r = web.enviar('/notificaciones/dispositivos', {}, f'/notificaciones/dispositivos/{token[-8:]}/revocar')
+    assert r.status_code == 302
+    activos = api.get('notificaciones', '/dispositivos').json()['dispositivos']
+    assert token[-8:] not in [d['token_final'] for d in activos]

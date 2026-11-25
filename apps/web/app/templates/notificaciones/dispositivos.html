@@ -1,0 +1,34 @@
+{% extends "portal.html" %}
+{% block titulo %}Dispositivos{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Dispositivos con la app</h1>
+        <p>Teléfonos donde tu cuenta tiene sesión abierta en la app móvil. Si perdiste uno o ya no lo usas, revócalo:
+            la app cerrará la sesión la próxima vez que se abra.</p>
+    </div>
+    <a class="btn" href="{{ url_for('notificaciones') }}">Volver a notificaciones</a>
+</div>
+{% if dispositivos is not none %}
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>Dispositivo</th><th>Plataforma</th><th>Registrado</th><th>Identificador</th><th></th></tr></thead>
+        <tbody>
+        {% for d in dispositivos %}
+        <tr>
+            <td>{{ d.nombre or 'Sin nombre' }}</td>
+            <td>{{ d.plataforma|capitalize }}</td>
+            <td class="nowrap"><small>{{ d.registrado|fecha }}</small></td>
+            <td><code>…{{ d.token_final }}</code></td>
+            <td><form class="en-linea" method="post" action="{{ url_for('dispositivo_revocar', token_final=d.token_final) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn-enlace">Revocar</button></form></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="vacio">No hay dispositivos con sesión abierta.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

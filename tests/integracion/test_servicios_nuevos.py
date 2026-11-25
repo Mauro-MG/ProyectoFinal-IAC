@@ -349,3 +349,18 @@ def test_entrega_con_qr_mueve_existencias_en_los_servicios_duenos(minorista, com
     assert r.status_code == 201, r.text
     assert minorista.post('proveedores', f"/proveedores/{oferta['proveedor_id']}/evaluaciones",
                           json={'pedido_id': pedido['id'], 'calificacion': 4}).status_code == 409
+
+
+def test_dispositivo_se_revoca_con_el_final_del_token(minorista):
+    """La lista solo expone los últimos 8 caracteres; con ellos se revoca (así lo hace el web) y la app lo detecta."""
+    token = 'android-' + uuid.uuid4().hex + uuid.uuid4().hex
+    alta = minorista.post('notificaciones', '/dispositivos',
+                          json={'token': token, 'plataforma': 'android', 'nombre': 'Prueba revocacion'})
+    assert alta.status_code == 201 and alta.json()['token_final'] == token[-8:]
+    lista = minorista.get('notificaciones', '/dispositivos').json()['dispositivos']
+    assert token[-8:] in [d['token_final'] for d in lista]
+    assert all('token' not in d for d in lista)                     # el token completo nunca sale del servidor
+    assert minorista.delete('notificaciones', f'/dispositivos/{token[-8:]}').status_code == 200
+    lista = minorista.get('notificaciones', '/dispositivos').json()['dispositivos']
+    assert token[-8:] not in [d['token_final'] for d in lista]
+    assert minorista.delete('notificaciones', f'/dispositivos/{token[-8:]}').status_code == 404
