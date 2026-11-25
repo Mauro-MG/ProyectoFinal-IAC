@@ -12,7 +12,7 @@
 set -euo pipefail
 RESPALDO="${1:?Indica el respaldo (gcloud storage ls gs://<bucket>/respaldos/)}"
 cd /opt/abastored/actual
-set -a; . ./.env; set +a
+set -a; . <(tr -d '\r' < ./.env); set +a
 TEMPORAL=$(mktemp -d)
 trap 'rm -rf "$TEMPORAL"' EXIT
 COMPOSE=(docker compose -p abastored -f docker-compose.yml -f docker-compose.gcp.yml)

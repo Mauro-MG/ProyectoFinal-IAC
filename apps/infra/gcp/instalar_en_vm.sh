@@ -46,6 +46,7 @@ IP=$(curl -fs -H 'Metadata-Flavor: Google' $METADATOS/instance/network-interface
 # Configuración compartida entre versiones: se crea la primera vez y en cada despliegue se asegura la configuración
 # de Google Cloud (una variable que falte haría que los servicios usaran los valores locales del emulador)
 [ -f "$COMPARTIDO/.env" ] || cp "$DESTINO/.env.example" "$COMPARTIDO/.env"
+sed -i 's/\r$//' "$COMPARTIDO/.env"      # fin de línea LF: los scripts de respaldo lo leen con bash
 fijar() {   # clave valor: reemplaza la línea o la agrega
     if grep -q "^$1=" "$COMPARTIDO/.env"; then sed -i "s|^$1=.*|$1=$2|" "$COMPARTIDO/.env"
     else echo "$1=$2" >> "$COMPARTIDO/.env"; fi

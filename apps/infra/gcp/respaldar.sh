@@ -2,14 +2,14 @@
 # =============================================================================
 # Respaldo de PostgreSQL y MongoDB al bucket (gs://<bucket>/respaldos/<fecha>/).
 # En la VM corre cada día por cron (/etc/cron.d/abastored-respaldo). A mano:
-#   sudo abastored-respaldar
+#   sudo /usr/local/bin/abastored-respaldar   (sudo no busca en /usr/local/bin)
 # Los objetos de respaldos/ vencen a los 60 días (regla del bucket). Se suben como la
 # cuenta dedicada abastored-archivos (suplantada), igual que los servicios.
 # Redis no se respalda: solo guarda sesiones, caché y bloqueos temporales.
 # =============================================================================
 set -euo pipefail
 cd /opt/abastored/actual
-set -a; . ./.env; set +a
+set -a; . <(tr -d '\r' < ./.env); set +a
 FECHA=$(date -u +%Y%m%dT%H%M%SZ)
 TEMPORAL=$(mktemp -d)
 trap 'rm -rf "$TEMPORAL"' EXIT
