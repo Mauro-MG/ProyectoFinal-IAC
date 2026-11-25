@@ -1,2 +1,4 @@
 capturas/
 __pycache__/
+build/
+dist/

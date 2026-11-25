@@ -32,7 +32,7 @@ from abasto_dominio.modelos import (Categoria, Marca, ProductoMaestro, UnidadMed
 from abasto_dominio.servicios.auditoria import registrar_evento
 from abasto_dominio.servicios.cache import invalidar_analisis
 
-from esquemas import (CONTRATOS_XML, CategoriaCambio, CategoriaEntrada, EquivalenciaEntrada, MarcaEntrada, ProductoEntrada,
+from esquemas import (CONTRATOS_XML, CategoriaCambio, CategoriaEntrada, CategoriasConsulta, EquivalenciaEntrada, MarcaEntrada, ProductoEntrada,
                       ProductosConsulta, VarianteEntrada)
 
 srv = Servicio('catalogo', 'Catálogo',
@@ -307,12 +307,15 @@ def categoria_a_dict(c, productos=0):
     return {'id': c.id, 'nombre': c.nombre, 'descripcion': c.descripcion, 'productos': productos, 'activa': c.activa}
 
 
-@srv.ruta('/categorias', 'GET', resumen='Categorías', etiqueta='Clasificación', publico=True, raiz_xml='categorias')
-def listar_categorias():
+@srv.ruta('/categorias', 'GET', resumen='Categorías', etiqueta='Clasificación', publico=True, raiz_xml='categorias',
+          consulta=CategoriasConsulta)
+def listar_categorias(q):
+    """Por omisión solo las activas. `incluir_inactivas=true` (para administrar el catálogo) muestra también las
+    desactivadas, para poder reactivarlas."""
     conteo = dict(db.session.query(ProductoMaestro.categoria_id, func.count(ProductoMaestro.id))
                   .filter_by(activo=True).group_by(ProductoMaestro.categoria_id).all())
-    return {'categorias': [categoria_a_dict(c, conteo.get(c.id, 0))
-                           for c in Categoria.query.filter_by(activa=True).order_by(Categoria.orden)]}
+    consulta = Categoria.query if q.incluir_inactivas else Categoria.query.filter_by(activa=True)
+    return {'categorias': [categoria_a_dict(c, conteo.get(c.id, 0)) for c in consulta.order_by(Categoria.orden)]}
 
 
 @srv.ruta('/categorias', 'POST', resumen='Alta de categoría', etiqueta='Clasificación', permisos=GESTION,

@@ -13,6 +13,7 @@ Reglas de conversión a XML (contrato v1; XSD de cada servicio en apps/microserv
   * valores nulos se omiten (minOccurs="0"); booleanos como true/false;
     fechas en ISO 8601; números con punto decimal.
 """
+import math
 from datetime import date, datetime, time
 from decimal import Decimal
 from functools import lru_cache
@@ -74,6 +75,9 @@ def _texto(valor):
         return valor.isoformat()
     if isinstance(valor, Decimal):
         return format(valor.normalize(), 'f')
+    if isinstance(valor, float):
+        # xs:decimal no acepta notación científica (str(0.000013) == '1.3e-05'): se escribe en forma fija
+        return format(Decimal(repr(valor)), 'f') if math.isfinite(valor) else 'NaN'
     if isinstance(valor, UUID):
         return str(valor)
     return str(valor)

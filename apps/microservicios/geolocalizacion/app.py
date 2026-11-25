@@ -34,7 +34,7 @@ from abasto_dominio.servicios.cache import invalidar_analisis
 from abasto_dominio.servicios.geo import area_km2, distancia_km
 
 from esquemas import (CONTRATOS_XML, CercanosConsulta, CoberturaConsulta, DistanciaConsulta, GeocodificarConsulta,
-                      PuntoConsulta, PuntoEntrada, ZonaCambio, ZonaEntrada)
+                      PuntoConsulta, PuntoEntrada, ZonaCambio, ZonaEntrada, ZonasConsulta)
 
 srv = Servicio('geolocalizacion', 'Geolocalización',
                'Geocodificación, validación de coordenadas, distancias, búsquedas por radio, comercios y proveedores '
@@ -55,9 +55,10 @@ def normalizar(texto):
 def zona_a_dict(z, detalle=False):
     datos = {'id': z.id, 'nombre': z.nombre, 'municipio': z.municipio, 'estado': z.estado,
              'codigo_postal': z.codigo_postal, 'latitud_centro': float(z.latitud_centro),
-             'longitud_centro': float(z.longitud_centro), 'radio_km': float(z.radio_km), 'poblacion': z.poblacion}
+             'longitud_centro': float(z.longitud_centro), 'radio_km': float(z.radio_km), 'poblacion': z.poblacion,
+             'activa': z.activa}
     if detalle:
-        datos.update({'area_km2': round(area_km2(float(z.radio_km)), 2), 'activa': z.activa,
+        datos.update({'area_km2': round(area_km2(float(z.radio_km)), 2),
                       'comercios': db.session.execute(text(
                           'SELECT count(*) FROM comercios WHERE zona_id = :z AND activo'), {'z': z.id}).scalar()})
     return datos
@@ -113,9 +114,14 @@ def _invalidar_zonas():
 
 # ---------------------------------------------------------------- zonas
 
-@srv.ruta('/zonas', 'GET', resumen='Zonas municipales', etiqueta='Zonas', publico=True, raiz_xml='zonas')
-def listar_zonas():
-    """Lista pública de zonas activas. Se guarda 10 minutos en Redis (`geo:zonas`); un alta o cambio la invalida."""
+@srv.ruta('/zonas', 'GET', resumen='Zonas municipales', etiqueta='Zonas', publico=True, raiz_xml='zonas',
+          consulta=ZonasConsulta)
+def listar_zonas(q):
+    """Lista pública de zonas activas. Se guarda 10 minutos en Redis (`geo:zonas`); un alta o cambio la invalida.
+    `incluir_inactivas=true` (configuración de zonas) lee de PostgreSQL e incluye las desactivadas."""
+    if q.incluir_inactivas:
+        return {'origen': 'postgres', 'zonas': [zona_a_dict(z) for z in
+                                                ZonaMunicipal.query.order_by(ZonaMunicipal.municipio, ZonaMunicipal.nombre)]}
     try:
         guardado = extensiones.redis_client.get(CLAVE_ZONAS)
         if guardado:
