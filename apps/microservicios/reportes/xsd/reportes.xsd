@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generado con: python -m abasto_api.contratos apps/microservicios/reportes -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://abastored.mx/esquemas/v1" targetNamespace="https://abastored.mx/esquemas/v1" elementFormDefault="qualified" version="1.0">
+  <xs:annotation>
+    <xs:documentation>Contratos XML v1 de ms-reportes (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
+  </xs:annotation>
+  <!-- Elementos raíz: uno por petición o respuesta -->
+  <xs:element name="ejecucion" type="EjecucionSalida"/>
+  <xs:element name="error" type="ErrorSalida"/>
+  <xs:element name="programado" type="ProgramadoSalida"/>
+  <xs:element name="programado_entrada" type="ProgramadoEntrada"/>
+  <xs:element name="programados" type="ProgramadosSalida"/>
+  <xs:element name="reporte" type="ReporteSalida"/>
+  <xs:element name="reporte_entrada" type="ReporteEntrada"/>
+  <xs:element name="reportes" type="ReportesSalida"/>
+  <xs:element name="resultado" type="Resultado"/>
+  <xs:element name="salud" type="Salud"/>
+  <xs:element name="tipos" type="TiposSalida"/>
+  <!-- Tipos -->
+  <xs:complexType name="Dependencia">
+    <xs:all>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DetalleError">
+    <xs:all>
+      <xs:element name="campo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="EjecucionSalida">
+    <xs:all>
+      <xs:element name="revisados" type="xs:integer" minOccurs="1"/>
+      <xs:element name="generados" type="xs:integer" minOccurs="1"/>
+      <xs:element name="con_error" type="xs:integer" minOccurs="1"/>
+      <xs:element name="reportes" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="reporte" maxOccurs="unbounded" type="ReporteSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ErrorSalida">
+    <xs:annotation>
+      <xs:documentation>Error estandarizado (en JSON viene dentro de la llave `error`).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="codigo" type="xs:string" minOccurs="1"/>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="status" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="400"/>
+            <xs:maxInclusive value="599"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ruta" type="xs:string" minOccurs="0"/>
+      <xs:element name="correlation_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="detalles" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="detalle" maxOccurs="unbounded" type="DetalleError" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Filtros">
+    <xs:all>
+      <xs:element name="comercio_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="zona_id" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="dias" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="366"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="solo_canasta" type="xs:boolean" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ProgramadoEntrada">
+    <xs:all>
+      <xs:element name="nombre" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+            <xs:maxLength value="80"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="tipo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="inventario"/>
+            <xs:enumeration value="ventas"/>
+            <xs:enumeration value="precios"/>
+            <xs:enumeration value="pedidos"/>
+            <xs:enumeration value="proveedores"/>
+            <xs:enumeration value="cobertura"/>
+            <xs:enumeration value="brechas"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="formato" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="pdf"/>
+            <xs:enumeration value="csv"/>
+            <xs:enumeration value="xlsx"/>
+            <xs:enumeration value="json"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="filtros" type="Filtros" minOccurs="0"/>
+      <xs:element name="frecuencia" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="diaria"/>
+            <xs:enumeration value="semanal"/>
+            <xs:enumeration value="mensual"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="hora" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="23"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ProgramadoSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:string" minOccurs="1"/>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="1"/>
+      <xs:element name="formato" type="xs:string" minOccurs="1"/>
+      <xs:element name="filtros" minOccurs="1">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="frecuencia" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="diaria"/>
+            <xs:enumeration value="semanal"/>
+            <xs:enumeration value="mensual"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="hora" type="xs:integer" minOccurs="1"/>
+      <xs:element name="activo" type="xs:boolean" minOccurs="1"/>
+      <xs:element name="proxima_ejecucion" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="ultima_ejecucion" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="ultimo_reporte_id" type="xs:string" minOccurs="0"/>
+      <xs:element name="ultimo_error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ProgramadosSalida">
+    <xs:all>
+      <xs:element name="programados" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="programado" maxOccurs="unbounded" type="ProgramadoSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ReporteEntrada">
+    <xs:all>
+      <xs:element name="tipo" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="inventario"/>
+            <xs:enumeration value="ventas"/>
+            <xs:enumeration value="precios"/>
+            <xs:enumeration value="pedidos"/>
+            <xs:enumeration value="proveedores"/>
+            <xs:enumeration value="cobertura"/>
+            <xs:enumeration value="brechas"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="formato" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="pdf"/>
+            <xs:enumeration value="csv"/>
+            <xs:enumeration value="xlsx"/>
+            <xs:enumeration value="json"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="filtros" type="Filtros" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ReporteSalida">
+    <xs:all>
+      <xs:element name="id" type="xs:string" minOccurs="1"/>
+      <xs:element name="tipo" type="xs:string" minOccurs="1"/>
+      <xs:element name="titulo" type="xs:string" minOccurs="1"/>
+      <xs:element name="formato" type="xs:string" minOccurs="1"/>
+      <xs:element name="nombre_archivo" type="xs:string" minOccurs="1"/>
+      <xs:element name="tamano_bytes" type="xs:integer" minOccurs="1"/>
+      <xs:element name="renglones" type="xs:integer" minOccurs="1"/>
+      <xs:element name="filtros" minOccurs="1">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="generado" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="expira" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="url_archivo" type="xs:string" minOccurs="1"/>
+      <xs:element name="programado_id" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ReportesSalida">
+    <xs:all>
+      <xs:element name="total" type="xs:integer" minOccurs="1"/>
+      <xs:element name="reportes" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="reporte" maxOccurs="unbounded" type="ReporteSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Resultado">
+    <xs:annotation>
+      <xs:documentation>Respuesta de operaciones que no regresan un recurso (bajas, revocaciones, marcados).</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+      <xs:element name="jti" type="xs:string" minOccurs="0"/>
+      <xs:element name="sesiones_cerradas" type="xs:integer" minOccurs="0"/>
+      <xs:element name="cambiadas" type="xs:integer" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Salud">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="version" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="dependencias" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="Dependencia" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="TipoSalida">
+    <xs:all>
+      <xs:element name="tipo" type="xs:string" minOccurs="1"/>
+      <xs:element name="descripcion" type="xs:string" minOccurs="1"/>
+      <xs:element name="filtros" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="formatos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="formato" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="TiposSalida">
+    <xs:all>
+      <xs:element name="tipos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tipo" maxOccurs="unbounded" type="TipoSalida" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+</xs:schema>
