@@ -32,7 +32,7 @@ integrante hace además su **entrega individual**.
 
 ## Despliegues
 
-- [x] Google Cloud: `https://34.135.84.31`, verificado con 182 pruebas, bucket real, respaldo y restauración.
+- [x] Google Cloud: `https://34.135.84.31`, verificado con 185 pruebas, bucket real, respaldo y restauración.
 - [ ] **Ubiquitous:** la página está lista en `apps/ubiquitous/`. Falta:
   - completar la sección «Equipo» con aportaciones, conclusiones y uso de IA;
   - publicarla con `publicar.ps1` desde la red UDEM o VPN;

@@ -8,7 +8,11 @@
 PRUEBAS_HOST=https://34.135.84.31 PRUEBAS_CA=apps/infra/gcp/certificado_gateway_gcp.crt PRUEBAS_GCS_REAL=1     python -m pytest tests/integracion -q -rs
 ```
 
-**Resultado:** 182 aprobadas, 15 omitidas, 0 fallidas (4 min 53 s).
+**Resultado:** 182 aprobadas, 15 omitidas, 0 fallidas (4 min 53 s; despliegue `e58954e`).
+
+**Repetición final** (25/11/2026, despliegue y pruebas del commit `670ba4e`): **185 aprobadas, 19 omitidas, 0
+fallidas** (5 min 29 s). Las 4 omitidas nuevas son `test_fallas.py`, que detiene contenedores y no se corre
+contra el servidor desplegado.
 
 Con `PRUEBAS_GCS_REAL=1` corre también `test_url_firmada_expira_en_el_bucket_real`: la URL firmada V4 descarga el archivo directo de `storage.googleapis.com` y, pasado su tiempo de vida, Google la rechaza.
 
@@ -23,6 +27,7 @@ Ninguna se omite por fallar. Las 15 requieren detener contenedores o leer secret
 | test_propiedad_datos.py | 5 | Revisan permisos de los roles de PostgreSQL con `docker exec` |
 | test_resiliencia.py | 2 | Detienen PostgreSQL/Redis/MongoDB |
 | test_seguridad.py | 3 | Dos fabrican tokens con el secreto JWT (no está en este equipo); una detiene Redis |
+| test_fallas.py (repetición final) | 4 | Detienen o congelan PostgreSQL, MongoDB y ms-inventario |
 
 ## Ajustes a las pruebas que salieron de esta corrida
 

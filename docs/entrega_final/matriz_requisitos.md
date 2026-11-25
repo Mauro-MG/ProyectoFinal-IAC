@@ -25,7 +25,7 @@ Estados:
 | HTTPS, credenciales protegidas, logs, persistencia | Cumplido | certificado con SAN, secretos 700 en la VM, rotación de logs, volúmenes |
 | Respaldo y restauración documentados y probados | Cumplido | `docs/evidencias/respaldos_gcp/` (44/44 tablas, 26/26 colecciones) |
 | Distribución de componentes y justificación de bases en contenedores | Cumplido | `apps/infra/README.md`, `docs/diagramas/despliegue_gcp.png` |
-| Desplegado y validado en GCP | Cumplido | `https://34.135.84.31`; `docs/evidencias/pruebas_gcp/` (182 aprobadas) |
+| Desplegado y validado en GCP | Cumplido | `https://34.135.84.31`; `docs/evidencias/pruebas_gcp/` (185 aprobadas con el último commit) |
 | Despliegue en Ubiquitous | **Pendiente (equipo)** | Ubiquitous solo sirve páginas estáticas: el sistema no puede correr ahí. La página del proyecto está lista en `apps/ubiquitous/`, pero no hubo conexión SSH desde fuera de la red UDEM. La publica el usuario con su contraseña (`publicar.ps1`) |
 
 ## 3. Cloud Storage y URL firmadas
@@ -122,6 +122,6 @@ Estados:
 | Corrida | Commit | Resultado | Dónde |
 | :--- | :--- | :--- | :--- |
 | Suite completa local (unitarias + integración), `python scripts/ejecutar_pruebas.py` | `c7fb9bc`, sin cambios pendientes | **342 aprobadas**, 0 fallidas, 1 no aplica: la caducidad en el bucket real, que solo corre en GCP. Tardó 6 min 48 s | `docs/pruebas/` |
-| Integración contra GCP (`PRUEBAS_GCS_REAL=1`) | ver `docs/evidencias/pruebas_gcp/` | 182 aprobadas, 15 omitidas (detienen contenedores o requieren el secreto local) | `docs/evidencias/pruebas_gcp/` |
+| Integración contra GCP (`PRUEBAS_GCS_REAL=1`), desplegado `670ba4e` | `670ba4e` | **185 aprobadas**, 0 fallidas, 19 omitidas (detienen contenedores o requieren el secreto local) | `docs/evidencias/pruebas_gcp/` |
 | Tres procesos completos | `c7fb9bc` | 3/3 en local y 3/3 en GCP | `docs/evidencias/procesos/` |
 | Carga, estrés y recuperación | `dcb0892` y `65fccba` | Sin 5xx en carga ni estrés. Con Redis caído: p95 de 1 s y 503 claro | `docs/rendimiento.md` |
