@@ -53,6 +53,32 @@ o se adjunta como *release*.
    - A los 8 s seguía corriendo, esperando en la ventana de inicio de sesión.
    - Creó su bitácora local en el perfil vacío (`AbastoRed\bitacora.sqlite3`).
 
+## Instalador para el servidor desplegado en Google Cloud
+
+**Fecha:** 25 de noviembre de 2026.
+
+| Dato | Valor |
+| :--- | :--- |
+| Instalador | `AbastoRed-1.1.0-win64.msi` (46.4 MB) |
+| SHA-256 | `0383cc42bb981e497466982574304e9509cbf1a678519f3c7229906bb6a9f1fa` |
+| Construcción | `python instalador/construir_instalador.py --gateway https://34.135.84.31 --certificado ../infra/gcp/certificado_gateway_gcp.crt` |
+
+Se repitió la misma prueba (extracción administrativa con código 0 y diagnóstico con el entorno
+mínimo, sin Python y con un perfil vacío). El `abastored.ini` del instalador trae
+`gateway = https://34.135.84.31`, y la salida fue:
+
+```
+Gateway: https://34.135.84.31
+  ms-seguridad: contrato XSD válido con 23 elementos raíz
+  ms-comercios: contrato XSD válido con 12 elementos raíz
+  ms-analisis: contrato XSD válido con 12 elementos raíz
+  Estado público (XML validado): 24 de 24 servicios en línea
+Diagnóstico correcto
+```
+
+Código de salida: 0. La conexión TLS se verificó con el certificado público del gateway de GCP
+incluido en el instalador.
+
 ## Pendiente
 
 Falta la **prueba manual en otra computadora** con Windows recién instalado. Es una instalación
