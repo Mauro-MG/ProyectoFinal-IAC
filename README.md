@@ -27,16 +27,18 @@ microservicios, contratos, pruebas y plan) está en **`docs/AbastoRed_Equipo01_D
 │   ├── microservicios/   24 servicios Flask, uno por contenedor (8101–8124)   ← avance 2 y entrega final
 │   ├── movil/            App Android (Kotlin + Compose), sólo JSON, sin conexión con sincronización
 │   ├── escritorio/       App PySide6, sólo XML validado contra el XSD de cada servicio
-│   └── infra/            Despliegue en Google Cloud                            ← avance 4
+│   ├── infra/            Google Cloud: aprovisionar, desplegar, respaldar y restaurar (desplegado)
+│   └── ubiquitous/       Página del proyecto para el portafolio en ubiquitous.udem.edu
 ├── libs/
 │   ├── abasto_dominio/   Modelos y reglas de negocio (los usan el web y los servicios)
 │   └── abasto_api/       Base común de los servicios: rutas, JWT, JSON/XML, XSD, errores, Swagger
 ├── db/                   postgres/ (esquema y datos), mongo/init.js, redis/redis.conf
 ├── tests/
 │   ├── unitarias/        sin Docker (fakeredis)
-│   ├── integracion/      contra el sistema levantado
+│   ├── integracion/      contra el sistema levantado (local o en GCP)
+│   ├── carga/            Locust, planes de ejecución, caché y recuperación (ver docs/rendimiento.md)
 │   └── evidencias/       generar.py: 5 casos por endpoint, reporte HTML y colección Postman
-├── docs/                 documento técnico, diagramas, evidencias/, postman/
+├── docs/                 documento técnico, diagramas, evidencias/, postman/, rendimiento.md, entrega_final/
 └── docker-compose.yml
 ```
 
@@ -47,7 +49,7 @@ Requisitos: Docker y Docker Compose (y Python 3.11+ sólo para generar los secre
 ```bash
 python scripts/preparar_entorno.py   # una vez: crea .env y los secretos aleatorios en secrets/
 docker compose up -d --build
-docker compose ps                    # los 29 contenedores deben quedar "healthy"
+docker compose ps                    # 31 contenedores; todos los que tienen healthcheck, "healthy"
 ```
 
 El sistema tiene **una sola entrada**: el gateway HTTPS (nginx). Ningún otro contenedor publica puertos;
@@ -80,6 +82,17 @@ Cada servicio publica `/health`, `/openapi.json`, `/docs` (Swagger) y `/xsd` (co
 Para detener: `docker compose stop` (conserva datos) o `docker compose down -v` (borra los volúmenes
 y vuelve a cargar los scripts de `db/`).
 
+## Google Cloud, apps y página del proyecto
+
+| Qué | Dónde | Cómo |
+| :--- | :--- | :--- |
+| Sistema desplegado | `https://34.135.84.31` (certificado: `apps/infra/gcp/certificado_gateway_gcp.crt`) | `bash apps/infra/gcp/desplegar.sh` — detalle en [apps/infra/README.md](apps/infra/README.md) |
+| App Android (APK de release firmado) | `apps/movil/app/build/outputs/apk/release/` (no se versiona) | [apps/movil/README.md](apps/movil/README.md) |
+| App de escritorio (instalador .msi) | `apps/escritorio/dist/` (no se versiona) | [apps/escritorio/README.md](apps/escritorio/README.md) |
+| Página en Ubiquitous | `apps/ubiquitous/` | `apps/ubiquitous/publicar.ps1` desde la red UDEM o VPN |
+| Volumen, carga y rendimiento | [docs/rendimiento.md](docs/rendimiento.md) | `scripts/datos_masivos.py`, `tests/carga/` |
+| Material de la entrega final | [docs/entrega_final/](docs/entrega_final/) | matriz de requisitos, guion de la demo, checklist |
+
 ## Pruebas y evidencias
 
 Dos formas de correr **todas** las pruebas, con el sistema levantado:
@@ -107,6 +120,14 @@ python tests/evidencias/generar.py   # 5 casos por endpoint: docs/evidencias/ y 
   saga sobre el inventario y su traza en ms-auditoria, lote offline con duplicados y conflicto, entrega con QR,
   cotización consolidada hasta pedido, documentos con validación del tipo real, búsqueda y demanda, reportes e
   importación con errores por fila.
+- `tests/integracion/test_procesos_completos.py`: tres procesos de punta a punta (alta de comercio con foto y
+  validación, abasto con entrega por QR, importación → análisis → reporte en el bucket), con evidencia en
+  `docs/evidencias/procesos/`. También corre contra GCP.
+- `tests/integracion/test_fallas.py`: PostgreSQL, MongoDB o un servicio caídos y un servicio lento (timeout), con
+  la comprobación de que no quedan datos a medias ni descuentos dobles. `test_almacenamiento.py` y
+  `test_monitoreo.py` cubren el bucket (URL firmadas, caída) y el monitoreo (liveness/readiness, historial).
+- Contra el despliegue: `PRUEBAS_HOST=https://34.135.84.31 PRUEBAS_CA=apps/infra/gcp/certificado_gateway_gcp.crt
+  PRUEBAS_GCS_REAL=1 python -m pytest tests/integracion` (las que detienen contenedores se omiten solas).
 - `tests/integracion/test_web_por_apis.py` recorre el web con formularios reales y comprueba en ms-auditoria que
   cada cambio lo hizo el servicio dueño. `tests/integracion/test_propiedad_datos.py` le pregunta a PostgreSQL
   quién puede escribir cada tabla e intenta escrituras prohibidas.
