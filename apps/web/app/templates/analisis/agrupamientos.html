@@ -1,0 +1,107 @@
+{% extends "portal.html" %}
+{% from "_macros.html" import opciones %}
+{% block titulo %}Concentraciones comerciales{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+    <div>
+        <h1>Concentraciones comerciales</h1>
+        <p>Agrupamiento geográfico de los comercios con DBSCAN: encuentra dónde se concentran los puntos de venta
+           (tianguis, corredores, mercados) sin fijar cuántos hay, y marca como aislados a los que quedan lejos de
+           cualquier concentración. Con un producto, muestra en qué concentraciones falta.</p>
+    </div>
+</div>
+
+<form class="filtros" method="get">
+    <div class="campo"><label for="radio_m">Distancia entre vecinos (m)</label>
+        <input id="radio_m" name="radio_m" type="number" min="25" max="5000" step="25" value="{{ params.radio_m }}"></div>
+    <div class="campo"><label for="minimo">Comercios para formar una concentración</label>
+        <input id="minimo" name="minimo" type="number" min="1" max="100" value="{{ params.minimo }}"></div>
+    <div class="campo"><label for="sector">Sector</label>
+        <select id="sector" name="sector">
+            <option value="">Todos</option>
+            {% for s in ('Formal', 'Informal') %}<option {{ 'selected' if params.sector == s }}>{{ s }}</option>{% endfor %}
+        </select></div>
+    <div class="campo"><label for="producto_id">Cobertura de</label>
+        <select id="producto_id" name="producto_id">{{ opciones(productos, params.producto_id, vacio='(sin producto)') }}</select></div>
+    <div class="campo"><button class="btn btn-primario">Agrupar</button></div>
+</form>
+
+{% if resultado %}
+<p class="tenue">{{ resultado.algoritmo }} · {{ resultado.validos }} comercios ·
+   <strong>{{ resultado.grupos_encontrados }}</strong> concentraciones · {{ resultado.porcentaje_ruido }} % aislados ·
+   calculado en {{ resultado.tiempo_ms }} ms{% if resultado.excluidos %} · {{ resultado.excluidos }} sin coordenadas válidas{% endif %}</p>
+
+<div class="tarjeta"><div id="mapa" class="mapa"></div></div>
+
+{% if resultado.grupos %}
+<div class="tarjeta">
+    <h2>Mezcla formal / informal por concentración</h2>
+    <div id="grafica-mezcla" class="grafica"></div>
+</div>
+<div class="tabla-contenedor">
+    <table>
+        <thead><tr><th>#</th><th>Municipio</th><th class="num">Comercios</th><th class="num">Formales</th>
+            <th class="num">Informales</th><th class="num">Radio</th>{% if resultado.producto %}<th class="num">Con {{ resultado.producto }}</th>{% endif %}
+            <th>Lectura</th></tr></thead>
+        <tbody>
+        {% for g in resultado.grupos %}
+        <tr>
+            <td>{{ loop.index }}</td><td>{{ g.municipio_principal or '—' }}</td><td class="num">{{ g.tamano }}</td>
+            <td class="num">{{ g.formales }}</td><td class="num">{{ g.informales }}</td><td class="num">{{ g.radio_m|round|int }} m</td>
+            {% if resultado.producto %}<td class="num"><span class="etiqueta-estado {{ 'critico' if g.cobertura_producto_pct < 30 else ('alerta' if g.cobertura_producto_pct < 60 else 'ok') }}">{{ g.cobertura_producto_pct }} %</span></td>{% endif %}
+            <td><small>{{ g.lectura }}</small></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="mensaje info">Con estos parámetros no hay concentraciones: prueba con una distancia mayor o menos comercios.</div>
+{% endif %}
+{% else %}
+<div class="mensaje alerta">El servicio de análisis no respondió; intenta en un momento.</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if resultado %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script>
+const resultado = {{ resultado|tojson }};
+const paleta = ['#25609e', '#c27c0e', '#237a4b', '#7a3e9d', '#b3322a', '#1f7f86', '#8a6d1f', '#3f4c9e'];
+const mapa = L.map('mapa').setView([25.70, -100.32], 11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 18, attribution: '&copy; OpenStreetMap'}).addTo(mapa);
+const limites = [];
+resultado.grupos.forEach((g, i) => {
+    const color = paleta[i % paleta.length];
+    L.circle([g.centro_latitud, g.centro_longitud], {radius: Math.max(g.radio_m, 30), color, weight: 2, fillOpacity: 0.08})
+        .bindPopup(`<strong>Concentración ${i + 1}</strong><br>${g.lectura}`).addTo(mapa);
+    g.comercios.forEach(c => {
+        L.circleMarker([c.latitud, c.longitud], {radius: 5, color: '#fff', weight: 1, fillColor: color, fillOpacity: 0.95})
+            .bindPopup(`<strong>${c.nombre}</strong><br>${c.sector}` + (c.con_producto === null ? '' :
+                       (c.con_producto ? '<br>Tiene el producto' : '<br><b>No tiene el producto</b>'))).addTo(mapa);
+        limites.push([c.latitud, c.longitud]);
+    });
+});
+resultado.aislados.forEach(c => {
+    L.circleMarker([c.latitud, c.longitud], {radius: 4, color: '#fff', weight: 1, fillColor: '#9aa39e', fillOpacity: 0.9})
+        .bindPopup(`<strong>${c.nombre}</strong><br>Aislado · ${c.sector}`).addTo(mapa);
+    limites.push([c.latitud, c.longitud]);
+});
+if (limites.length) mapa.fitBounds(limites, {padding: [20, 20]});
+if (resultado.grupos.length) {
+    Highcharts.chart('grafica-mezcla', {
+        chart: {type: 'column'}, title: {text: null}, credits: {enabled: false},
+        xAxis: {categories: resultado.grupos.map((g, i) => `#${i + 1} ${g.municipio_principal || ''}`)},
+        yAxis: {title: {text: 'Comercios'}, allowDecimals: false}, plotOptions: {column: {stacking: 'normal'}},
+        series: [{name: 'Formales', data: resultado.grupos.map(g => g.formales), color: '#25609e'},
+                 {name: 'Informales', data: resultado.grupos.map(g => g.informales), color: '#c27c0e'}]
+    });
+}
+</script>
+{% endif %}
+{% endblock %}

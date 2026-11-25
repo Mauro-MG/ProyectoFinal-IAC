@@ -17,6 +17,16 @@ class BrechasConsulta(BaseConsulta):
     por_pagina: int = Field(50, ge=1, le=500)
 
 
+class AgrupamientosConsulta(BaseConsulta):
+    radio_m: int = Field(400, ge=25, le=5000, description='ε de DBSCAN: distancia máxima entre vecinos (metros)')
+    minimo: int = Field(4, ge=1, le=100, description='MinPts de DBSCAN: comercios para formar un núcleo')
+    municipio: str | None = Field(None, max_length=100)
+    sector: Literal['Formal', 'Informal'] | None = None
+    producto_id: int | None = Field(None, ge=1, description='Cobertura de este producto en cada grupo')
+    solo_verificados: bool = True
+    incluir_comercios: bool = Field(False, description='Lista de comercios de cada grupo (para el mapa)')
+
+
 class MapaConsulta(BaseConsulta):
     producto_id: int | None = Field(None, ge=1, description='Colorea los comercios por existencia de este producto')
 
@@ -201,7 +211,48 @@ class GraficaSalida(Salida):
     series: list[Serie]
 
 
+class ComercioAgrupado(Salida):
+    id: str
+    nombre: str
+    sector: str
+    latitud: float
+    longitud: float
+    con_producto: bool | None = None
+
+
+class Grupo(Salida):
+    grupo: int
+    tamano: int
+    centro_latitud: float
+    centro_longitud: float
+    radio_m: float
+    distancia_media_m: float
+    nucleos: int
+    formales: int
+    informales: int
+    municipio_principal: str | None = None
+    con_producto: int | None = None
+    cobertura_producto_pct: float | None = None
+    lectura: str
+    comercios: list[ComercioAgrupado] = []
+
+
+class AgrupamientosSalida(Salida):
+    algoritmo: str
+    parametros: dict
+    comercios: int
+    validos: int
+    excluidos: int
+    grupos_encontrados: int
+    porcentaje_ruido: float
+    aislados: list[ComercioAgrupado] = []
+    grupos: list[Grupo]
+    tiempo_ms: float
+    producto: str | None = None
+
+
 CONTRATOS_XML = {
+    'agrupamientos': AgrupamientosSalida,
     'zonas': ZonasSalida, 'brechas': BrechasSalida, 'mapa': MapaSalida,
     'oportunidades': OportunidadesSalida, 'ejecucion': EjecucionSalida, 'evolucion': EvolucionSalida,
     'municipios': MunicipiosSalida, 'grafica': GraficaSalida,

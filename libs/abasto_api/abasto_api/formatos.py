@@ -34,7 +34,7 @@ SINGULARES = {
     'sesiones': 'sesion', 'errores': 'error', 'series': 'serie', 'datos': 'dato', 'categorias': 'categoria',
     'usuarios': 'usuario', 'snapshots': 'snapshot', 'resumen': 'renglon', 'consumidor': 'renglon',
     'mayoreo': 'renglon', 'faltantes': 'faltante', 'dependencias': 'dependencia', 'tendencia': 'punto',
-    'dependencias_caidas': 'dependencia',
+    'dependencias_caidas': 'dependencia', 'grupos': 'grupo', 'aislados': 'aislado',
     'roles': 'rol', 'permisos_disponibles': 'permiso', 'servicios': 'servicio', 'pasos': 'paso',
     'cercanas': 'cercana', 'importaciones': 'importacion', 'oportunidades': 'oportunidad', 'ids': 'id',
     # Entrega final

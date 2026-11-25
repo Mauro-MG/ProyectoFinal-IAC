@@ -5,6 +5,7 @@
     <xs:documentation>Contratos XML v1 de ms-analisis (AbastoRed). Codificación UTF-8. Los campos opcionales se omiten cuando no tienen valor.</xs:documentation>
   </xs:annotation>
   <!-- Elementos raíz: uno por petición o respuesta -->
+  <xs:element name="agrupamientos" type="AgrupamientosSalida"/>
   <xs:element name="brechas" type="BrechasSalida"/>
   <xs:element name="ejecucion" type="EjecucionSalida"/>
   <xs:element name="error" type="ErrorSalida"/>
@@ -17,6 +18,39 @@
   <xs:element name="salud" type="Salud"/>
   <xs:element name="zonas" type="ZonasSalida"/>
   <!-- Tipos -->
+  <xs:complexType name="AgrupamientosSalida">
+    <xs:all>
+      <xs:element name="algoritmo" type="xs:string" minOccurs="1"/>
+      <xs:element name="parametros" minOccurs="1">
+        <xs:complexType mixed="true">
+          <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="comercios" type="xs:integer" minOccurs="1"/>
+      <xs:element name="validos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="excluidos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="grupos_encontrados" type="xs:integer" minOccurs="1"/>
+      <xs:element name="porcentaje_ruido" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="aislados" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="aislado" maxOccurs="unbounded" type="ComercioAgrupado" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="grupos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="grupo" maxOccurs="unbounded" type="Grupo" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="tiempo_ms" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="producto" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
   <xs:complexType name="Brecha">
     <xs:all>
       <xs:element name="zona_id" type="xs:integer" minOccurs="1"/>
@@ -62,6 +96,16 @@
         </xs:complexType>
       </xs:element>
       <xs:element name="totales" type="TotalesBrecha" minOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="ComercioAgrupado">
+    <xs:all>
+      <xs:element name="id" type="xs:string" minOccurs="1"/>
+      <xs:element name="nombre" type="xs:string" minOccurs="1"/>
+      <xs:element name="sector" type="xs:string" minOccurs="1"/>
+      <xs:element name="latitud" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="longitud" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="con_producto" type="xs:boolean" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="Dependencia">
@@ -144,6 +188,30 @@
         <xs:complexType>
           <xs:sequence>
             <xs:element name="serie" maxOccurs="unbounded" type="Serie" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Grupo">
+    <xs:all>
+      <xs:element name="grupo" type="xs:integer" minOccurs="1"/>
+      <xs:element name="tamano" type="xs:integer" minOccurs="1"/>
+      <xs:element name="centro_latitud" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="centro_longitud" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="radio_m" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="distancia_media_m" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="nucleos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="formales" type="xs:integer" minOccurs="1"/>
+      <xs:element name="informales" type="xs:integer" minOccurs="1"/>
+      <xs:element name="municipio_principal" type="xs:string" minOccurs="0"/>
+      <xs:element name="con_producto" type="xs:integer" minOccurs="0"/>
+      <xs:element name="cobertura_producto_pct" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="lectura" type="xs:string" minOccurs="1"/>
+      <xs:element name="comercios" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="comercio" maxOccurs="unbounded" type="ComercioAgrupado" minOccurs="0"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>

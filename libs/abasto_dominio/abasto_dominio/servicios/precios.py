@@ -10,6 +10,7 @@ from sqlalchemy import case, cast, func
 from abasto_dominio.extensiones import db
 from abasto_dominio.modelos import (CatalogoProveedor, Categoria, Comercio, PrecioComercio, PrecioMayoreo, ProductoMaestro,
                         Proveedor, ZonaMunicipal, proveedor_zonas)
+from abasto_dominio.servicios.estadistica import mann_whitney
 
 SECTOR = case(
     (cast(Comercio.tipo_comercio, db.String).like('FORMAL%'), 'Formal'),
@@ -88,7 +89,28 @@ def precios_mayoreo(filtros):
             .all())
 
 
-def resumen_por_producto(consumidor, mayoreo):
+def muestras_por_sector(filtros):
+    """Precios individuales (no promedios) por producto y sector, para la prueba estadística."""
+    consulta = (db.session.query(ProductoMaestro.id, SECTOR, PrecioComercio.precio)
+                .join(ProductoMaestro, PrecioComercio.producto_id == ProductoMaestro.id)
+                .join(Comercio, PrecioComercio.comercio_id == Comercio.id)
+                .join(ZonaMunicipal, Comercio.zona_id == ZonaMunicipal.id)
+                .filter(PrecioComercio.activo.is_(True), PrecioComercio.estado_validacion == 'VALIDADO',
+                        PrecioComercio.fecha_registro >= filtros['desde'],
+                        PrecioComercio.fecha_registro < filtros['hasta_exclusivo']))
+    consulta = _filtrar_productos(consulta, filtros)
+    if filtros.get('zona_id'):
+        consulta = consulta.filter(ZonaMunicipal.id == filtros['zona_id'])
+    if filtros.get('municipio'):
+        consulta = consulta.filter(ZonaMunicipal.municipio == filtros['municipio'])
+    muestras = defaultdict(lambda: {'Formal': [], 'Informal': []})
+    for producto_id, sector, precio in consulta.all():
+        if sector in ('Formal', 'Informal'):
+            muestras[producto_id][sector].append(float(precio))
+    return muestras
+
+
+def resumen_por_producto(consumidor, mayoreo, individuales=None):
     """
     Une ambas consultas por producto: promedio formal, informal, mayoreo y el
     margen bruto estimado (precio promedio al consumidor vs. mejor precio de mayoreo).
@@ -112,7 +134,7 @@ def resumen_por_producto(consumidor, mayoreo):
         muestras = datos['Formal'][1] + datos['Informal'][1]
         consumidor_prom = ((datos['Formal'][0] + datos['Informal'][0]) / muestras) if muestras else None
         mayoreo_min = min(datos['mayoreo']) if datos['mayoreo'] else None
-        resumen.append({
+        fila = {
             'producto_id': producto_id,
             'producto': nombres[producto_id],
             'formal': formal,
@@ -121,7 +143,16 @@ def resumen_por_producto(consumidor, mayoreo):
             'mayoreo_min': mayoreo_min,
             'margen_pct': ((consumidor_prom - mayoreo_min) * 100 / consumidor_prom)
                           if consumidor_prom and mayoreo_min else None,
-        })
+        }
+        if individuales is not None:
+            # ¿La diferencia formal/informal es real o puede ser azar? Mann-Whitney sobre los precios individuales
+            m = individuales.get(producto_id, {'Formal': [], 'Informal': []})
+            prueba = mann_whitney(m['Informal'], m['Formal'])
+            fila.update(n_formal=prueba['n2'], n_informal=prueba['n1'], mediana_formal=prueba['mediana2'],
+                        mediana_informal=prueba['mediana1'], p_valor=prueba['p_valor'],
+                        diferencia_significativa=prueba['significativa'], efecto=prueba['efecto'],
+                        nota_prueba=prueba['nota'])
+        resumen.append(fila)
     return sorted(resumen, key=lambda r: r['producto'])
 
 

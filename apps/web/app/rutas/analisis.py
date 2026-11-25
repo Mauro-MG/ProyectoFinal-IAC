@@ -60,6 +60,21 @@ def cobertura():
         productos=ProductoMaestro.query.filter_by(activo=True).order_by(ProductoMaestro.nombre).all())
 
 
+@app.route('/analisis/agrupamientos')
+@login_required
+@permiso_requerido('analisis.ver')
+def agrupamientos():
+    """Concentraciones comerciales (DBSCAN en ms-analisis). No hay cálculo local de respaldo: el algoritmo vive en
+    el servicio."""
+    params = {'radio_m': request.args.get('radio_m', 400, type=int), 'minimo': request.args.get('minimo', 4, type=int),
+              'sector': request.args.get('sector') or None,
+              'producto_id': request.args.get('producto_id', type=int) or None}
+    resultado = _desde_servicio('/analisis/agrupamientos', {**{k: v for k, v in params.items() if v},
+                                                           'incluir_comercios': 'true'})
+    return render_template('analisis/agrupamientos.html', resultado=resultado, params=params,
+                           productos=ProductoMaestro.query.filter_by(activo=True).order_by(ProductoMaestro.nombre).all())
+
+
 @app.route('/analisis/cobertura/corte', methods=['POST'])
 @login_required
 @permiso_requerido('analisis.ver')

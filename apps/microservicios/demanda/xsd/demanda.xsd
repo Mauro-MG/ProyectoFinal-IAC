@@ -169,6 +169,7 @@
       <xs:element name="promedio_diario" type="xs:decimal" minOccurs="1"/>
       <xs:element name="pendiente_diaria" type="xs:decimal" minOccurs="1"/>
       <xs:element name="error_medio" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="evaluacion" type="Evaluacion" minOccurs="0"/>
       <xs:element name="total_estimado" type="xs:decimal" minOccurs="1"/>
       <xs:element name="estimacion" minOccurs="1">
         <xs:complexType>
@@ -177,6 +178,21 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Evaluacion">
+    <xs:annotation>
+      <xs:documentation>Holdout temporal: el modelo se ajusta sin los últimos `dias_prueba` y se compara con lo que pasó.</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="dias_entrenamiento" type="xs:integer" minOccurs="1"/>
+      <xs:element name="dias_prueba" type="xs:integer" minOccurs="1"/>
+      <xs:element name="mae" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="wape_pct" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="mae_ingenuo" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="wape_ingenuo_pct" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="mejora_vs_ingenuo_pct" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="error_entrenamiento" type="xs:decimal" minOccurs="1"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="HistoricaSalida">

@@ -149,6 +149,18 @@ class PuntoEstimado(Salida):
     maximo: float
 
 
+class Evaluacion(Salida):
+    """Holdout temporal: el modelo se ajusta sin los últimos `dias_prueba` y se compara con lo que pasó."""
+    dias_entrenamiento: int
+    dias_prueba: int
+    mae: float
+    wape_pct: float | None = None
+    mae_ingenuo: float
+    wape_ingenuo_pct: float | None = None
+    mejora_vs_ingenuo_pct: float | None = None
+    error_entrenamiento: float
+
+
 class EstimacionSalida(Salida):
     producto_id: int
     producto: str
@@ -156,7 +168,8 @@ class EstimacionSalida(Salida):
     metodo: str
     promedio_diario: float
     pendiente_diaria: float
-    error_medio: float
+    error_medio: float = Field(description='Error absoluto medio usado para el rango (el de la evaluación fuera de muestra)')
+    evaluacion: Evaluacion | None = Field(None, description='Sin dato si hay menos de 3 semanas de historia')
     total_estimado: float
     estimacion: list[PuntoEstimado]
 
