@@ -14,6 +14,7 @@ from abasto_dominio.modelos import ConfiguracionSistema
 CLAVE_VERSION = 'config:version'
 
 VALORES_POR_OMISION = {
+    'MONITOREO_INTERVALO_SEGUNDOS': 30,
     'COMISION_PEDIDO_PCT': 3,
     'PRECIO_DESTACADO_MENSUAL': 499,
     'UMBRAL_BRECHA_ALTA': 30,

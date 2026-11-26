@@ -1,0 +1,69 @@
+[2026-11-25 22:32:03,037] 0296db426743/INFO/locust.main: Starting Locust 2.32.2
+[2026-11-25 22:32:03,047] 0296db426743/INFO/locust.main: Run time limit set to 360 seconds
+[2026-11-25 22:32:03,052] 0296db426743/INFO/locust.runners: Ramping to 400 users at a rate of 2.00 per second
+[2026-11-25 22:35:23,374] 0296db426743/INFO/locust.runners: All users spawned: {"AnalistaEscritorio": 67, "Auditor": 33, "ComercianteMovil": 200, "VisitantePublico": 100} (400 total users)
+[2026-11-25 22:38:02,726] 0296db426743/INFO/locust.main: --run-time limit reached, shutting down
+[2026-11-25 22:38:02,887] 0296db426743/INFO/locust.main: writing html report to file: /mnt/locust/resultados/20261125_1632_estres/reporte.html
+[2026-11-25 22:38:02,900] 0296db426743/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      analisis GET /analisis/agrupamientos [xml]                                       435     0(0.00%) |    262     158     801    240 |    1.21        0.00
+GET      analisis GET /analisis/brechas [xml]                                             885     0(0.00%) |    193     114     701    170 |    2.46        0.00
+GET      analisis GET /analisis/zonas [xml]                                              1290     0(0.00%) |     52       5     413     42 |    3.59        0.00
+GET      auditoria GET /eventos                                                          1623     0(0.00%) |     19      10      99     19 |    4.51        0.00
+GET      auditoria GET /resumen                                                           834     0(0.00%) |     17       9      85     17 |    2.32        0.00
+GET      busqueda GET /buscar                                                            2785 2064(74.11%) |     56       3     926      6 |    7.74        5.74
+GET      comercios GET /comercios                                                         200     0(0.00%) |     10       7      27     10 |    0.56        0.00
+GET      demanda GET /demanda/estimacion [xml]                                            385     0(0.00%) |     32      23      84     32 |    1.07        0.00
+GET      disponibilidad GET /disponibilidad                                              2828 2435(86.10%) |      7       3      79      5 |    7.86        6.77
+GET      inventario GET /comercios/{id}/inventario                                       6666     0(0.00%) |     31      13     177     29 |   18.53        0.00
+GET      notificaciones /notificaciones/contador                                         5086     0(0.00%) |      6       3      82      6 |   14.14        0.00
+GET      pedidos GET /pedidos                                                            1644     0(0.00%) |     16       8      59     15 |    4.57        0.00
+GET      precios GET /precios/comparacion [xml]                                           877     0(0.00%) |     24      15     140     23 |    2.44        0.00
+GET      recomendaciones GET /recomendaciones/{id}                                       1612     0(0.00%) |    937     232    3505    700 |    4.48        0.00
+GET      reportes GET /reportes [xml]                                                     419     0(0.00%) |      6       4      31      6 |    1.16        0.00
+GET      ventas GET /ventas/productos                                                    1692     0(0.00%) |     12       7     117     10 |    4.70        0.00
+GET      ventas GET /ventas/resumen                                                      1671     0(0.00%) |     11       6     113      9 |    4.64        0.00
+POST     ventas POST /ventas                                                             1593     1(0.06%) |     62      25     194     58 |    4.43        0.00
+GET      web GET /                                                                       4318     0(0.00%) |     67      29     262     54 |   12.00        0.00
+GET      web GET /disponibilidad                                                         2768     0(0.00%) |     58      37     223     53 |    7.69        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                     39611 4500(11.36%) |     75       3    3505     23 |  110.11       12.51
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      analisis GET /analisis/agrupamientos [xml]                                            240    260    290    310    370    430    540    560    800    800    800    435
+GET      analisis GET /analisis/brechas [xml]                                                  170    190    210    230    290    350    440    530    700    700    700    885
+GET      analisis GET /analisis/zonas [xml]                                                     42     55     64     73    140    190    270    330    400    410    410   1290
+GET      auditoria GET /eventos                                                                 19     20     22     23     25     28     32     36     76     99     99   1623
+GET      auditoria GET /resumen                                                                 17     19     21     22     24     26     32     38     86     86     86    834
+GET      busqueda GET /buscar                                                                    6      7     11    120    190    320    430    530    840    930    930   2785
+GET      comercios GET /comercios                                                               10     11     11     11     13     16     17     19     28     28     28    200
+GET      demanda GET /demanda/estimacion [xml]                                                  32     34     36     37     39     42     46     51     84     84     84    385
+GET      disponibilidad GET /disponibilidad                                                      5      6      7      8     18     23     27     31     68     80     80   2828
+GET      inventario GET /comercios/{id}/inventario                                              29     33     36     38     47     56     70     84    130    180    180   6666
+GET      notificaciones /notificaciones/contador                                                 6      7      7      7      9     10     14     17     34     83     83   5086
+GET      pedidos GET /pedidos                                                                   15     17     18     19     22     24     27     31     47     60     60   1644
+GET      precios GET /precios/comparacion [xml]                                                 23     25     26     27     30     34     39     47    140    140    140    877
+GET      recomendaciones GET /recomendaciones/{id}                                             700   1000   1300   1500   2000   2600   3100   3200   3500   3500   3500   1612
+GET      reportes GET /reportes [xml]                                                            6      7      8      8      9     11     12     14     31     31     31    419
+GET      ventas GET /ventas/productos                                                           10     11     12     13     16     23     43     55    110    120    120   1692
+GET      ventas GET /ventas/resumen                                                              9     10     11     11     14     21     39     52    100    110    110   1671
+POST     ventas POST /ventas                                                                    58     63     68     72     84     99    120    130    190    190    190   1593
+GET      web GET /                                                                              54     82     91     96    110    130    150    170    220    260    260   4318
+GET      web GET /disponibilidad                                                                53     59     63     66     84    100    130    150    220    220    220   2768
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                             23     38     50     60    120    260    730   1300   3100   3400   3500  39611
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+2435               GET disponibilidad GET /disponibilidad: 429                                                         
+2064               GET busqueda GET /buscar: 429                                                                       
+1                  POST ventas POST /ventas: 409 {
+  "error": {
+    "codigo": "inventario_insuficiente",
+    "mensaje": "ms-inventario rechazó el movimiento: Partida 1: 
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+

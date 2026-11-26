@@ -69,8 +69,8 @@ rechacen.
 | `snapshots_precios` | ms-precios |
 | `ejecuciones_analisis` | ms-analisis |
 | `importaciones` | ms-inventario |
-| `archivos.files` / `archivos.chunks` (GridFS) | ms-documentos |
-| `reportes.files` / `reportes.chunks` (GridFS), `reportes_programados` | ms-reportes |
+| `archivos_metadatos` (el contenido está en Cloud Storage; `archivos.files`/`chunks` de GridFS quedan solo como origen de la migración) | ms-documentos |
+| `reportes_generados` (el archivo está en Cloud Storage; GridFS `reportes` solo para reportes anteriores), `reportes_programados` | ms-reportes |
 | `eventos_auditoria` | ms-auditoria (cada servicio agrega su copia al confirmar su transacción) |
 | `bitacora_peticiones` | **excepción**: `abasto_api` inserta una línea por petición en cada servicio; ms-monitoreo y ms-auditoria la consultan |
 
@@ -78,8 +78,8 @@ En MongoDB la regla la respeta el código, pero todavía no la impone la base: t
 mismo usuario. Crear un usuario de MongoDB por servicio, con permiso solo sobre sus colecciones, sería el
 equivalente a `05_roles.sql`. Hoy hay dos escrituras que no son del dueño:
 
-- ms-inventario guarda en GridFS el CSV de cada importación, como evidencia; el bucket `archivos` es de
-  ms-documentos.
+- ms-inventario guarda en Cloud Storage el CSV de cada importación, como evidencia, y registra su metadato
+  en `archivos_metadatos`, que es de ms-documentos.
 - Si ms-notificaciones no responde, `notificar()` escribe el aviso directo en `notificaciones` para que
   no se pierda.
 | `alertas_infraestructura` | ms-monitoreo |

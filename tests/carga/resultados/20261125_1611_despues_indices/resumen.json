@@ -1,0 +1,127 @@
+{
+  "fecha": "2026-11-25T16:11:03",
+  "commit": "d221929",
+  "etiqueta": "despues_indices",
+  "tablas": "movimientos_inventario=267669, detalle_ventas=240201, precios_comercio=202189, ventas=120011, inventario_comercio=66642, detalle_pedidos=45135, pedidos_abasto=15026",
+  "consultas": [
+    {
+      "consulta": "ventas_productos_mas_vendidos",
+      "origen": "ms-ventas GET /ventas/productos (app.py, mas_vendidos)",
+      "ms_ejecucion": 1.03,
+      "ms_disparadores_fk": 0,
+      "filas": 10,
+      "recorridos": [
+        "Bitmap Heap Scan on ventas",
+        "Bitmap Index Scan (idx_ventas_comercio_fecha)",
+        "Bitmap Heap Scan on detalle_ventas",
+        "Bitmap Index Scan (idx_detalle_ventas_venta)",
+        "Seq Scan on productos_maestros"
+      ]
+    },
+    {
+      "consulta": "reporte_ventas_por_dia",
+      "origen": "ms-reportes generadores.ventas",
+      "ms_ejecucion": 0.82,
+      "ms_disparadores_fk": 0,
+      "filas": 25,
+      "recorridos": [
+        "Bitmap Heap Scan on ventas",
+        "Bitmap Index Scan (idx_ventas_comercio_fecha)",
+        "Bitmap Heap Scan on detalle_ventas",
+        "Bitmap Index Scan (idx_detalle_ventas_venta)"
+      ]
+    },
+    {
+      "consulta": "inventario_de_un_comercio",
+      "origen": "ms-inventario GET /comercios/{id}/inventario",
+      "ms_ejecucion": 0.26,
+      "ms_disparadores_fk": 0,
+      "filas": 14,
+      "recorridos": [
+        "Bitmap Heap Scan on inventario_comercio",
+        "Bitmap Index Scan (inventario_comercio_comercio_id_producto_id_key)",
+        "Seq Scan on productos_maestros"
+      ]
+    },
+    {
+      "consulta": "pedidos_de_un_proveedor",
+      "origen": "ms-pedidos GET /pedidos (vista del proveedor)",
+      "ms_ejecucion": 0.19,
+      "ms_disparadores_fk": 0,
+      "filas": 19,
+      "recorridos": [
+        "Bitmap Heap Scan on pedidos_abasto",
+        "Bitmap Index Scan (idx_pedidos_proveedor_estado)"
+      ]
+    },
+    {
+      "consulta": "analisis_oferta_por_zona_producto",
+      "origen": "analisis._oferta_por_zona_producto (GET /analisis/zonas)",
+      "ms_ejecucion": 33.34,
+      "ms_disparadores_fk": 0,
+      "filas": 168,
+      "recorridos": [
+        "Seq Scan on inventario_comercio",
+        "Seq Scan on comercios"
+      ]
+    },
+    {
+      "consulta": "analisis_ventas_por_zona_producto",
+      "origen": "analisis._ventas_por_zona_producto (GET /analisis/zonas)",
+      "ms_ejecucion": 48.04,
+      "ms_disparadores_fk": 0,
+      "filas": 168,
+      "recorridos": [
+        "Bitmap Heap Scan on movimientos_inventario",
+        "Bitmap Index Scan (idx_movimientos_tipo_fecha)",
+        "Seq Scan on inventario_comercio",
+        "Seq Scan on comercios"
+      ]
+    },
+    {
+      "consulta": "analisis_precio_promedio_zona",
+      "origen": "analisis._precio_promedio_por_zona_producto",
+      "ms_ejecucion": 34.86,
+      "ms_disparadores_fk": 0,
+      "filas": 168,
+      "recorridos": [
+        "Seq Scan on precios_comercio",
+        "Seq Scan on comercios"
+      ]
+    },
+    {
+      "consulta": "disponibilidad_publica_producto",
+      "origen": "ms-disponibilidad GET /disponibilidad?producto_id=",
+      "ms_ejecucion": 4.6,
+      "ms_disparadores_fk": 0,
+      "filas": 50,
+      "recorridos": [
+        "Seq Scan on comercios",
+        "Bitmap Heap Scan on inventario_comercio",
+        "Bitmap Index Scan (idx_inventario_producto)"
+      ]
+    },
+    {
+      "consulta": "borrar_un_pedido (revision FK)",
+      "origen": "borrado de un pedido: revisa movimientos_inventario.pedido_id",
+      "ms_ejecucion": 3.16,
+      "ms_disparadores_fk": 2.85,
+      "filas": 0,
+      "recorridos": [
+        "Index Scan on pedidos_abasto (pedidos_abasto_pkey)"
+      ]
+    },
+    {
+      "consulta": "borrar_una_venta (revision FK)",
+      "origen": "borrado de una venta: revisa detalle_ventas.venta_id y devoluciones",
+      "ms_ejecucion": 2.27,
+      "ms_disparadores_fk": 1.92,
+      "filas": 0,
+      "recorridos": [
+        "Bitmap Heap Scan on detalle_ventas",
+        "Bitmap Index Scan (idx_detalle_ventas_venta)",
+        "Index Scan on ventas (ventas_pkey)"
+      ]
+    }
+  ]
+}

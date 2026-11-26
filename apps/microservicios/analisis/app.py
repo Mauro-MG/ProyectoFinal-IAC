@@ -21,14 +21,19 @@ from abasto_api import ErrorApi, Servicio, no_encontrado, sobre_lista, tiene, us
 from abasto_dominio.servicios import analisis, historicos
 from abasto_dominio.servicios.cache import obtener_o_calcular
 
-from esquemas import (CONTRATOS_XML, BrechasConsulta, EvolucionConsulta, GraficaConsulta, MapaConsulta,
-                      OportunidadesConsulta)
+from sqlalchemy import text
+
+from abasto_dominio.extensiones import db
+from abasto_dominio.servicios import agrupamiento
+from esquemas import (CONTRATOS_XML, AgrupamientosConsulta, BrechasConsulta, EvolucionConsulta, GraficaConsulta,
+                      MapaConsulta, OportunidadesConsulta)
 
 srv = Servicio('analisis', 'Análisis territorial',
                'Cobertura por zona, índice de acceso a la canasta básica y ranking de zonas, detección de brechas '
                'de surtido, zonas desatendidas, estadísticas territoriales por municipio, oportunidades de abasto, '
                'historial de ejecuciones y datos listos para Highcharts.',
-               xsd=Path(__file__).parent / 'xsd' / 'analisis.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'analisis.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 
@@ -50,6 +55,90 @@ def brechas(q):
     totales = {n: sum(1 for f in filas if f['nivel'] == n) for n in ('ALTA', 'MEDIA', 'BAJA', 'SIN_BRECHA')}
     return {**sobre_lista(filas[inicio:inicio + q.por_pagina], len(filas), q.pagina, q.por_pagina, 'brechas'),
             'totales': totales}
+
+
+def _comercios_para_agrupar(q):
+    filtros, parametros = ['c.activo', 'c.latitud IS NOT NULL'], {}
+    if q.solo_verificados:
+        filtros.append("c.estado_registro = 'VERIFICADO'")
+    if q.municipio:
+        filtros.append('c.municipio = :municipio')
+        parametros['municipio'] = q.municipio
+    if q.sector:
+        filtros.append("(c.tipo_comercio::text LIKE 'INFORMAL%') = :informal")
+        parametros['informal'] = q.sector == 'Informal'
+    con_producto = 'NULL'
+    if q.producto_id:
+        con_producto = ('EXISTS (SELECT 1 FROM inventario_comercio i WHERE i.comercio_id = c.id AND i.activo '
+                        'AND i.producto_id = :producto AND i.existencia > 0)')
+        parametros['producto'] = q.producto_id
+    filas = db.session.execute(text(
+        f"SELECT c.id::text AS id, c.nombre_comercio AS nombre, c.municipio, c.latitud, c.longitud, "
+        f"CASE WHEN c.tipo_comercio::text LIKE 'INFORMAL%' THEN 'Informal' ELSE 'Formal' END AS sector, "
+        f"{con_producto} AS con_producto FROM comercios c WHERE {' AND '.join(filtros)}"), parametros).mappings().all()
+    return [dict(f) for f in filas]
+
+
+def _lectura(datos, producto):
+    """Interpretación en una línea para el analista."""
+    mezcla = ('principalmente informal' if datos['informales'] > 2 * datos['formales'] else
+              'principalmente formal' if datos['formales'] > 2 * datos['informales'] else 'mixta')
+    texto = f"Concentración {mezcla} de {datos['tamano']} comercios en un radio de {round(datos['radio_m'])} m"
+    if datos['cobertura_producto_pct'] is not None:
+        texto += f"; {producto} disponible en {datos['cobertura_producto_pct']} % de ellos"
+        if datos['cobertura_producto_pct'] < 30:
+            texto += ' (brecha: oportunidad de abasto)'
+    return texto + '.'
+
+
+@srv.ruta('/analisis/agrupamientos', 'GET', resumen='Agrupamiento geográfico de comercios (DBSCAN)',
+          etiqueta='Cobertura', permisos=['analisis.ver'], consulta=AgrupamientosConsulta, raiz_xml='agrupamientos')
+def agrupamientos(q):
+    """DBSCAN con distancia haversine e índice de rejilla (O(n·k)): encuentra las concentraciones comerciales sin
+    fijar cuántas hay y marca como aislados a los comercios fuera de toda concentración. Para cada grupo: centro,
+    radio, mezcla formal/informal y, con `producto_id`, en cuántos comercios del grupo hay existencia del producto.
+    Detalle del algoritmo: docs/algoritmos.md."""
+    comercios = _comercios_para_agrupar(q)
+    por_id = {c['id']: c for c in comercios}
+    resultado = agrupamiento.agrupar([(c['id'], c['latitud'], c['longitud']) for c in comercios], q.radio_m, q.minimo)
+    producto = None
+    if q.producto_id:
+        fila = db.session.execute(text('SELECT nombre FROM productos_maestros WHERE id = :p'),
+                                  {'p': q.producto_id}).first()
+        if not fila:
+            raise no_encontrado('El producto')
+        producto = fila.nombre
+
+    def comercio(i):
+        c = por_id[i]
+        return {'id': i, 'nombre': c['nombre'], 'sector': c['sector'], 'latitud': float(c['latitud']),
+                'longitud': float(c['longitud']), 'con_producto': c['con_producto']}
+
+    grupos = []
+    for grupo in resultado['grupos']:
+        miembros = [por_id[i] for i in grupo['ids']]
+        municipios = {}
+        for m in miembros:
+            municipios[m['municipio']] = municipios.get(m['municipio'], 0) + 1
+        datos = {k: grupo[k] for k in ('grupo', 'tamano', 'centro_latitud', 'centro_longitud', 'radio_m',
+                                       'distancia_media_m', 'nucleos')}
+        datos.update(formales=sum(1 for m in miembros if m['sector'] == 'Formal'),
+                     informales=sum(1 for m in miembros if m['sector'] == 'Informal'),
+                     municipio_principal=max(municipios, key=municipios.get) if municipios else None)
+        if q.producto_id:
+            datos['con_producto'] = sum(1 for m in miembros if m['con_producto'])
+            datos['cobertura_producto_pct'] = round(datos['con_producto'] * 100 / len(miembros), 1)
+        else:
+            datos['con_producto'] = datos['cobertura_producto_pct'] = None
+        datos['lectura'] = _lectura(datos, producto)
+        datos['comercios'] = [comercio(i) for i in grupo['ids']] if q.incluir_comercios else []
+        grupos.append(datos)
+    grupos.sort(key=lambda d: -d['tamano'])
+    return {'algoritmo': 'DBSCAN (haversine, índice de rejilla)', 'parametros': resultado['parametros'],
+            'comercios': resultado['puntos'], 'validos': resultado['validos'], 'excluidos': len(resultado['excluidos']),
+            'grupos_encontrados': len(grupos), 'porcentaje_ruido': resultado['porcentaje_ruido'],
+            'aislados': [comercio(i) for i in resultado['ruido']] if q.incluir_comercios else [],
+            'grupos': grupos, 'tiempo_ms': resultado['tiempo_ms'], 'producto': producto}
 
 
 @srv.ruta('/analisis/mapa', 'GET', resumen='Puntos para el mapa de cobertura', etiqueta='Cobertura',

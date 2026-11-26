@@ -144,10 +144,20 @@ def test_gateway_limita_rafagas_por_ip():
         pytest.skip('No aplica: sólo existe al entrar por el gateway')
     from concurrent.futures import ThreadPoolExecutor
     # /health/live no lo limitan los servicios: si aparece un 429, sólo pudo ponerlo el gateway
-    with ThreadPoolExecutor(max_workers=25) as grupo:
-        respuestas = list(grupo.map(lambda _: requests.get(f"{base('catalogo')}/health/live", timeout=10), range(200)))
+    # Conexiones reutilizadas por hilo: contra un servidor remoto, abrir TLS en cada petición reparte la ráfaga en
+    # varios segundos y cabe en el margen del límite sin probarlo
+    import threading
+    locales = threading.local()
+
+    def pedir(_):
+        if not hasattr(locales, 'sesion'):
+            locales.sesion = requests.Session()
+        return locales.sesion.get(f"{base('catalogo')}/health/live", timeout=10)
+
+    with ThreadPoolExecutor(max_workers=50) as grupo:
+        respuestas = list(grupo.map(pedir, range(300)))
     limitadas = [r for r in respuestas if r.status_code == 429]
-    assert limitadas, 'el gateway dejó pasar 200 peticiones simultáneas'
+    assert limitadas, 'el gateway dejó pasar 300 peticiones simultáneas'
     assert limitadas[0].headers.get('X-Limitado-Por') == 'gateway'
     assert limitadas[0].json()['error']['codigo'] == 'limite_excedido'
     assert any(r.status_code == 200 for r in respuestas)  # el margen inicial sí pasa

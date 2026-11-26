@@ -86,3 +86,11 @@ def test_leer_xml_no_resuelve_entidades_externas():
     except ValueError:
         return  # rechazado: también es correcto
     assert 'root:' not in (datos.get('email') or '')
+
+
+def test_flotantes_pequenos_en_xml_sin_notacion_cientifica():
+    """xs:decimal no acepta '1.3e-05'; lo detectó la validación XSD de la app de escritorio."""
+    from abasto_api.formatos import _texto
+    assert _texto(1.3e-05) == '0.000013'
+    assert _texto(1e-12) == '0.000000000001'
+    assert _texto(2.5) == '2.5' and _texto(123456789.5) == '123456789.5'

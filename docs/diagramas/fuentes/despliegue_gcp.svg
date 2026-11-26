@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1110" viewBox="0 0 1600 1110" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <!-- Despliegue REAL de AbastoRed en Google Cloud (2026-11-25). Fuente editable de docs/diagramas/despliegue_gcp.png -->
+  <defs>
+    <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .t { font-size: 20px; font-weight: 700; fill: #0f172a; }
+      .s { font-size: 15px; fill: #475569; }
+      .p { font-size: 13px; fill: #64748b; }
+      .caja { fill: #fff; stroke: #64748b; stroke-width: 2; rx: 10; }
+      .app { fill: #ecfdf5; stroke: #15803d; stroke-width: 2; rx: 10; }
+      .dato { fill: #fef9c3; stroke: #a16207; stroke-width: 2; rx: 10; }
+      .gcp { fill: #eff6ff; stroke: #1d4ed8; stroke-width: 2; rx: 10; }
+      .linea { stroke: #475569; stroke-width: 2.2; fill: none; marker-end: url(#f); }
+      .discontinua { stroke-dasharray: 8 6; }
+    </style>
+  </defs>
+  <rect width="1600" height="1110" fill="#ffffff"/>
+  <text x="800" y="44" text-anchor="middle" font-size="28" font-weight="700" fill="#0f172a">AbastoRed en Google Cloud: despliegue real</text>
+  <text x="800" y="72" text-anchor="middle" class="s">Proyecto integracion-505802 · us-central1-c · https://34.135.84.31 · verificado el 25/11/2026</text>
+
+  <!-- Clientes -->
+  <rect class="caja" x="60" y="100" width="300" height="70"/><text x="210" y="130" text-anchor="middle" class="t">Navegador</text><text x="210" y="154" text-anchor="middle" class="p">sitio público y web por rol</text>
+  <rect class="caja" x="390" y="100" width="300" height="70"/><text x="540" y="130" text-anchor="middle" class="t">App Android</text><text x="540" y="154" text-anchor="middle" class="p">JSON · APK firmado</text>
+  <rect class="caja" x="720" y="100" width="300" height="70"/><text x="870" y="130" text-anchor="middle" class="t">App de escritorio</text><text x="870" y="154" text-anchor="middle" class="p">XML validado con XSD · MSI</text>
+  <rect class="caja" x="1210" y="100" width="330" height="70"/><text x="1375" y="130" text-anchor="middle" class="t">Equipo (despliegue)</text><text x="1375" y="154" text-anchor="middle" class="p">desplegar.sh · SSH por IAP</text>
+
+  <!-- Firewall -->
+  <rect x="40" y="220" width="1520" height="870" rx="14" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="10 6"/>
+  <text x="60" y="1074" font-size="15" font-weight="700" fill="#1d4ed8">Reglas de firewall (etiqueta abastored): 80/443 desde internet · 22 solo desde el rango de IAP 35.235.240.0/20</text>
+  <path class="linea" d="M210,170 L520,300"/><path class="linea" d="M540,170 L560,300"/><path class="linea" d="M870,170 L600,300"/>
+  <text x="905" y="212" class="s">HTTPS 443</text>
+  <path class="linea discontinua" d="M1375,170 L1375,300"/><text x="1385" y="270" class="p">SSH (IAP)</text>
+
+  <!-- VM -->
+  <rect x="70" y="270" width="1460" height="560" rx="12" fill="#f8fafc" stroke="#334155" stroke-width="2"/>
+  <text x="90" y="296" font-size="17" font-weight="700" fill="#0f172a">VM «integracion» · e2-standard-4 (4 vCPU, 16 GB) · CentOS Stream 10 · SELinux · firewalld · Docker Compose · disco 50 GB</text>
+
+  <rect class="app" x="440" y="310" width="300" height="80"/><text x="590" y="342" text-anchor="middle" class="t">Gateway nginx</text><text x="590" y="366" text-anchor="middle" class="p">TLS · límite 30 r/s por IP · /ms/&lt;servicio&gt;/</text>
+  <rect class="caja" x="1220" y="310" width="290" height="80"/><text x="1365" y="342" text-anchor="middle" class="t">/opt/abastored</text><text x="1365" y="366" text-anchor="middle" class="p">versiones/&lt;commit&gt; · compartido/</text>
+
+  <!-- red publica -->
+  <rect x="100" y="420" width="1080" height="190" rx="10" fill="none" stroke="#15803d" stroke-width="1.6" stroke-dasharray="6 5"/>
+  <text x="115" y="442" font-size="14" font-weight="700" fill="#15803d">red «publica» (interna de Docker): solo el gateway publica puertos</text>
+  <rect class="app" x="120" y="460" width="300" height="130"/><text x="270" y="494" text-anchor="middle" class="t">abastored-web</text><text x="270" y="518" text-anchor="middle" class="p">Flask + Gunicorn</text><text x="270" y="540" text-anchor="middle" class="p">escribe SOLO por las APIs</text><text x="270" y="562" text-anchor="middle" class="p">PostgreSQL de solo lectura</text>
+  <rect class="app" x="440" y="460" width="420" height="130"/><text x="650" y="494" text-anchor="middle" class="t">24 microservicios ms-*</text><text x="650" y="518" text-anchor="middle" class="p">Flask · JSON y XML con XSD · JWT + sesión en Redis</text><text x="650" y="540" text-anchor="middle" class="p">un usuario de PostgreSQL por servicio</text><text x="650" y="562" text-anchor="middle" class="p">salud: liveness / readiness / storage</text>
+  <rect class="app" x="880" y="460" width="280" height="130"/><text x="1020" y="494" text-anchor="middle" class="t">monitor-verificador</text><text x="1020" y="518" text-anchor="middle" class="p">revisa los 24 servicios</text><text x="1020" y="540" text-anchor="middle" class="p">cada 30 s (parámetro)</text><text x="1020" y="562" text-anchor="middle" class="p">historial con TTL en MongoDB</text>
+  <path class="linea" d="M520,390 L300,460"/><path class="linea" d="M600,390 L640,460"/>
+
+  <!-- red datos -->
+  <rect x="100" y="640" width="1080" height="170" rx="10" fill="none" stroke="#a16207" stroke-width="1.6" stroke-dasharray="6 5"/>
+  <text x="115" y="662" font-size="14" font-weight="700" fill="#a16207">red «datos» (interna, sin salida a internet): bases en contenedores con volúmenes</text>
+  <rect class="dato" x="120" y="680" width="320" height="110"/><text x="280" y="716" text-anchor="middle" class="t">PostgreSQL 16 + PostGIS</text><text x="280" y="742" text-anchor="middle" class="p">datos de negocio · roles por servicio</text>
+  <rect class="dato" x="460" y="680" width="320" height="110"/><text x="620" y="716" text-anchor="middle" class="t">MongoDB 7</text><text x="620" y="742" text-anchor="middle" class="p">auditoría, notificaciones, metadatos</text><text x="620" y="762" text-anchor="middle" class="p">de archivos, historial de salud</text>
+  <rect class="dato" x="800" y="680" width="360" height="110"/><text x="980" y="716" text-anchor="middle" class="t">Redis 7</text><text x="980" y="742" text-anchor="middle" class="p">sesiones JWT, caché, límites,</text><text x="980" y="762" text-anchor="middle" class="p">contadores, candados</text>
+  <path class="linea" d="M600,590 L320,680"/><path class="linea" d="M650,590 L640,680"/><path class="linea" d="M720,590 L940,680"/>
+
+  <!-- Servicios GCP -->
+  <rect class="gcp" x="1220" y="460" width="290" height="160"/><text x="1365" y="494" text-anchor="middle" class="t">Cloud Storage</text><text x="1365" y="518" text-anchor="middle" class="p">bucket privado</text><text x="1365" y="540" text-anchor="middle" class="p">abastored-archivos-integracion-505802</text><text x="1365" y="562" text-anchor="middle" class="p">fotos, documentos, reportes</text><text x="1365" y="584" text-anchor="middle" class="p">+ respaldos/ (vencen a 60 días)</text><text x="1365" y="604" text-anchor="middle" class="p">clientes descargan con URL firmada</text>
+  <rect class="gcp" x="1220" y="640" width="290" height="170"/><text x="1365" y="674" text-anchor="middle" class="t">IAM</text><text x="1365" y="698" text-anchor="middle" class="p">cuenta abastored-archivos</text><text x="1365" y="720" text-anchor="middle" class="p">suplantada por la VM</text><text x="1365" y="742" text-anchor="middle" class="p">(sin llaves descargadas)</text><text x="1365" y="764" text-anchor="middle" class="p">firma URL V4 con signBlob</text>
+  <path class="linea" d="M760,460 L760,412 L1365,412 L1365,460"/><text x="900" y="405" class="p">objetos (API de Cloud Storage)</text>
+  <path class="linea discontinua" d="M1365,640 L1365,622"/>
+
+  <!-- descarga directa -->
+  
+
+  <!-- respaldo -->
+  <rect class="caja" x="100" y="860" width="660" height="150"/>
+  <text x="120" y="892" class="t">Operación</text>
+  <text x="120" y="920" class="s">• Despliegue: git archive del commit → IAP → instalar_en_vm.sh</text>
+  <text x="120" y="944" class="s">• Respaldo diario 03:30 UTC: pg_dump + mongodump al bucket (SHA-256)</text>
+  <text x="120" y="968" class="s">• Simulacro de restauración en bases aparte: 44/44 tablas, 26/26 colecciones</text>
+  <text x="120" y="992" class="s">• Volver a una versión anterior: desplegar.sh &lt;commit&gt;</text>
+  <rect class="caja" x="800" y="860" width="710" height="150"/>
+  <text x="820" y="892" class="t">Verificación</text>
+  <text x="820" y="920" class="s">• 182 pruebas de integración contra el despliegue (15 omitidas: requieren Docker local)</text>
+  <text x="820" y="944" class="s">• 29 contenedores sanos · /health/storage contra el bucket real</text>
+  <text x="820" y="968" class="s">• Recorrido de la app Android y diagnóstico del instalador MSI contra GCP</text>
+  <text x="820" y="992" class="s">• Por qué bases en contenedores: costo y un solo equipo de práctica (ver apps/infra/README.md)</text>
+</svg>

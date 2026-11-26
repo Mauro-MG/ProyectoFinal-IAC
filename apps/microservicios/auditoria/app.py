@@ -35,7 +35,8 @@ from esquemas import (CONTRATOS_XML, ConciliacionEntrada, EventoEntrada, Eventos
 srv = Servicio('auditoria', 'Auditoría',
                'Bitácora centralizada de operaciones sensibles (usuario, servicio, fecha, identificador de '
                'correlación y cambios realizados), consulta por filtros y trazabilidad de operaciones distribuidas.',
-               xsd=Path(__file__).parent / 'xsd' / 'auditoria.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'auditoria.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 

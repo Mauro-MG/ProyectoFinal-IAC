@@ -1,0 +1,22 @@
+Method,Name,Error,Occurrences
+GET,ventas GET /ventas/productos,"CatchResponseError('503 {\n  ""error"": {\n    ""codigo"": ""sesiones_no_disponibles"",\n    ""mensaje"": ""No se pudo verificar la sesión: Redis no disponi')",39
+POST,ventas POST /ventas,"CatchResponseError('503 {\n  ""error"": {\n    ""codigo"": ""servicio_no_disponible"",\n    ""mensaje"": ""ms-inventario no respondió: ConnectionError."",\n  ')",23
+GET,inventario GET /comercios/{id}/inventario,"gaierror(-2, 'Name or service not known')",90
+GET,analisis GET /analisis/zonas [xml],"CatchResponseError('503 <?xml version=\'1.0\' encoding=\'UTF-8\'?>\n<error xmlns=""https://abastored.mx/esquemas/v1"">\n  <codigo>sesiones_no_disponible')",45
+GET,analisis GET /analisis/brechas [xml],"CatchResponseError('503 <?xml version=\'1.0\' encoding=\'UTF-8\'?>\n<error xmlns=""https://abastored.mx/esquemas/v1"">\n  <codigo>sesiones_no_disponible')",22
+GET,busqueda GET /buscar,CatchResponseError('429'),24
+GET,precios GET /precios/comparacion [xml],"CatchResponseError('503 <?xml version=\'1.0\' encoding=\'UTF-8\'?>\n<error xmlns=""https://abastored.mx/esquemas/v1"">\n  <codigo>sesiones_no_disponible')",23
+GET,inventario GET /comercios/{id}/inventario,"ConnectionResetError(104, 'Connection reset by peer')",1
+GET,inventario GET /comercios/{id}/inventario,"ConnectionRefusedError(111, 'Connection refused')",2
+POST,ventas POST /ventas,"CatchResponseError('503 {\n  ""error"": {\n    ""codigo"": ""sesiones_no_disponibles"",\n    ""mensaje"": ""No se pudo verificar la sesión: Redis no disponi')",59
+GET,inventario GET /comercios/{id}/inventario,"CatchResponseError('503 {\n  ""error"": {\n    ""codigo"": ""sesiones_no_disponibles"",\n    ""mensaje"": ""No se pudo verificar la sesión: Redis no disponi')",204
+GET,pedidos GET /pedidos,"CatchResponseError('503 {\n  ""error"": {\n    ""codigo"": ""sesiones_no_disponibles"",\n    ""mensaje"": ""No se pudo verificar la sesión: Redis no disponi')",36
+GET,disponibilidad GET /disponibilidad,CatchResponseError('429'),231
+GET,recomendaciones GET /recomendaciones/{id},"CatchResponseError('503 {\n  ""error"": {\n    ""codigo"": ""sesiones_no_disponibles"",\n    ""mensaje"": ""No se pudo verificar la sesión: Redis no disponi')",55
+GET,ventas GET /ventas/resumen,"CatchResponseError('503 {\n  ""error"": {\n    ""codigo"": ""sesiones_no_disponibles"",\n    ""mensaje"": ""No se pudo verificar la sesión: Redis no disponi')",51
+GET,auditoria GET /resumen,"CatchResponseError('503 {\n  ""error"": {\n    ""codigo"": ""sesiones_no_disponibles"",\n    ""mensaje"": ""No se pudo verificar la sesión: Redis no disponi')",24
+GET,notificaciones /notificaciones/contador,"CatchResponseError('503 {\n  ""error"": {\n    ""codigo"": ""sesiones_no_disponibles"",\n    ""mensaje"": ""No se pudo verificar la sesión: Redis no disponi')",148
+GET,analisis GET /analisis/agrupamientos [xml],"CatchResponseError('503 <?xml version=\'1.0\' encoding=\'UTF-8\'?>\n<error xmlns=""https://abastored.mx/esquemas/v1"">\n  <codigo>sesiones_no_disponible')",14
+GET,demanda GET /demanda/estimacion [xml],"CatchResponseError('503 <?xml version=\'1.0\' encoding=\'UTF-8\'?>\n<error xmlns=""https://abastored.mx/esquemas/v1"">\n  <codigo>sesiones_no_disponible')",13
+GET,auditoria GET /eventos,"CatchResponseError('503 {\n  ""error"": {\n    ""codigo"": ""sesiones_no_disponibles"",\n    ""mensaje"": ""No se pudo verificar la sesión: Redis no disponi')",40
+GET,reportes GET /reportes [xml],"CatchResponseError('503 <?xml version=\'1.0\' encoding=\'UTF-8\'?>\n<error xmlns=""https://abastored.mx/esquemas/v1"">\n  <codigo>sesiones_no_disponible')",9

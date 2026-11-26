@@ -92,3 +92,28 @@ def notificacion_eliminar(id):
     except ServicioNoDisponible:
         flash('El servicio de notificaciones no está disponible; intenta en un momento.', 'error')
     return redirect(request.referrer or url_for('notificaciones'))
+
+
+@app.route('/notificaciones/dispositivos')
+@login_required
+def dispositivos():
+    """Teléfonos con la app móvil y sesión abierta en esta cuenta. Al revocar uno, la app cierra la sesión al abrirse."""
+    try:
+        respuesta = llamar('notificaciones', 'GET', '/dispositivos')
+        lista = respuesta.datos.get('dispositivos', [])
+    except ServicioNoDisponible:
+        lista = None
+        flash('El servicio de notificaciones no está disponible; intenta en un momento.', 'error')
+    return render_template('notificaciones/dispositivos.html', dispositivos=lista)
+
+
+@app.route('/notificaciones/dispositivos/<token_final>/revocar', methods=['POST'])
+@login_required
+def dispositivo_revocar(token_final):
+    try:
+        respuesta = llamar('notificaciones', 'DELETE', f'/dispositivos/{token_final}')
+        flash('Dispositivo revocado: la app pedirá iniciar sesión otra vez.' if respuesta.ok
+              else respuesta.mensaje_error, 'ok' if respuesta.ok else 'error')
+    except ServicioNoDisponible:
+        flash('El servicio de notificaciones no está disponible; intenta en un momento.', 'error')
+    return redirect(url_for('dispositivos'))

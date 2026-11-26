@@ -1,0 +1,38 @@
+{
+  "fecha": "2026-11-25T16:15:05",
+  "commit": "d221929",
+  "mediciones": {
+    "/analisis/zonas": {
+      "con_cache": {
+        "n": 30,
+        "promedio_ms": 6.5,
+        "mediana_ms": 6.3,
+        "p95_ms": 7.4,
+        "max_ms": 9.1
+      },
+      "sin_cache": {
+        "n": 30,
+        "promedio_ms": 42.4,
+        "mediana_ms": 41.2,
+        "p95_ms": 44.7,
+        "max_ms": 60.3
+      }
+    },
+    "/analisis/mapa": {
+      "con_cache": {
+        "n": 30,
+        "promedio_ms": 49.8,
+        "mediana_ms": 47.3,
+        "p95_ms": 58.5,
+        "max_ms": 75.5
+      },
+      "sin_cache": {
+        "n": 30,
+        "promedio_ms": 255.2,
+        "mediana_ms": 245.0,
+        "p95_ms": 268.5,
+        "max_ms": 634.5
+      }
+    }
+  }
+}

@@ -16,7 +16,7 @@ import subprocess
 import pytest
 import requests
 
-from apoyo import MODO, RAIZ, base, sesion_de
+from apoyo import LOCAL, MODO, RAIZ, base, sesion_de
 
 
 def pytest_collection_modifyitems(config, items):
@@ -41,6 +41,9 @@ def secreto_jwt():
     """Para fabricar un token con la firma correcta (expirado o sin sesión): se lee del secreto local."""
     if os.environ.get('JWT_SECRET_KEY'):
         return os.environ['JWT_SECRET_KEY']
+    if not LOCAL:
+        pytest.skip('No aplica: el sistema es remoto y su secreto JWT no está en este equipo (pásalo en '
+                    'JWT_SECRET_KEY para correrlas)')
     for archivo in (RAIZ / 'secrets' / 'jwt_secret_key.txt', '/run/secrets/jwt_secret_key'):
         try:
             with open(archivo, encoding='utf-8') as f:
@@ -55,6 +58,8 @@ def docker():
     """Para las pruebas de resiliencia (detener y arrancar contenedores)."""
     if MODO == 'interno' or not shutil.which('docker'):
         pytest.skip('No aplica: requiere el CLI de Docker en el equipo anfitrión para detener contenedores')
+    if not LOCAL:
+        pytest.skip('No aplica: el sistema probado es remoto; no se detienen contenedores de producción')
 
     def ejecutar(*args):
         return subprocess.run(['docker', *args], capture_output=True, text=True, timeout=120)

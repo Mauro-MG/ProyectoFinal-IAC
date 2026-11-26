@@ -6,10 +6,13 @@
         <h1>Notificaciones</h1>
         <p>Avisos de pedidos, stock bajo, precios en revisión e importaciones. <small>Fuente: {{ fuente }}</small></p>
     </div>
-    <form method="post" action="{{ url_for('notificaciones_marcar_todas') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button class="btn">Marcar todas como leídas</button>
-    </form>
+    <div class="acciones">
+        <a class="btn" href="{{ url_for('dispositivos') }}">Dispositivos</a>
+        <form class="en-linea" method="post" action="{{ url_for('notificaciones_marcar_todas') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn">Marcar todas como leídas</button>
+        </form>
+    </div>
 </div>
 
 <form class="filtros" method="get">

@@ -7,7 +7,37 @@ proveedores. Cumple dos reglas:
 - **Solo usa XML.** Cada petición se valida contra el XSD del servicio antes de enviarse, y cada
   respuesta al llegar, incluidas las de error.
 
-## Cómo correrla
+## Instalación para el usuario final (Windows)
+
+El instalador `AbastoRed-<versión>-win64.msi` lleva Python, PySide6 y todo lo necesario. El usuario
+no instala nada más:
+
+1. Instala el `.msi` con doble clic.
+2. Abre «AbastoRed» desde el menú Inicio.
+
+Si no conecta, `AbastoRed-diagnostico.exe`, en la carpeta de instalación, revisa:
+- la dirección del servidor;
+- el certificado;
+- los contratos XSD;
+- el estado de los servicios.
+
+Para construir el instalador, en un equipo con Python 3.12:
+
+```bash
+cd apps/escritorio
+pip install -r requirements.txt cx_Freeze==7.2.3
+python instalador/construir_instalador.py --gateway https://<servidor> --certificado <certificado público .crt>
+```
+
+El `.msi` queda en `dist/`.
+- `--certificado` solo hace falta si el servidor usa un certificado autofirmado. El script rechaza
+  cualquier archivo que contenga una llave privada.
+- La dirección del servidor queda en `abastored.ini`. Cada usuario puede cambiarla en
+  `%APPDATA%\AbastoRed\abastored.ini`.
+
+Prueba en un entorno limpio: `docs/evidencias/instalador_escritorio/`.
+
+## Cómo correrla en desarrollo
 
 Con el sistema levantado (`docker compose up -d` en la raíz del repositorio):
 
@@ -26,7 +56,8 @@ Variables opcionales:
 | `ABASTORED_CARPETA` | `~/AbastoRed` | Bitácora local y reportes descargados |
 
 Usuarios de prueba: `coordinador@test.mx`, `analista@test.mx` y `proveedor@test.mx`, todos con la
-contraseña `Password123!`.
+contraseña `Password123!`. El administrador es `admin@abastored.mx` con `Admin123!`; ve además el
+catálogo y la configuración de zonas.
 
 ## Módulos
 
@@ -37,8 +68,11 @@ Cada usuario ve solo los módulos que permite su rol, según los permisos de su 
 | Validación de comercios | coordinación (`comercios.validar`) | ms-comercios `GET /comercios`, `PATCH /comercios/{id}/validacion` |
 | Verificación de proveedores | coordinación (`proveedores.verificar`) | ms-proveedores `PATCH /proveedores/{id}/verificacion` |
 | Pedidos recibidos | proveedor (`pedidos.atender`) | ms-pedidos: detalle, partidas y acciones (aceptar, preparar, despachar, rechazar) |
-| Precios | `precios.consultar` | ms-precios `/precios/comparacion` (formal, informal y mayoreo); revisión de precios atípicos |
-| Cobertura y brechas | `analisis.ver` | ms-analisis `/analisis/brechas`; exportación a CSV registrada en ms-auditoria (`POST /eventos`) |
+| Precios | `precios.consultar` | ms-precios `/precios/comparacion`: formal, informal y mayoreo, con la prueba de Mann-Whitney; revisión de precios atípicos |
+| Recomendaciones de surtido | `analisis.ver` | ms-recomendaciones `/recomendaciones/zonas/{id}` y `/efectividad`; ms-analisis `POST /analisis/ejecuciones` (ejecuta y guarda el análisis de cobertura); impresión |
+| Catálogo maestro | `catalogos.gestionar` | ms-catalogo: alta, edición y baja de productos; alta, activación y desactivación de categorías |
+| Configuración de zonas | `catalogos.gestionar` | ms-geolocalizacion `POST /zonas`, `PATCH /zonas/{id}` (centro, radio, población, activa); impresión |
+| Cobertura y brechas | `analisis.ver` | ms-analisis: brechas, **oportunidades de abasto** (`/analisis/oportunidades`) y concentraciones comerciales (`/analisis/agrupamientos`, DBSCAN). Cada tabla se exporta a CSV o PDF y se imprime; cada exportación o impresión queda en ms-auditoria (`POST /eventos`) |
 | Importar archivos | `integraciones.ejecutar`, `proveedor.catalogo` | ms-integraciones: plantilla, simulación e importación con errores por fila |
 | Reportes | `reportes.ver`, `pedidos.atender` | ms-reportes: genera el PDF, Excel, CSV o JSON, lo descarga y lo abre |
 | Mi actividad | todos | Bitácora local (SQLite); con `auditoria.ver`, la traza en ms-auditoria `GET /trazas/{id}` |

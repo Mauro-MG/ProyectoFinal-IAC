@@ -9,14 +9,17 @@
   <xs:element name="alerta_cierre" type="AlertaCierre"/>
   <xs:element name="alertas" type="AlertasSalida"/>
   <xs:element name="bases_datos" type="BasesDatosSalida"/>
+  <xs:element name="disponibilidad" type="DisponibilidadSalida"/>
   <xs:element name="error" type="ErrorSalida"/>
   <xs:element name="estado" type="EstadoGeneral"/>
   <xs:element name="evaluacion" type="EvaluacionSalida"/>
+  <xs:element name="historial" type="HistorialSalida"/>
   <xs:element name="metricas" type="MetricasSalida"/>
   <xs:element name="resultado" type="Resultado"/>
   <xs:element name="salud" type="Salud"/>
   <xs:element name="serie" type="SerieSalida"/>
   <xs:element name="servicio" type="ServicioEstado"/>
+  <xs:element name="verificacion" type="VerificacionSalida"/>
   <!-- Tipos -->
   <xs:complexType name="Alerta">
     <xs:all>
@@ -91,7 +94,9 @@
     <xs:all>
       <xs:element name="nombre" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="critica" type="xs:boolean" minOccurs="0"/>
       <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="detalle" type="xs:string" minOccurs="0"/>
       <xs:element name="error" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
@@ -99,7 +104,9 @@
     <xs:all>
       <xs:element name="nombre" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="critica" type="xs:boolean" minOccurs="0"/>
       <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="detalle" type="xs:string" minOccurs="0"/>
       <xs:element name="error" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
@@ -108,6 +115,52 @@
       <xs:element name="campo" type="xs:string" minOccurs="1"/>
       <xs:element name="mensaje" type="xs:string" minOccurs="1"/>
       <xs:element name="tipo" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DisponibilidadSalida">
+    <xs:all>
+      <xs:element name="fuente" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="historial"/>
+            <xs:enumeration value="ultima_verificacion"/>
+            <xs:enumeration value="en_vivo"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ultima_verificacion" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="intervalo_segundos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="ok" type="xs:integer" minOccurs="1"/>
+      <xs:element name="degradados" type="xs:integer" minOccurs="1"/>
+      <xs:element name="caidos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="servicios" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="servicio" maxOccurs="unbounded" type="DisponibilidadServicio" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="avisos" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="aviso" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="DisponibilidadServicio">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="ultima_verificacion" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="responsable" type="xs:string" minOccurs="0"/>
+      <xs:element name="disponibilidad_24h_pct" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="verificaciones_24h" type="xs:integer" minOccurs="0"/>
+      <xs:element name="fallas_24h" type="xs:integer" minOccurs="0"/>
+      <xs:element name="ultimo_error" type="xs:string" minOccurs="0"/>
+      <xs:element name="ultimo_error_fecha" type="xs:dateTime" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="ErrorSalida">
@@ -169,6 +222,19 @@
       </xs:element>
     </xs:all>
   </xs:complexType>
+  <xs:complexType name="HistorialSalida">
+    <xs:all>
+      <xs:element name="servicio" type="xs:string" minOccurs="1"/>
+      <xs:element name="horas" type="xs:integer" minOccurs="1"/>
+      <xs:element name="puntos" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="punto" maxOccurs="unbounded" type="PuntoHistorial" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
   <xs:complexType name="MetricaServicio">
     <xs:all>
       <xs:element name="servicio" type="xs:string" minOccurs="1"/>
@@ -197,6 +263,15 @@
       </xs:element>
     </xs:all>
   </xs:complexType>
+  <xs:complexType name="PuntoHistorial">
+    <xs:all>
+      <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="responsable" type="xs:string" minOccurs="0"/>
+      <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
   <xs:complexType name="PuntoSerie">
     <xs:all>
       <xs:element name="hora" type="xs:dateTime" minOccurs="1"/>
@@ -223,6 +298,15 @@
       <xs:element name="version" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
       <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="activo_segundos" type="xs:integer" minOccurs="0"/>
+      <xs:element name="tiempo_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="dependencias_caidas" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="dependencias" minOccurs="1">
         <xs:complexType>
           <xs:sequence>
@@ -270,7 +354,25 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+      <xs:element name="responsable" type="xs:string" minOccurs="0"/>
       <xs:element name="error" type="xs:string" minOccurs="0"/>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="VerificacionSalida">
+    <xs:all>
+      <xs:element name="revisado" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="servicios" type="xs:integer" minOccurs="1"/>
+      <xs:element name="ok" type="xs:integer" minOccurs="1"/>
+      <xs:element name="degradados" type="xs:integer" minOccurs="1"/>
+      <xs:element name="caidos" type="xs:integer" minOccurs="1"/>
+      <xs:element name="guardado_en" minOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="alertas_nuevas" type="xs:integer" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
 </xs:schema>

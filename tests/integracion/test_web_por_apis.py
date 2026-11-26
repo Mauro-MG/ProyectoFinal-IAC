@@ -201,7 +201,7 @@ def test_equipo_del_proveedor_lo_administra_ms_seguridad():
 
     r = dueno.enviar('/mi-empresa/equipo', {}, ruta_post=f"/mi-empresa/equipo/{operador['id']}/estado")
     assert r.status_code == 302
-    r = requests.post(url('seguridad', '/auth/login'), json={'email': email, 'password': 'Temporal2026'}, timeout=10)
+    r = _intentar_login(email, 'Temporal2026')
     assert r.status_code == 401   # ya no puede entrar
     assert _servicios('Usuario', operador['id']) == {'ms-seguridad'}
 
@@ -231,12 +231,34 @@ def test_si_el_servicio_rechaza_el_cambio_el_web_muestra_el_motivo():
     assert r.status_code == 200 and 'Ya existe esa categoría' in r.text
 
 
-def _login(email, clave):
+def _intentar_login(email, clave):
+    """Login respetando el límite por minuto de ms-seguridad (espera lo que indica Retry-After)."""
     for _ in range(3):
         r = requests.post(url('seguridad', '/auth/login'), json={'email': email, 'password': clave}, timeout=10)
         if r.status_code != 429:
             break
         time.sleep(int(r.headers.get('Retry-After', 30)) + 1)
+    return r
+
+
+def _login(email, clave):
+    r = _intentar_login(email, clave)
     assert r.status_code == 200, r.text[:200]
     return r.json()
 
+
+
+def test_revocar_dispositivo_desde_el_web_lo_hace_ms_notificaciones():
+    """El usuario ve sus teléfonos con la app (solo el final del token) y revoca uno; la app lo detecta al abrirse."""
+    token = 'android-' + uuid.uuid4().hex + uuid.uuid4().hex
+    api = sesion_de('minorista')
+    assert api.post('notificaciones', '/dispositivos',
+                    json={'token': token, 'plataforma': 'android', 'nombre': 'Telefono web'}).status_code == 201
+    web = Navegador()
+    web.enviar('/login', {'email': 'minorista@test.mx', 'password': 'Password123!'})
+    pagina = web.abrir('/notificaciones/dispositivos').text
+    assert 'Telefono web' in pagina and token[-8:] in pagina and token[:-8] not in pagina
+    r = web.enviar('/notificaciones/dispositivos', {}, f'/notificaciones/dispositivos/{token[-8:]}/revocar')
+    assert r.status_code == 302
+    activos = api.get('notificaciones', '/dispositivos').json()['dispositivos']
+    assert token[-8:] not in [d['token_final'] for d in activos]

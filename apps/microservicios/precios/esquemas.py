@@ -96,6 +96,14 @@ class ResumenProducto(Salida):
     diferencia_pct: float | None = None
     mayoreo_min: float | None = None
     margen_pct: float | None = None
+    n_formal: int | None = None
+    n_informal: int | None = None
+    mediana_formal: float | None = None
+    mediana_informal: float | None = None
+    p_valor: float | None = Field(None, description='Mann-Whitney U, dos colas')
+    diferencia_significativa: bool | None = Field(None, description='p < 0.05')
+    efecto: float | None = Field(None, description='Correlación biserial por rangos: < 0, lo informal es más barato')
+    nota_prueba: str | None = None
 
 
 class FilaConsumidor(Salida):

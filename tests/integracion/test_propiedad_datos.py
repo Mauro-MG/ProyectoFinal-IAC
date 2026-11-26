@@ -18,7 +18,7 @@ import subprocess
 
 import pytest
 
-from apoyo import MODO, RAIZ, sesion_de
+from apoyo import LOCAL, MODO, RAIZ, sesion_de
 
 # Especificación: tabla -> servicio dueño (el único que escribe). Debe coincidir con docs/propiedad_de_datos.md
 DUENOS = {
@@ -72,6 +72,8 @@ def sql():
 
     if not shutil.which('docker'):
         pytest.skip('No aplica: requiere el CLI de Docker en el equipo anfitrión para consultar PostgreSQL')
+    if not LOCAL:
+        pytest.skip('No aplica: el sistema es remoto; los permisos de la base se revisan en el equipo donde corre')
 
     def ejecutar(consulta, usuario='abastored_web'):
         r = subprocess.run(['docker', 'exec', 'abastored-postgres', 'psql', '-U', usuario, '-d', base, '-v',
@@ -133,7 +135,10 @@ def test_un_servicio_no_puede_escribir_en_una_tabla_ajena(sql):
 
 
 def test_los_servicios_se_conectan_con_su_propio_usuario(sql):
-    sesion_de('comerciante').get('ventas', '/ventas')   # abre la conexión de ms-ventas si aún no la tiene
+    # Una consulta real a ms-ventas (con su comercio) abre su conexión aunque ninguna prueba anterior lo haya usado
+    comerciante = sesion_de('comerciante')
+    comercio = comerciante.get('comercios', '/comercios').json()['items'][0]
+    assert comerciante.get('ventas', '/ventas', params={'comercio_id': comercio['id']}).status_code == 200
     usuarios = {f[0] for f in sql("SELECT DISTINCT usename FROM pg_stat_activity "
                                   "WHERE datname = current_database()")}  # procesos internos: sin base
     assert 'ms_ventas' in usuarios

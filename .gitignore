@@ -66,5 +66,5 @@ Thumbs.db
 secrets/
 # Certificado del gateway generado al arrancar
 infra/certs/
-# Reportes de pruebas generados
-reportes/
+# Reportes de pruebas generados (solo la carpeta de la raíz: apps/microservicios/reportes es un servicio)
+/reportes/

@@ -1,4 +1,5 @@
-"""Piezas comunes de la interfaz: tareas en segundo plano, tablas y mensajes."""
+"""Piezas comunes de la interfaz: tareas en segundo plano, tablas, impresión y mensajes."""
+import html
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -194,3 +195,46 @@ class Pantalla(QWidget):
 
     def al_mostrar(self):
         """Se llama la primera vez que el usuario abre el módulo."""
+
+
+# ---------------------------------------------------------------- impresión
+
+def documento_tabla(titulo, columnas, filas, subtitulo=''):
+    """HTML imprimible de una tabla (lo usan la vista previa de impresión y la exportación a PDF)."""
+    from PySide6.QtGui import QTextDocument
+    encabezado = ''.join(f'<th>{html.escape(t)}</th>' for _, t in columnas)
+    cuerpo = ''.join('<tr>' + ''.join(f'<td>{html.escape(formato(f.get(c)))}</td>' for c, _ in columnas) + '</tr>'
+                     for f in filas)
+    documento = QTextDocument()
+    documento.setHtml(
+        f'<h2>{html.escape(titulo)}</h2><p style="color:#555">{html.escape(subtitulo)} · '
+        f'Impreso el {datetime.now():%d/%m/%Y %H:%M} · AbastoRed</p>'
+        f'<table border="1" cellspacing="0" cellpadding="3" width="100%" style="border-collapse:collapse">'
+        f'<thead style="background:#e8f0eb"><tr>{encabezado}</tr></thead><tbody>{cuerpo}</tbody></table>'
+        f'<p style="color:#555">{len(filas)} renglones</p>')
+    return documento
+
+
+def imprimir_tabla(padre, titulo, columnas, filas, subtitulo=''):
+    """Vista previa de impresión (de ahí se imprime o se guarda como PDF con la impresora «Microsoft Print to PDF»)."""
+    from PySide6.QtPrintSupport import QPrintPreviewDialog, QPrinter
+    documento = documento_tabla(titulo, columnas, filas, subtitulo)
+    impresora = QPrinter(QPrinter.HighResolution)
+    from PySide6.QtGui import QPageLayout
+    impresora.setPageOrientation(QPageLayout.Landscape if len(columnas) > 6 else QPageLayout.Portrait)
+    vista = QPrintPreviewDialog(impresora, padre)
+    vista.setWindowTitle(f'Imprimir · {titulo}')
+    vista.paintRequested.connect(documento.print_)
+    return vista.exec()
+
+
+def exportar_pdf(ruta, titulo, columnas, filas, subtitulo=''):
+    """Misma tabla directo a un PDF (sin diálogo)."""
+    from PySide6.QtGui import QPageLayout
+    from PySide6.QtPrintSupport import QPrinter
+    impresora = QPrinter(QPrinter.HighResolution)
+    impresora.setOutputFormat(QPrinter.PdfFormat)
+    impresora.setOutputFileName(str(ruta))
+    impresora.setPageOrientation(QPageLayout.Landscape if len(columnas) > 6 else QPageLayout.Portrait)
+    documento_tabla(titulo, columnas, filas, subtitulo).print_(impresora)
+    return ruta

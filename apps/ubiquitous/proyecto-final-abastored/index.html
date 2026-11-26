@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AbastoRed — Proyecto final · Integración de Aplicaciones Computacionales</title>
+<meta name="description" content="AbastoRed: plataforma híbrida para comercio formal e informal. Proyecto final, Equipo 01.">
+<link rel="stylesheet" href="../assets/css/styles.css">
+<style>
+  .acceso { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 4px; }
+  .acceso a { background: var(--azul); color: #fff; font-weight: 700; padding: 9px 18px; border-radius: 8px; }
+  .acceso a.sec { background: #fff; color: var(--azul); border: 1px solid var(--azul); }
+  .acceso a:hover { text-decoration: none; opacity: .9; }
+  .capturas { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .capturas figure { margin: 0; background: #fff; border: 1px solid var(--borde); border-radius: var(--radius); overflow: hidden; }
+  .capturas img { display: block; width: 100%; height: 230px; object-fit: cover; object-position: top; border-bottom: 1px solid var(--borde); }
+  .capturas.movil img { height: 420px; }
+  .capturas figcaption { padding: 10px 14px; font-size: .84rem; color: var(--gris-claro); }
+  .capturas figcaption strong { display: block; color: var(--azul-osc); font-size: .9rem; }
+  .cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 16px 0; }
+  .cifras div { background: #fff; border: 1px solid var(--borde); border-radius: var(--radius); padding: 14px 16px; }
+  .cifras b { display: block; font-size: 1.6rem; color: var(--azul-osc); line-height: 1.2; }
+  .cifras span { font-size: .82rem; color: var(--gris-claro); }
+  @media (max-width: 600px) { .capturas img { height: 180px; } .capturas.movil img { height: 320px; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container">
+    <div class="topbar-marca">
+      <img src="../assets/img/udem-logo.png" alt="UDEM">
+      Proyecto final — AbastoRed
+    </div>
+    <nav class="topnav">
+      <a class="topbar-back" href="../index.html">← Portafolio</a>
+      <a href="#problema">Problema</a>
+      <a href="#arquitectura">Arquitectura</a>
+      <a href="#aplicaciones">Aplicaciones</a>
+      <a href="#despliegue">Despliegue</a>
+      <a href="#pruebas">Pruebas</a>
+      <a href="#galeria">Galería</a>
+      <a href="#equipo">Equipo</a>
+    </nav>
+  </div>
+</header>
+
+<section class="portada">
+  <div class="container">
+    <img class="sello" src="../assets/img/udem-logo.png" alt="Universidad de Monterrey">
+    <div class="franja">Integración de Aplicaciones Computacionales · 2026</div>
+    <h1>AbastoRed: plataforma híbrida para comercio formal e informal</h1>
+    <p class="subtitulo">Proyecto 14 · Equipo 01 · Proyecto final</p>
+    <dl class="portada-datos">
+      <dt>Equipo</dt><dd>01</dd>
+      <dt>Sistema en línea</dt><dd><a href="https://34.135.84.31/" style="color:#fde68a">https://34.135.84.31</a></dd>
+      <dt>Materia</dt><dd>Integración de Aplicaciones Computacionales</dd>
+    </dl>
+    <div class="acceso" style="justify-content:center">
+      <a href="https://34.135.84.31/">Abrir el sistema</a>
+      <a class="sec" href="https://34.135.84.31/disponibilidad">Disponibilidad por zona</a>
+      <a class="sec" href="https://github.com/Mauro-MG/ProyectoFinal-IAC">Código fuente</a>
+    </div>
+  </div>
+</section>
+
+<section class="bloque" id="problema">
+  <div class="container">
+    <h2><span class="num">01</span> Problema y alcance</h2>
+    <p class="lead">A quién sirve y qué resuelve.</p>
+    <p>
+      En el área metropolitana de Monterrey, buena parte de la canasta básica se vende en tianguis, puestos de mercado
+      y tiendas de barrio que no tienen sistemas. AbastoRed les da una forma sencilla de llevar inventario y precios,
+      pedir mercancía a proveedores mayoristas y saber qué les conviene surtir. Con esos mismos datos, el municipio
+      ve en qué zonas falta acceso a productos básicos.
+    </p>
+    <div class="grid-cards">
+      <div class="card"><h4>Comerciantes formales e informales</h4><p>Inventario, ventas, precios y pedidos de abasto desde el web o el teléfono, aun sin señal.</p></div>
+      <div class="card"><h4>Proveedores mayoristas</h4><p>Catálogo, pedido mínimo, zonas de entrega, equipo de operadores y entregas con QR.</p></div>
+      <div class="card"><h4>Analistas y municipio</h4><p>Cobertura territorial, brechas de surtido, comparación de precios y concentraciones comerciales.</p></div>
+      <div class="card"><h4>Público</h4><p>Dónde encontrar un producto y a cuánto, sin crear cuenta.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="bloque" id="arquitectura">
+  <div class="container">
+    <h2><span class="num">02</span> Arquitectura</h2>
+    <p class="lead">24 microservicios, cada uno dueño de sus datos, detrás de un gateway HTTPS.</p>
+    <ul>
+      <li><strong>24 microservicios</strong> en Flask. Cada uno es dueño de sus tablas y entra a PostgreSQL con su propio usuario. Hablan JSON y XML validado con XSD.</li>
+      <li><strong>Gateway nginx</strong>: el único que publica puertos. Termina TLS, limita ráfagas por IP y enruta <code>/ms/&lt;servicio&gt;/</code>.</li>
+      <li><strong>Datos</strong>:
+        <ul>
+          <li>PostgreSQL 16 + PostGIS para el negocio.</li>
+          <li>MongoDB 7 para auditoría, notificaciones, metadatos de archivos e historial de salud.</li>
+          <li>Redis 7 para sesiones JWT, caché y límites.</li>
+          <li>Google Cloud Storage para fotos, documentos y reportes, con URL firmadas temporales.</li>
+        </ul>
+      </li>
+      <li><strong>Sistema web</strong>: lee con un usuario de solo lectura y escribe solo por las APIs de los servicios dueños.</li>
+      <li><strong>Algoritmos</strong>:
+        <ul>
+          <li>DBSCAN geográfico (haversine) para concentraciones comerciales.</li>
+          <li>Pronóstico de demanda evaluado contra un modelo base.</li>
+          <li>Prueba de Mann-Whitney para comparar precios entre sectores.</li>
+        </ul>
+      </li>
+    </ul>
+    <div class="diagrama-wrap">
+      <img src="img/microservicios_24.png" alt="Los 24 microservicios agrupados por dominio, el gateway y las bases" loading="lazy">
+      <div class="diagrama-caption">Los 24 microservicios por dominio, generado del registro de servicios.</div>
+    </div>
+  </div>
+</section>
+
+<section class="bloque" id="aplicaciones">
+  <div class="container">
+    <h2><span class="num">03</span> Aplicaciones</h2>
+    <p class="lead">Tres clientes distintos, sobre las mismas APIs.</p>
+    <div class="grid-cards">
+      <div class="card"><h4>Web</h4><p>Sitio público y panel por rol: comerciante, proveedor, analista, coordinador, auditor y administrador.</p></div>
+      <div class="card"><h4>Android (Kotlin + Compose)</h4><p>Registro, inventario sin conexión con sincronización por lotes, escaneo de códigos de barras y QR de entrega, ubicación, cámara, abasto recomendado y avisos en segundo plano.</p></div>
+      <div class="card"><h4>Escritorio (PySide6)</h4><p>Solo XML validado con los XSD de cada servicio. Análisis, catálogo, zonas, exportación a CSV/PDF e instalador MSI.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="bloque" id="despliegue">
+  <div class="container">
+    <h2><span class="num">04</span> Despliegue en Google Cloud</h2>
+    <p class="lead">El sistema completo corre en Compute Engine. Esta página solo lo presenta: Ubiquitous no ejecuta contenedores.</p>
+    <div class="diagrama-wrap">
+      <img src="img/despliegue_gcp.png" alt="Diagrama del despliegue real en Google Cloud" loading="lazy">
+      <div class="diagrama-caption">Despliegue real verificado el 25/11/2026.</div>
+    </div>
+    <div class="aviso">
+      <strong>Certificado:</strong> el gateway usa un certificado autofirmado del equipo, porque no hay dominio propio.
+      El navegador mostrará una advertencia al abrir <code>https://34.135.84.31</code>. Las apps móvil y de escritorio
+      confían solo en ese certificado: no aceptan cualquiera.
+    </div>
+  </div>
+</section>
+
+<section class="bloque" id="pruebas">
+  <div class="container">
+    <h2><span class="num">05</span> Pruebas y evidencia</h2>
+    <p class="lead">Resultados medidos el 25/11/2026 contra el despliegue en Google Cloud.</p>
+    <div class="cifras">
+      <div><b>182</b><span>pruebas de integración aprobadas contra GCP (15 omitidas: requieren Docker local)</span></div>
+      <div><b>24 / 24</b><span>servicios en línea, revisados cada 30 s</span></div>
+      <div><b>44 / 44</b><span>tablas iguales en el simulacro de restauración del respaldo</span></div>
+      <div><b>6 / 6</b><span>pasos del recorrido de la app Android contra GCP</span></div>
+    </div>
+    <ul>
+      <li>URL firmadas: acceso autorizado, acceso denegado, archivo inválido y <strong>caducidad real</strong> en el bucket.</li>
+      <li>Instalador de escritorio: probado en un entorno sin Python. Valida los contratos XSD contra el servidor.</li>
+      <li>Revocar un teléfono desde el web cierra la sesión de la app la próxima vez que se abre.</li>
+    </ul>
+    <p>El detalle de cada prueba está en <code>docs/evidencias/</code> del repositorio.</p>
+  </div>
+</section>
+
+<section class="bloque" id="galeria">
+  <div class="container">
+    <h2><span class="num">06</span> Galería</h2>
+    <p class="lead">Capturas reales del sistema.</p>
+    <h3>Web</h3>
+    <div class="capturas">
+      <figure><a href="img/gcp_inicio.png"><img src="img/gcp_inicio.png" alt="Inicio público" loading="lazy"></a><figcaption><strong>Inicio público (GCP)</strong>Acceso a la canasta básica por zona.</figcaption></figure>
+      <figure><a href="img/web_inventario.png"><img src="img/web_inventario.png" alt="Inventario" loading="lazy"></a><figcaption><strong>Inventario del comerciante</strong>Existencia, mínimo, precio y estado.</figcaption></figure>
+      <figure><a href="img/web_agrupamientos.png"><img src="img/web_agrupamientos.png" alt="Concentraciones" loading="lazy"></a><figcaption><strong>Concentraciones comerciales</strong>DBSCAN geográfico sobre el mapa.</figcaption></figure>
+      <figure><a href="img/web_cobertura.png"><img src="img/web_cobertura.png" alt="Cobertura" loading="lazy"></a><figcaption><strong>Cobertura territorial</strong>Índice de acceso por zona.</figcaption></figure>
+      <figure><a href="img/web_monitoreo.png"><img src="img/web_monitoreo.png" alt="Monitoreo" loading="lazy"></a><figcaption><strong>Estado de los servicios</strong>Salud de dependencias y disponibilidad en 24 h.</figcaption></figure>
+      <figure><a href="img/web_auditoria.png"><img src="img/web_auditoria.png" alt="Auditoría" loading="lazy"></a><figcaption><strong>Auditoría</strong>Quién cambió qué y en qué servicio.</figcaption></figure>
+    </div>
+    <h3>Android</h3>
+    <div class="capturas movil">
+      <figure><a href="img/movil_11_comercio_ubicacion.png"><img src="img/movil_11_comercio_ubicacion.png" alt="Registro del comercio" loading="lazy"></a><figcaption><strong>Comercio con ubicación</strong>La zona se asigna con el GPS.</figcaption></figure>
+      <figure><a href="img/movil_13_abasto.png"><img src="img/movil_13_abasto.png" alt="Abasto recomendado" loading="lazy"></a><figcaption><strong>Abasto recomendado</strong>Lo que falta en la zona y se vende.</figcaption></figure>
+      <figure><a href="img/movil_14_ofertas.png"><img src="img/movil_14_ofertas.png" alt="Ofertas" loading="lazy"></a><figcaption><strong>Pedido a un proveedor</strong>Respeta mínimos y existencias.</figcaption></figure>
+      <figure><a href="img/movil_17_revocado.png"><img src="img/movil_17_revocado.png" alt="Sesión revocada" loading="lazy"></a><figcaption><strong>Dispositivo revocado</strong>La app vuelve al inicio de sesión.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="bloque" id="equipo">
+  <div class="container">
+    <h2><span class="num">07</span> Equipo</h2>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Integrante</th><th>Matrícula</th></tr></thead>
+        <tbody>
+          <tr><td>José Humberto Moreno</td><td>596055</td></tr>
+          <tr><td>David López</td><td>600390</td></tr>
+          <tr><td>Mauro Montelongo</td><td>595821</td></tr>
+          <tr><td>Humberto Alejandro Vargas Sánchez</td><td>604775</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- PENDIENTE (lo escribe el equipo): aportaciones de cada integrante, conclusiones y uso de IA.
+         No se llenan automáticamente: deben ser las palabras de cada quien. -->
+  </div>
+</section>
+
+<footer class="pie">
+  <div class="container">
+    <p><strong>AbastoRed</strong> · Proyecto 14, Equipo 01 · Universidad de Monterrey · 2026</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -44,6 +44,7 @@ srv = Servicio('ventas', 'Ventas',
 app = srv.app
 
 DOS = Decimal('0.01')
+ESPACIO_VENTAS = uuid.UUID('6f1d3c52-8a1e-4b7e-9c41-2b5e0a7d9f30')   # espacio fijo para uuid5(comercio:id_cliente)
 PorDevolver = namedtuple('PorDevolver', 'partida_id cantidad')
 
 
@@ -125,7 +126,10 @@ def registrar(datos):
             return {**venta_a_dict(previa), 'duplicada': True}, 200
     comercio = _comercio(datos.comercio_id)
     usuario = usuario_actual()
-    venta_id = uuid.uuid4()
+    # Con id_cliente, el id de la venta sale de él (siempre el mismo). Si ms-inventario tardó más que el timeout y
+    # aplicó la salida después de que esta petición se rindió, el reintento de la app usa la misma referencia
+    # `venta:{id}`: ms-inventario responde «ya aplicado» y no descuenta dos veces (tests/integracion/test_fallas.py).
+    venta_id = uuid.uuid5(ESPACIO_VENTAS, f'{comercio.id}:{datos.id_cliente}') if datos.id_cliente else uuid.uuid4()
     partidas, movimientos = [], []
     for i, p in enumerate(datos.partidas):
         if p.inventario_id:

@@ -39,6 +39,10 @@ class CategoriaEntrada(BaseEntrada):
     orden: int = Field(0, ge=0, le=999)
 
 
+class CategoriasConsulta(BaseConsulta):
+    incluir_inactivas: bool = False
+
+
 class CategoriaCambio(BaseEntrada):
     """Sólo cambian los campos enviados."""
     nombre: str | None = Field(None, min_length=3, max_length=100)

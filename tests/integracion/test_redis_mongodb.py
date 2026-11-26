@@ -33,6 +33,14 @@ def test_cache_de_zonas(api):
 def test_snapshot_diario_de_precios_es_idempotente(api):
     """Upsert sobre el índice único (fecha, comercio, producto): correr dos veces no duplica documentos."""
     analista = api('analista')
+    # El snapshot toma los precios de los últimos 7 días: se registra uno hoy para no depender de cuándo se cargó
+    # la base (con datos de más de una semana el snapshot correctamente da 0 documentos)
+    minorista = api('minorista')
+    comercio = minorista.get('comercios', '/comercios').json()['items'][0]
+    renglon = next(r for r in minorista.get('inventario', f"/comercios/{comercio['id']}/inventario").json()['renglones']
+                   if r['precio_venta'])
+    nuevo = round(renglon['precio_venta'] + 0.01, 2)
+    assert minorista.put('precios', f"/inventario/{renglon['id']}/precio", json={'precio': nuevo}).status_code == 200
     primero = analista.post('precios', '/precios/snapshots')
     segundo = analista.post('precios', '/precios/snapshots')
     assert primero.status_code == segundo.status_code == 201

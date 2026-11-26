@@ -89,16 +89,21 @@ def buscar_comercios(q, parametros):
         filtros.append('c.zona_id = :zona')
     if q.municipio:
         filtros.append('c.municipio = :municipio')
-    producto = (f'(SELECT max({relevancia("p.nombre")}) - 30 FROM inventario_comercio i '
-                f'JOIN productos_maestros p ON p.id = i.producto_id WHERE i.comercio_id = c.id AND i.activo '
-                f'{"AND i.existencia > 0" if q.con_existencia else ""})')
-    rel = f'GREATEST({relevancia("c.nombre_comercio", "c.colonia")}, COALESCE({producto}, 0))'
+    # Relevancia por producto que venden: se calcula UNA vez por producto del catálogo y se une con el inventario
+    # agrupado por comercio. (Antes era una subconsulta por comercio que recalculaba el texto de cada renglón de
+    # su inventario, dos veces: con 4 000 comercios tardaba ~500 ms por búsqueda; ver docs/rendimiento.md.)
+    por_producto = (f'SELECT i.comercio_id, max(pr.r) - 30 AS rp FROM inventario_comercio i '
+                    f'JOIN (SELECT id, {relevancia("nombre")} AS r FROM productos_maestros) pr '
+                    f'  ON pr.id = i.producto_id AND pr.r > 0 '
+                    f'WHERE i.activo {"AND i.existencia > 0" if q.con_existencia else ""} GROUP BY i.comercio_id')
+    rel = f'GREATEST({relevancia("c.nombre_comercio", "c.colonia")}, COALESCE(cp.rp, 0))'
     if q.con_existencia:
-        rel = f'COALESCE({producto}, 0)'
+        rel = 'COALESCE(cp.rp, 0)'
     return (f"SELECT 'comercio' AS tipo, c.id::text AS id, c.nombre_comercio AS nombre, c.colonia AS detalle, "
             f'z.nombre AS zona, c.municipio, {rel} AS relevancia, {_distancia("c", q)} AS distancia_km, '
             f'NULL::numeric AS existencia, NULL::numeric AS precio '
             f'FROM comercios c LEFT JOIN zonas_municipales z ON z.id = c.zona_id '
+            f'LEFT JOIN ({por_producto}) cp ON cp.comercio_id = c.id '
             f'WHERE {" AND ".join(filtros)} AND {rel} > 0')
 
 
@@ -121,7 +126,7 @@ def reportar_a_demanda(q, encontrados):
         llamar('demanda', 'POST', '/api/v1/demanda/busquedas', permisos_servicio=['demanda.registrar'],
                json={'texto': q.q[:120], 'zona_id': q.zona_id, 'resultados': encontrados, 'origen': 'busqueda',
                      'producto_id': None}, timeout=1)
-    except ErrorApi:
+    except (ErrorApi, RedisError):          # llamar() usa Redis (correlación/servicio): si falta, se omite
         current_app.logger.info('ms-demanda no registró la búsqueda (no disponible).')
 
 

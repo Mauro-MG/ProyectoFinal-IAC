@@ -17,6 +17,9 @@
 #   Cada servicio entra a PostgreSQL con su propio usuario (ms_<servicio>, db/postgres/05_roles.sql) y
 #   solo recibe SU contraseña (pg_ms_<servicio>); el web usa abastored_web, de solo lectura. La contraseña
 #   del superusuario solo la tiene el contenedor de PostgreSQL.
+# Archivos: Google Cloud Storage. En local se usa el emulador gcs-emulador (fake-gcs-server) con el mismo
+#   cliente de GCS; en Google Cloud se deja vacío STORAGE_EMULATOR_HOST en .env y se usa el bucket real
+#   (ver apps/infra/README.md). El bucket nunca es público: los archivos se entregan con URLs firmadas.
 # Desarrollo: docker-compose.dev.yml publica además los puertos en 127.0.0.1 (sólo este equipo).
 
 x-secretos-entorno: &secretos-entorno
@@ -24,6 +27,12 @@ x-secretos-entorno: &secretos-entorno
   JWT_SECRET_KEY_FILE: /run/secrets/jwt_secret_key
   MONGO_PASSWORD_FILE: /run/secrets/mongo_password
   REDIS_PASSWORD_FILE: /run/secrets/redis_password
+  # Cloud Storage (valores de .env; por omisión, el emulador local)
+  GCS_BUCKET: ${GCS_BUCKET:-abastored-archivos}
+  GCS_PROYECTO: ${GCS_PROYECTO:-abastored-local}
+  GCS_CUENTA_FIRMA: ${GCS_CUENTA_FIRMA:-}
+  STORAGE_EMULATOR_HOST: ${STORAGE_EMULATOR_HOST-http://gcs-emulador:4443}
+  GCS_URL_PUBLICA: ${GCS_URL_PUBLICA:-https://localhost/almacenamiento}
 
 x-microservicio: &microservicio
   env_file: .env
@@ -36,6 +45,10 @@ x-microservicio: &microservicio
     abastored-redis:
       condition: service_healthy
   networks: [publica, datos]
+  # Si un contenedor está detenido, su nombre deja de existir y el DNS interno de Docker pregunta afuera:
+  # sin esto cada llamada a Redis o a otro servicio caído esperaba hasta ~11 s (medido en
+  # tests/carga/recuperacion.sh). Con 1 s y un intento falla rápido y el servicio responde su 503.
+  dns_opt: ["timeout:1", "attempts:1"]
 
 services:
   # ------------------------------------------------------------------ entrada única
@@ -46,6 +59,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      GATEWAY_SAN: ${GATEWAY_SAN:-}           # nombres o IP públicas extra para el certificado (Google Cloud)
     volumes:
       - ./infra/certs:/etc/nginx/certs        # certificado autofirmado generado al primer arranque
     depends_on:
@@ -59,6 +74,7 @@ services:
       dockerfile: apps/web/Dockerfile
     container_name: abastored-web
     restart: unless-stopped
+    dns_opt: ["timeout:1", "attempts:1"]        # ver x-microservicio
     env_file: .env
     environment:
       <<: *secretos-entorno
@@ -273,6 +289,20 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_entregas
     secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_entregas]
 
+  # Verificación automática de salud cada MONITOREO_INTERVALO_SEGUNDOS: misma imagen y mismo usuario de base que
+  # ms-monitoreo, pero sin servidor HTTP (verificador.py). Guarda el historial y evalúa las alertas.
+  monitor-verificador:
+    <<: *microservicio
+    build: {context: ., dockerfile: apps/microservicios/monitoreo/Dockerfile}
+    container_name: monitor-verificador
+    command: ["python", "verificador.py"]
+    healthcheck: {disable: true}
+    environment:
+      <<: *secretos-entorno
+      POSTGRES_USER: ms_monitoreo
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_ms_monitoreo
+    secrets: [secret_key, jwt_secret_key, mongo_password, redis_password, pg_ms_monitoreo]
+
   ms-auditoria:
     <<: *microservicio
     build: {context: ., dockerfile: apps/microservicios/auditoria/Dockerfile}
@@ -334,6 +364,18 @@ services:
     networks: [publica, datos]
 
   # ------------------------------------------------------------------ datos (red privada)
+  # Emulador de Google Cloud Storage para desarrollo y pruebas (no se usa en Google Cloud). Los objetos
+  # persisten en el volumen gcs-data. No valida firmas: la expiración de URLs se prueba contra el bucket real.
+  gcs-emulador:
+    image: fsouza/fake-gcs-server:1.52.2
+    container_name: abastored-gcs-emulador
+    restart: unless-stopped
+    command: ["-scheme", "http", "-port", "4443", "-backend", "filesystem", "-filesystem-root", "/storage",
+              "-public-host", "localhost", "-external-url", "http://gcs-emulador:4443"]
+    volumes:
+      - gcs-data:/storage
+    networks: [datos, publica]   # publica: el gateway sirve las URLs firmadas en /almacenamiento/
+
   abastored-postgres:
     image: postgis/postgis:16-3.4-alpine
     container_name: abastored-postgres
@@ -458,6 +500,7 @@ networks:
     internal: true        # sin salida a internet ni puertos publicados: sólo la usan los contenedores
 
 volumes:
+  gcs-data:
   postgres-data:
   mongo-data:
   redis-data:

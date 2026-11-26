@@ -21,6 +21,7 @@ from sqlalchemy import text
 from abasto_api import Servicio, no_encontrado
 from abasto_dominio import extensiones
 from abasto_dominio.extensiones import db
+from abasto_dominio.servicios import pronostico
 
 from esquemas import (BusquedaEntrada, CONTRATOS_XML, EstimacionConsulta, HistoricaConsulta, NoSatisfechaConsulta,
                       ProductoConsulta, RegionesConsulta, TendenciasConsulta)
@@ -28,7 +29,8 @@ from esquemas import (BusquedaEntrada, CONTRATOS_XML, EstimacionConsulta, Histor
 srv = Servicio('demanda', 'Demanda',
                'Registro y análisis de demanda histórica, tendencias y estacionalidad; productos buscados y no '
                'disponibles; estimaciones de demanda; agregaciones por región, producto y periodo.',
-               xsd=Path(__file__).parent / 'xsd' / 'demanda.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'demanda.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 LECTORES = ['demanda.ver', 'analisis.ver', 'recomendaciones.ver']
@@ -198,33 +200,23 @@ def estacionalidad(q):
           permisos=LECTORES, consulta=EstimacionConsulta, raiz_xml='estimacion')
 def estimacion(q):
     """Regresión lineal (mínimos cuadrados) sobre las unidades diarias de `historia_dias`, multiplicada por el índice
-    del día de la semana. El rango es ± el error medio absoluto del ajuste en la historia."""
+    del día de la semana. El rango usa el error de la EVALUACIÓN fuera de muestra (los últimos días se separan, el
+    modelo se ajusta sin ellos y se comparan sus pronósticos con lo que pasó), no el error de entrenamiento.
+    `evaluacion` incluye el pronóstico ingenuo (mismo día de la semana anterior) como referencia."""
     producto = _producto(q.producto_id)
     serie = serie_diaria(q.producto_id, q.zona_id, q.historia_dias)
     dias, valores = list(serie), list(serie.values())
-    n = len(valores)
-    xs = range(n)
-    media_x, media_y = (n - 1) / 2, sum(valores) / n
-    var_x = sum((x - media_x) ** 2 for x in xs)
-    pendiente = sum((x - media_x) * (y - media_y) for x, y in zip(xs, valores)) / var_x if var_x else 0.0
-    ordenada = media_y - pendiente * media_x
-    por_dia = {}
-    for d, v in serie.items():
-        por_dia.setdefault(d.weekday(), []).append(v)
-    indice = {k: (sum(v) / len(v)) / media_y if media_y else 1.0 for k, v in por_dia.items()}
-    ajuste = [max(ordenada + pendiente * x, 0) * indice.get(dias[x].weekday(), 1.0) for x in xs]
-    error = sum(abs(a - y) for a, y in zip(ajuste, valores)) / n
-    estimados = []
-    for paso in range(1, q.horizonte_dias + 1):
-        fecha = dias[-1] + timedelta(days=paso)
-        valor = max(ordenada + pendiente * (n - 1 + paso), 0) * indice.get(fecha.weekday(), 1.0)
-        estimados.append({'fecha': fecha, 'unidades': round(valor, 2), 'minimo': round(max(valor - error, 0), 2),
-                          'maximo': round(valor + error, 2)})
+    modelo = pronostico.ajustar(dias, valores)
+    evaluacion = pronostico.evaluar(dias, valores)
+    error = evaluacion['mae'] if evaluacion else modelo['error_entrenamiento']
+    estimados = [{'fecha': fecha, 'unidades': round(valor, 2), 'minimo': round(max(valor - error, 0), 2),
+                  'maximo': round(valor + error, 2)}
+                 for fecha, valor in pronostico.pronosticar(modelo, dias[-1], q.horizonte_dias)]
     return {'producto_id': producto.id, 'producto': producto.nombre, 'zona_id': q.zona_id,
             'metodo': f'Regresión lineal sobre {q.historia_dias} días con índice por día de la semana',
-            'promedio_diario': round(media_y, 2), 'pendiente_diaria': round(pendiente, 4),
-            'error_medio': round(error, 2), 'total_estimado': round(sum(e['unidades'] for e in estimados), 2),
-            'estimacion': estimados}
+            'promedio_diario': round(modelo['media'], 2), 'pendiente_diaria': round(modelo['pendiente'], 4),
+            'error_medio': round(error, 2), 'evaluacion': evaluacion,
+            'total_estimado': round(sum(e['unidades'] for e in estimados), 2), 'estimacion': estimados}
 
 
 @srv.ruta('/demanda/regiones', 'GET', resumen='Demanda por municipio o zona', etiqueta='Agregados',

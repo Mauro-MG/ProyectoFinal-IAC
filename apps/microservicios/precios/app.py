@@ -135,7 +135,9 @@ def validar_precio(id, datos):
          )
 def comparacion(q):
     """Mínimo, promedio, máximo y muestras por producto, zona y sector (consumidor) y por proveedor (mayoreo);
-    el resumen une ambos y estima el margen bruto. Sólo precios VALIDADO."""
+    el resumen une ambos y estima el margen bruto. Sólo precios VALIDADO. Para cada producto, la prueba de
+    Mann-Whitney sobre los precios individuales dice si la diferencia formal/informal es estadísticamente
+    significativa (p < 0.05) y su tamaño (`efecto` entre -1 y 1; negativo: lo informal es más barato)."""
     hasta = q.hasta or date.today()
     desde = q.desde or hasta - timedelta(days=30)
     if desde > hasta:
@@ -151,7 +153,8 @@ def comparacion(q):
     fila = lambda r: {k: v for k, v in r._asdict().items()}  # noqa: E731
     return {
         'desde': desde, 'hasta': hasta,
-        'resumen': servicio_precios.resumen_por_producto(consumidor, mayoreo),
+        'resumen': servicio_precios.resumen_por_producto(
+            consumidor, mayoreo, servicio_precios.muestras_por_sector(filtros) if q.tipo != 'mayoreo' else None),
         'consumidor': [fila(r) for r in consumidor],
         'mayoreo': [{**fila(r), 'proveedor_id': str(r.proveedor_id)} for r in mayoreo],
     }

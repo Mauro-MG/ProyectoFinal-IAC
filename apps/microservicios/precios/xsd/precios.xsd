@@ -71,7 +71,9 @@
     <xs:all>
       <xs:element name="nombre" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="critica" type="xs:boolean" minOccurs="0"/>
       <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="detalle" type="xs:string" minOccurs="0"/>
       <xs:element name="error" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
@@ -345,6 +347,14 @@
       <xs:element name="diferencia_pct" type="xs:decimal" minOccurs="0"/>
       <xs:element name="mayoreo_min" type="xs:decimal" minOccurs="0"/>
       <xs:element name="margen_pct" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="n_formal" type="xs:integer" minOccurs="0"/>
+      <xs:element name="n_informal" type="xs:integer" minOccurs="0"/>
+      <xs:element name="mediana_formal" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="mediana_informal" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="p_valor" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="diferencia_significativa" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="efecto" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="nota_prueba" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="Salud">
@@ -353,6 +363,15 @@
       <xs:element name="version" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
       <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="activo_segundos" type="xs:integer" minOccurs="0"/>
+      <xs:element name="tiempo_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="dependencias_caidas" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="dependencias" minOccurs="1">
         <xs:complexType>
           <xs:sequence>

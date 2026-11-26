@@ -40,7 +40,8 @@ srv = Servicio('sincronizacion', 'Sincronización',
                'Sincronización de operaciones offline desde Android y escritorio: recepción de lotes JSON/XML, '
                'identificadores únicos, control de duplicados, resolución de conflictos, reintentos y confirmación '
                'de registros sincronizados.',
-               xsd=Path(__file__).parent / 'xsd' / 'sincronizacion.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'sincronizacion.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 MONTERREY = timezone(timedelta(hours=-6))

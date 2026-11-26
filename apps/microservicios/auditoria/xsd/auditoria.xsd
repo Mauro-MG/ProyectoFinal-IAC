@@ -49,7 +49,9 @@
     <xs:all>
       <xs:element name="nombre" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="critica" type="xs:boolean" minOccurs="0"/>
       <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="detalle" type="xs:string" minOccurs="0"/>
       <xs:element name="error" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
@@ -342,6 +344,15 @@
       <xs:element name="version" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
       <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="activo_segundos" type="xs:integer" minOccurs="0"/>
+      <xs:element name="tiempo_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="dependencias_caidas" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="dependencias" minOccurs="1">
         <xs:complexType>
           <xs:sequence>

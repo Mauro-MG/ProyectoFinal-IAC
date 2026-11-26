@@ -1,0 +1,58 @@
+#65 naming to docker.io/library/abastored-limpio-gateway:latest done
+#77 naming to docker.io/library/abastored-limpio-abastored-web:latest done
+#229 naming to docker.io/library/abastored-limpio-ms-abastecimiento:latest
+#229 naming to docker.io/library/abastored-limpio-ms-abastecimiento:latest 0.6s done
+#228 naming to docker.io/library/abastored-limpio-ms-auditoria:latest 0.9s done
+#205 naming to docker.io/library/abastored-limpio-ms-geolocalizacion:latest 0.7s done
+#208 naming to docker.io/library/abastored-limpio-ms-demanda:latest 0.7s done
+#207 naming to docker.io/library/abastored-limpio-ms-inventario:latest 0.7s done
+#210 naming to docker.io/library/abastored-limpio-ms-pedidos:latest 0.6s done
+#233 naming to docker.io/library/abastored-limpio-ms-sincronizacion:latest
+#237 naming to docker.io/library/abastored-limpio-ms-entregas:latest
+#212 naming to docker.io/library/abastored-limpio-ms-integraciones:latest 0.7s done
+#238 naming to docker.io/library/abastored-limpio-ms-documentos:latest
+#238 naming to docker.io/library/abastored-limpio-ms-documentos:latest 1.7s done
+#218 naming to docker.io/library/abastored-limpio-ms-seguridad:latest 2.3s done
+#215 naming to docker.io/library/abastored-limpio-ms-disponibilidad:latest 1.0s done
+#221 naming to docker.io/library/abastored-limpio-ms-precios:latest 2.0s done
+#227 naming to docker.io/library/abastored-limpio-ms-busqueda:latest 0.3s done
+#239 naming to docker.io/library/abastored-limpio-ms-monitoreo:latest
+#239 naming to docker.io/library/abastored-limpio-ms-monitoreo:latest 0.1s done
+#241 naming to docker.io/library/abastored-limpio-ms-ventas:latest 0.1s done
+#230 naming to docker.io/library/abastored-limpio-ms-catalogo:latest 2.3s done
+#231 naming to docker.io/library/abastored-limpio-ms-analisis:latest 2.4s done
+#232 naming to docker.io/library/abastored-limpio-ms-notificaciones:latest 1.5s done
+#240 naming to docker.io/library/abastored-limpio-ms-comercios:latest 0.1s done
+#234 naming to docker.io/library/abastored-limpio-ms-recomendaciones:latest 1.9s done
+#235 naming to docker.io/library/abastored-limpio-ms-configuracion:latest 0.8s done
+#236 naming to docker.io/library/abastored-limpio-ms-proveedores:latest 1.8s done
+#242 naming to docker.io/library/abastored-limpio-ms-reportes:latest
+#242 naming to docker.io/library/abastored-limpio-ms-reportes:latest 1.2s done
+#237 naming to docker.io/library/abastored-limpio-ms-entregas:latest 1.6s done
+#233 naming to docker.io/library/abastored-limpio-ms-sincronizacion:latest 2.3s done
+Image abastored-limpio-ms-ventas Built 
+Image abastored-limpio-ms-analisis Built 
+Image abastored-limpio-ms-precios Built 
+Image abastored-limpio-ms-documentos Built 
+Image abastored-limpio-ms-recomendaciones Built 
+Image abastored-limpio-ms-inventario Built 
+Image abastored-limpio-ms-reportes Built 
+Image abastored-limpio-ms-demanda Built 
+Image abastored-limpio-abastored-web Built 
+Image abastored-limpio-ms-busqueda Built 
+Image abastored-limpio-ms-abastecimiento Built 
+Image abastored-limpio-ms-auditoria Built 
+Image abastored-limpio-ms-pedidos Built 
+Image abastored-limpio-ms-catalogo Built 
+Image abastored-limpio-ms-proveedores Built 
+Image abastored-limpio-ms-integraciones Built 
+Image abastored-limpio-ms-comercios Built 
+Image abastored-limpio-ms-seguridad Built 
+Image abastored-limpio-ms-entregas Built 
+Image abastored-limpio-ms-geolocalizacion Built 
+Image abastored-limpio-ms-sincronizacion Built 
+Image abastored-limpio-ms-notificaciones Built 
+Image abastored-limpio-ms-configuracion Built 
+Image abastored-limpio-ms-disponibilidad Built 
+Image abastored-limpio-ms-monitoreo Built 
+Image abastored-limpio-gateway Built 

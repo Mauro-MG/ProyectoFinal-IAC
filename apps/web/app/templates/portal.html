@@ -44,6 +44,7 @@
         {% if p('analisis.ver') %}
             {{ opcion('cobertura', 'Cobertura territorial') }}
             {{ opcion('brechas', 'Brechas de surtido') }}
+            {{ opcion('agrupamientos', 'Concentraciones comerciales') }}
             {% if not p('catalogos.gestionar') %}{{ opcion('zonas_lista', 'Zonas', 'zona') }}{% endif %}
         {% endif %}
         {% if p('reportes.ver') or p('pedidos.atender') %}{{ opcion('reportes', 'Reportes', 'export') }}{% endif %}

@@ -3,7 +3,8 @@ ms-monitoreo: estado, métricas y alertas de los 24 microservicios y de las base
 
 - Salud: consulta en paralelo el /health de cada servicio del registro único
   (abasto_dominio.registro_servicios) por la red interna de Docker. Un servicio que no
-  responde no retrasa a los demás (tiempo de espera de 2 s por servicio).
+  responde no retrasa a los demás (se revisan en paralelo; espera de 8 s: un /health con una
+  dependencia caída tarda más en contestar y así se conserva el diagnóstico de la causa).
 - Bases de datos: latencia, versión, conexiones y tamaño de PostgreSQL, MongoDB y Redis.
 - Métricas: pipeline de agregación sobre `bitacora_peticiones` (MongoDB): peticiones, errores,
   latencia promedio, p95 y máxima por servicio; y los contadores del día que lleva cada
@@ -12,6 +13,13 @@ ms-monitoreo: estado, métricas y alertas de los 24 microservicios y de las base
   servicio caído, base de datos caída, latencia p95 o tasa de errores 5xx por encima del
   umbral configurado en ms-configuracion (MONITOREO_LATENCIA_ALERTA_MS, MONITOREO_ERRORES_ALERTA_PCT).
   Una alerta se abre una sola vez y se cierra sola cuando la condición desaparece.
+- Verificación periódica AUTOMÁTICA: el contenedor monitor-verificador (verificador.py, misma imagen)
+  revisa cada MONITOREO_INTERVALO_SEGUNDOS los 24 servicios, sus dependencias (PostgreSQL, Redis,
+  MongoDB y el bucket de Cloud Storage), guarda el historial en `verificaciones_salud` (MongoDB, 30
+  días) y evalúa las alertas. GET /disponibilidad muestra estado, última verificación, latencia,
+  disponibilidad de 24 h, último error y la dependencia responsable.
+- Si una dependencia del propio monitor cae, sigue informando: sin MongoDB guarda la última
+  verificación en Redis; sin MongoDB ni Redis, /disponibilidad revisa en vivo y lo indica en `fuente`.
 """
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -30,12 +38,15 @@ from abasto_dominio.extensiones import db
 from abasto_dominio.servicios.notificaciones import notificar
 from abasto_dominio.servicios.parametros import parametro
 
-from esquemas import AlertaCierre, AlertasConsulta, CONTRATOS_XML, MetricasConsulta
+import json
+
+from esquemas import AlertaCierre, AlertasConsulta, CONTRATOS_XML, HistorialConsulta, MetricasConsulta
 
 srv = Servicio('monitoreo', 'Monitoreo',
                'Estado de los microservicios, comprobaciones de salud y disponibilidad, métricas operativas (fallas y '
                'latencia), disponibilidad de las bases de datos y alertas de infraestructura.',
-               xsd=Path(__file__).parent / 'xsd' / 'monitoreo.xsd', contratos=CONTRATOS_XML)
+               xsd=Path(__file__).parent / 'xsd' / 'monitoreo.xsd', contratos=CONTRATOS_XML,
+               opcionales=())  # MongoDB es crítica: es dueño de colecciones ahí
 app = srv.app
 
 
@@ -43,7 +54,14 @@ def _alertas():
     return extensiones.mongo_db()['alertas_infraestructura']
 
 
-def revisar_servicio(nombre, base, timeout=2):
+def _verificaciones():
+    return extensiones.mongo_db()['verificaciones_salud']
+
+
+CLAVE_ULTIMA = 'monitoreo:ultima_verificacion'
+
+
+def revisar_servicio(nombre, base, timeout=8):
     puerto, descripcion = registro_servicios.SERVICIOS[nombre]
     datos = {'servicio': f'ms-{nombre}', 'puerto_desarrollo': puerto, 'descripcion': descripcion, 'dependencias': []}
     inicio = time.perf_counter()
@@ -51,12 +69,18 @@ def revisar_servicio(nombre, base, timeout=2):
         respuesta = requests.get(f'{base}/health', timeout=timeout)
         cuerpo = respuesta.json()
         caidas = [d for d in cuerpo.get('dependencias', []) if d.get('estado') != 'ok']
-        estado = 'ok' if respuesta.status_code == 200 else ('degradado' if len(caidas) < len(cuerpo.get('dependencias', [1])) else 'caido')
+        # El propio servicio dice si está ok, degradado (cayó una dependencia opcional) o caido (una crítica)
+        estado = cuerpo.get('estado') if cuerpo.get('estado') in ('ok', 'degradado', 'caido') else (
+            'ok' if respuesta.status_code == 200 else 'caido')
+        responsable = next((d['nombre'] for d in caidas if d.get('critica', True)), None) or \
+            (caidas[0]['nombre'] if caidas else None)
         return {**datos, 'estado': estado, 'http': respuesta.status_code, 'version': cuerpo.get('version'),
-                'tiempo_ms': round((time.perf_counter() - inicio) * 1000, 1), 'dependencias': cuerpo.get('dependencias', [])}
+                'tiempo_ms': round((time.perf_counter() - inicio) * 1000, 1), 'dependencias': cuerpo.get('dependencias', []),
+                'responsable': responsable,
+                'error': '; '.join(f"{d['nombre']}: {d.get('error') or 'caído'}" for d in caidas) or None}
     except (requests.RequestException, ValueError) as error:
-        return {**datos, 'estado': 'sin_respuesta', 'error': error.__class__.__name__,
-                'tiempo_ms': round((time.perf_counter() - inicio) * 1000, 1)}
+        return {**datos, 'estado': 'sin_respuesta', 'error': f'El servicio no respondió ({error.__class__.__name__})',
+                'responsable': 'proceso', 'tiempo_ms': round((time.perf_counter() - inicio) * 1000, 1)}
 
 
 def estado_general():
@@ -97,8 +121,15 @@ def bases_de_datos():
         return {'version': info.get('redis_version'), 'conexiones': info.get('connected_clients'),
                 'tamano_mb': round(info.get('used_memory', 0) / 1048576, 1)}
 
+    def storage():
+        from abasto_dominio.servicios import almacenamiento
+        r = almacenamiento.salud()
+        if r['estado'] != 'ok':
+            raise RuntimeError(r['detalle'])
+        return {'version': r['detalle']}
+
     return [{'nombre': 'postgres', **_medir(postgres)}, {'nombre': 'mongodb', **_medir(mongo)},
-            {'nombre': 'redis', **_medir(redis)}]
+            {'nombre': 'redis', **_medir(redis)}, {'nombre': 'storage', **_medir(storage)}]
 
 
 def metricas(horas, servicio=None):
@@ -203,7 +234,125 @@ def evaluar_alertas():
             'alertas': [alerta_a_dict(a) for a in nuevas]}
 
 
+# ---------------------------------------------------------------- verificación periódica e historial
+
+def verificar_y_registrar(evaluar=True):
+    """Una ronda de verificación: estado de los 24 servicios (con sus dependencias, incluido el bucket), registro en
+    el historial y evaluación de alertas. La llama el contenedor monitor-verificador cada N segundos. Guarda donde
+    pueda: MongoDB (historial) y Redis (última verificación); si ambos fallan, la deja en la bitácora del contenedor."""
+    general = estado_general()
+    ahora = general['revisado']
+    resumen = {'revisado': ahora, 'servicios': general['total'], 'ok': general['ok'],
+               'degradados': general['degradados'], 'caidos': general['caidos'], 'guardado_en': []}
+    renglones = [{'fecha': ahora, 'servicio': s['servicio'], 'estado': s['estado'], 'latencia_ms': s.get('tiempo_ms'),
+                  'http': s.get('http'), 'responsable': s.get('responsable'), 'error': s.get('error')}
+                 for s in general['servicios']]
+    try:
+        _verificaciones().insert_many([dict(r) for r in renglones])
+        resumen['guardado_en'].append('mongodb')
+    except Exception as error:  # noqa: BLE001 - el monitor no debe callarse porque falle su propia base
+        app.logger.error('Historial de salud sin MongoDB: %s', error.__class__.__name__)
+    try:
+        extensiones.redis_client.set(CLAVE_ULTIMA, json.dumps(
+            {'revisado': ahora.isoformat(), 'servicios': renglones}, default=str), ex=3600)
+        resumen['guardado_en'].append('redis')
+    except Exception as error:  # noqa: BLE001
+        app.logger.error('Última verificación sin Redis: %s', error.__class__.__name__)
+    if not resumen['guardado_en']:
+        # Sin bases: al menos queda en el log del contenedor (docker compose logs monitor-verificador)
+        app.logger.error('VERIFICACION %s', json.dumps(renglones, default=str))
+    if evaluar:
+        try:
+            resumen['alertas_nuevas'] = evaluar_alertas()['nuevas']
+        except Exception as error:  # noqa: BLE001 - p. ej. MongoDB caído: las alertas se evalúan en la siguiente
+            app.logger.error('No se evaluaron las alertas: %s', error.__class__.__name__)
+    return resumen
+
+
+def disponibilidad():
+    """Estado actual con su historial. Fuentes, de la más completa a la mínima: historial (MongoDB), última
+    verificación (Redis) y revisión en vivo."""
+    intervalo = int(parametro('MONITOREO_INTERVALO_SEGUNDOS') or 30)
+    avisos = []
+    try:
+        desde = datetime.now(timezone.utc) - timedelta(hours=24)
+        filas = list(_verificaciones().aggregate([
+            {'$match': {'fecha': {'$gte': desde}}},
+            {'$sort': {'fecha': 1}},
+            {'$group': {'_id': '$servicio', 'total': {'$sum': 1},
+                        'fallas': {'$sum': {'$cond': [{'$in': ['$estado', ['caido', 'sin_respuesta']]}, 1, 0]}},
+                        'ultimo': {'$last': '$$ROOT'}}},
+            {'$sort': {'_id': 1}}]))
+        errores = {d['_id']: d for d in _verificaciones().aggregate([
+            {'$match': {'error': {'$ne': None}}}, {'$sort': {'fecha': -1}},
+            {'$group': {'_id': '$servicio', 'error': {'$first': '$error'}, 'fecha': {'$first': '$fecha'}}}])}
+        if filas:
+            servicios = [{
+                'servicio': f['_id'], 'estado': f['ultimo']['estado'], 'ultima_verificacion': f['ultimo']['fecha'],
+                'latencia_ms': f['ultimo'].get('latencia_ms'), 'responsable': f['ultimo'].get('responsable'),
+                'disponibilidad_24h_pct': round((f['total'] - f['fallas']) * 100 / f['total'], 2),
+                'verificaciones_24h': f['total'], 'fallas_24h': f['fallas'],
+                'ultimo_error': errores.get(f['_id'], {}).get('error'),
+                'ultimo_error_fecha': errores.get(f['_id'], {}).get('fecha')} for f in filas]
+            ultima = max(s['ultima_verificacion'] for s in servicios)
+            if (datetime.now(timezone.utc) - ultima).total_seconds() > intervalo * 3:
+                avisos.append(f'La última verificación automática fue hace más de {intervalo * 3} s: revisa el '
+                              'contenedor monitor-verificador.')
+            return _resumir('historial', ultima, intervalo, servicios, avisos)
+        avisos.append('Aún no hay historial; se muestra la última verificación disponible.')
+    except Exception as error:  # noqa: BLE001
+        avisos.append(f'MongoDB del monitor no responde ({error.__class__.__name__}); sin historial de 24 h.')
+    try:
+        guardado = extensiones.redis_client.get(CLAVE_ULTIMA)
+        if guardado:
+            datos = json.loads(guardado)
+            servicios = [{**s, 'ultima_verificacion': datetime.fromisoformat(datos['revisado']),
+                          'latencia_ms': s.get('latencia_ms'), 'ultimo_error': s.get('error')} for s in datos['servicios']]
+            return _resumir('ultima_verificacion', datetime.fromisoformat(datos['revisado']), intervalo, servicios,
+                            avisos)
+    except Exception as error:  # noqa: BLE001
+        avisos.append(f'Redis no responde ({error.__class__.__name__}); se revisa en vivo.')
+    general = estado_general()
+    servicios = [{'servicio': s['servicio'], 'estado': s['estado'], 'ultima_verificacion': general['revisado'],
+                  'latencia_ms': s.get('tiempo_ms'), 'responsable': s.get('responsable'), 'ultimo_error': s.get('error')}
+                 for s in general['servicios']]
+    return _resumir('en_vivo', general['revisado'], intervalo, servicios, avisos)
+
+
+def _resumir(fuente, ultima, intervalo, servicios, avisos):
+    return {'fuente': fuente, 'ultima_verificacion': ultima, 'intervalo_segundos': intervalo,
+            'ok': sum(1 for s in servicios if s['estado'] == 'ok'),
+            'degradados': sum(1 for s in servicios if s['estado'] == 'degradado'),
+            'caidos': sum(1 for s in servicios if s['estado'] in ('caido', 'sin_respuesta')),
+            'servicios': servicios, 'avisos': avisos}
+
+
 # ---------------------------------------------------------------- rutas
+
+@srv.ruta('/disponibilidad', 'GET', resumen='Disponibilidad con historial (verificación automática)', etiqueta='Salud',
+          permisos=['servicios.monitorear'], raiz_xml='disponibilidad')
+def ver_disponibilidad():
+    """Estado actual de cada servicio según la última verificación automática, latencia, disponibilidad de las
+    últimas 24 h, último error y la dependencia responsable. `fuente` indica de dónde salió el dato si alguna base
+    del monitor no responde."""
+    return disponibilidad()
+
+
+@srv.ruta('/disponibilidad/historial', 'GET', resumen='Historial de verificaciones de un servicio', etiqueta='Salud',
+          permisos=['servicios.monitorear'], consulta=HistorialConsulta, raiz_xml='historial')
+def historial(q):
+    servicio = q.servicio if q.servicio.startswith('ms-') else f'ms-{q.servicio}'
+    puntos = list(_verificaciones().find(
+        {'servicio': servicio, 'fecha': {'$gte': datetime.now(timezone.utc) - timedelta(hours=q.horas)}},
+        {'_id': 0, 'fecha': 1, 'estado': 1, 'latencia_ms': 1, 'responsable': 1, 'error': 1}).sort('fecha', 1).limit(5000))
+    return {'servicio': servicio, 'horas': q.horas, 'puntos': puntos}
+
+
+@srv.ruta('/verificaciones', 'POST', resumen='Verificar ahora (además de la automática)', etiqueta='Salud',
+          permisos=['servicios.monitorear'], raiz_xml='verificacion')
+def verificar_ahora():
+    return verificar_y_registrar()
+
 
 @srv.ruta('/estado', 'GET', resumen='Estado de los 24 microservicios', etiqueta='Salud',
           permisos=['servicios.monitorear'], raiz_xml='estado')

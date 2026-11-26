@@ -50,8 +50,137 @@ class Repositorio(
     }
 
     suspend fun cerrarSesion() {
+        // Baja del dispositivo y revocación del token en el servidor; después se borra la sesión local
+        try { api.peticion("notificaciones", "DELETE", "/dispositivos/${sesion.tokenDispositivo()}") } catch (_: ErrorApi) { }
         try { api.peticion("seguridad", "POST", "/auth/logout") } catch (_: ErrorApi) { }
         sesion.guardar(null)
+        sesion.olvidarDispositivo()
+    }
+
+    /** Registro simplificado (ms-seguridad POST /auth/registro): la cuenta queda con sesión iniciada. */
+    suspend fun registrarse(nombre: String, apellido: String, email: String, password: String, telefono: String?,
+                            perfil: String): Usuario {
+        val cuerpo = buildJsonObject {
+            put("nombre", nombre); put("apellido_paterno", apellido); put("email", email); put("password", password)
+            put("telefono", telefono); put("perfil", perfil); put("origen", "movil")
+        }
+        val tokens = json.decodeFromString<Tokens>(
+            api.peticion("seguridad", "POST", "/auth/registro", cuerpo.toString(), autenticado = false))
+        sesion.guardar(tokens)
+        return tokens.usuario!!
+    }
+
+    // ------------------------------------------------------------ dispositivo
+    /**
+     * Registra este teléfono en ms-notificaciones con su token aleatorio cifrado (POST /dispositivos). Al abrir la app
+     * con sesión guardada, `dispositivoVigente` comprueba que el servidor lo siga teniendo: si se revocó (desde el web
+     * o por un administrador), la app cierra la sesión. No basta con tener el token guardado en el teléfono.
+     */
+    suspend fun registrarDispositivo(nombre: String) {
+        api.peticion("notificaciones", "POST", "/dispositivos", buildJsonObject {
+            put("token", sesion.tokenDispositivo()); put("plataforma", "android"); put("nombre", nombre)
+        }.toString())
+    }
+
+    suspend fun dispositivoVigente(): Boolean {
+        val token = sesion.tokenDispositivo()
+        return api.get<ListaDispositivos>("notificaciones", "/dispositivos").dispositivos.any { it.tokenFinal == token.takeLast(8) }
+    }
+
+    // ------------------------------------------------------------ perfil y comercio
+    suspend fun perfil(): Perfil = api.get("seguridad", "/usuarios/me")
+
+    suspend fun cambiarPassword(actual: String, nueva: String) {
+        api.peticion("seguridad", "PUT", "/usuarios/me/password",
+            buildJsonObject { put("password_actual", actual); put("password_nueva", nueva) }.toString())
+    }
+
+    /** Alta del comercio con la ubicación del teléfono; ms-comercios asigna la zona por coordenadas (RN-016). */
+    suspend fun registrarComercio(nombre: String, tipo: String, direccion: String, municipio: String,
+                                  latitud: Double?, longitud: Double?): Comercio =
+        json.decodeFromString(api.peticion("comercios", "POST", "/comercios", buildJsonObject {
+            put("nombre_comercio", nombre); put("tipo_comercio", tipo); put("direccion", direccion)
+            put("municipio", municipio); put("estado", "Nuevo León")
+            latitud?.let { put("latitud", "%.6f".format(java.util.Locale.US, it)) }
+            longitud?.let { put("longitud", "%.6f".format(java.util.Locale.US, it)) }
+        }.toString()))
+
+    /** Foto del comercio: el archivo va a ms-documentos (bucket) y ms-comercios la fija como foto principal. */
+    suspend fun subirFotoComercio(comercioId: String, jpeg: ByteArray): String {
+        val documento = json.decodeFromString<Documento>(api.subir("documentos", "/documentos",
+            mapOf("categoria" to "foto_comercio", "entidad" to "comercio", "entidad_id" to comercioId,
+                  "descripcion" to "Foto tomada con la app"), "fachada.jpg", "image/jpeg", jpeg))
+        api.peticion("comercios", "PUT", "/comercios/$comercioId/foto",
+            buildJsonObject { put("documento_id", documento.id) }.toString())
+        return documento.id
+    }
+
+    // ------------------------------------------------------------ catálogo y alta de productos
+    suspend fun buscarProductos(texto: String): List<Producto> =
+        api.get<ListaProductos>("catalogo", "/productos?por_pagina=50&texto=${java.net.URLEncoder.encode(texto, "UTF-8")}")
+            .productos
+
+    /** Producto por código de barras (lector de la cámara). null si no está en el catálogo. */
+    suspend fun productoPorCodigo(codigo: String): Producto? = try {
+        api.get("catalogo", "/productos/codigo/${java.net.URLEncoder.encode(codigo, "UTF-8")}")
+    } catch (e: ErrorApi) {
+        if (e.status == 404) null else throw e
+    }
+
+    suspend fun agregarProducto(comercioId: String, productoId: Int, existencia: Double, minimo: Double,
+                                precio: Double?): Renglon =
+        json.decodeFromString(api.peticion("inventario", "POST", "/comercios/$comercioId/inventario", buildJsonObject {
+            put("producto_id", productoId); put("existencia", existencia); put("stock_minimo", minimo)
+            precio?.let { put("precio_venta", it) }
+        }.toString()))
+
+    // ------------------------------------------------------------ abasto
+    suspend fun recomendaciones(comercioId: String): ListaRecomendaciones =
+        api.get("recomendaciones", "/recomendaciones/$comercioId")
+
+    suspend fun responderRecomendacion(comercioId: String, productoId: Int, respuesta: String) {
+        api.peticion("recomendaciones", "POST", "/recomendaciones/$comercioId/respuestas", buildJsonObject {
+            put("producto_id", productoId); put("respuesta", respuesta)
+        }.toString())
+    }
+
+    suspend fun proveedoresSugeridos(comercioId: String): List<ProveedorSugerido> =
+        api.get<ListaProveedores>("proveedores", "/comercios/$comercioId/proveedores-sugeridos").proveedores
+
+    suspend fun ofertas(productoId: Int, zonaId: Int?): List<Oferta> =
+        api.get<ListaOfertas>("proveedores", "/ofertas?producto_id=$productoId" + (zonaId?.let { "&zona_id=$it" } ?: ""))
+            .ofertas.filter { it.cubreZona }
+
+    /** Solicitud de abasto: abre (o reutiliza) el borrador con el proveedor, agrega la partida y lo envía. */
+    suspend fun solicitarAbasto(comercioId: String, oferta: Oferta, cantidad: Double, enviar: Boolean): Pedido {
+        val borrador = json.decodeFromString<Pedido>(api.peticion("pedidos", "POST", "/pedidos", buildJsonObject {
+            put("comercio_id", comercioId); put("proveedor_id", oferta.proveedorId)
+            putJsonArray("partidas") { addJsonObject { put("producto_id", oferta.productoId); put("cantidad", cantidad) } }
+        }.toString()))
+        return if (enviar) accionPedido(borrador.id, "enviar") else borrador
+    }
+
+    // ------------------------------------------------------------ notificaciones y entregas
+    suspend fun notificaciones(): ListaNotificaciones =
+        api.get("notificaciones", "/notificaciones?por_pagina=50")
+
+    suspend fun noLeidas(): Int = api.get<Contador>("notificaciones", "/notificaciones/contador").noLeidas
+
+    suspend fun marcarLeida(id: String) {
+        api.peticion("notificaciones", "PATCH", "/notificaciones/$id", buildJsonObject { put("leida", true) }.toString())
+    }
+
+    suspend fun entregaDePedido(pedidoId: String): Entrega? = try {
+        api.get("entregas", "/pedidos/$pedidoId/entrega")
+    } catch (e: ErrorApi) {
+        if (e.status == 404) null else throw e
+    }
+
+    /** Confirma la recepción con el código del QR que muestra el repartidor (ms-entregas valida el código). */
+    suspend fun confirmarEntrega(entregaId: String, codigo: String, recibidoPor: String) {
+        api.peticion("entregas", "POST", "/entregas/$entregaId/confirmacion", buildJsonObject {
+            put("codigo", codigo); put("recibido_por", recibidoPor)
+        }.toString())
     }
 
     // ------------------------------------------------------------ consultas

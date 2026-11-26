@@ -38,7 +38,7 @@ Qué tablas escribe cada servicio y cuáles solo lee: [`docs/propiedad_de_datos.
 | `disponibilidad/` | 8111 | Disponibilidad por comercio, zona y proveedor; reservado y tiempo de surtido; cambios para apps | solo lectura y caché |
 | `geolocalizacion/` | 8112 | Geocodificación, validación de coordenadas, distancias, radios, cobertura (PostGIS) | zonas_municipales, colonias |
 | `sincronizacion/` | 8113 | Lotes offline de Android y escritorio: duplicados, conflictos, reintentos, confirmación | lotes y operaciones (Mongo) |
-| `documentos/` | 8114 | Archivos en GridFS con validación del tipo real, metadatos y control de acceso | bucket `archivos` (Mongo) |
+| `documentos/` | 8114 | Archivos en Cloud Storage con validación del tipo real, URL firmadas temporales y control de acceso; migración desde GridFS | `archivos_metadatos` (Mongo) + objetos del bucket |
 | `reportes/` | 8115 | Reportes en PDF, CSV, Excel y JSON; programación | bucket `reportes`, reportes_programados (Mongo) |
 | `recomendaciones/` | 8116 | Recomendación de surtido explicada y medición de resultados | recomendaciones_emitidas (Mongo) |
 | `demanda/` | 8117 | Demanda histórica, tendencias, estacionalidad, no satisfecha, estimación | demanda_busquedas (Mongo) |

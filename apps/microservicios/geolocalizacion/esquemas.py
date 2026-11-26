@@ -46,6 +46,10 @@ class CoberturaConsulta(BaseConsulta):
     municipio: str | None = Field(None, max_length=100)
 
 
+class ZonasConsulta(BaseConsulta):
+    incluir_inactivas: bool = False
+
+
 class ZonaEntrada(BaseEntrada):
     nombre: str = Field(min_length=3, max_length=100)
     municipio: str = Field(min_length=2, max_length=100)

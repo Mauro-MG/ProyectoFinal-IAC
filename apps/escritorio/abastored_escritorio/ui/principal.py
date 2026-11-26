@@ -4,16 +4,19 @@ from PySide6.QtWidgets import (QDialog, QFormLayout, QLabel, QLineEdit, QListWid
                                QPushButton, QSplitter, QStackedWidget, QVBoxLayout)
 
 from abastored_escritorio.ui.actividad import Actividad
+from abastored_escritorio.ui.catalogo import Catalogo
 from abastored_escritorio.ui.cobertura import Cobertura
 from abastored_escritorio.ui.comun import en_segundo_plano, mostrar_error
 from abastored_escritorio.ui.importacion import Importacion
 from abastored_escritorio.ui.pedidos import Pedidos
 from abastored_escritorio.ui.precios import ComparacionPrecios
+from abastored_escritorio.ui.recomendaciones import Recomendaciones
 from abastored_escritorio.ui.reportes import Reportes
 from abastored_escritorio.ui.validacion import ValidacionComercios, VerificacionProveedores
+from abastored_escritorio.ui.zonas import Zonas
 
-MODULOS = [ValidacionComercios, VerificacionProveedores, Pedidos, ComparacionPrecios, Cobertura, Importacion,
-           Reportes, Actividad]
+MODULOS = [ValidacionComercios, VerificacionProveedores, Pedidos, ComparacionPrecios, Cobertura, Recomendaciones,
+           Catalogo, Zonas, Importacion, Reportes, Actividad]
 
 ESTILO = """
 QWidget { font-size: 10pt; }

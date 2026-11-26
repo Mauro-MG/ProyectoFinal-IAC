@@ -1,0 +1,104 @@
+{
+  "Plan": {
+    "Node Type": "ModifyTable",
+    "Operation": "Delete",
+    "Parallel Aware": false,
+    "Async Capable": false,
+    "Relation Name": "pedidos_abasto",
+    "Alias": "pedidos_abasto",
+    "Startup Cost": 0.29,
+    "Total Cost": 8.3,
+    "Plan Rows": 0,
+    "Plan Width": 0,
+    "Actual Startup Time": 0.182,
+    "Actual Total Time": 0.182,
+    "Actual Rows": 0,
+    "Actual Loops": 1,
+    "Shared Hit Blocks": 14,
+    "Shared Read Blocks": 0,
+    "Shared Dirtied Blocks": 0,
+    "Shared Written Blocks": 0,
+    "Local Hit Blocks": 0,
+    "Local Read Blocks": 0,
+    "Local Dirtied Blocks": 0,
+    "Local Written Blocks": 0,
+    "Temp Read Blocks": 0,
+    "Temp Written Blocks": 0,
+    "Plans": [
+      {
+        "Node Type": "Index Scan",
+        "Parent Relationship": "Outer",
+        "Parallel Aware": false,
+        "Async Capable": false,
+        "Scan Direction": "Forward",
+        "Index Name": "pedidos_abasto_pkey",
+        "Relation Name": "pedidos_abasto",
+        "Alias": "pedidos_abasto",
+        "Startup Cost": 0.29,
+        "Total Cost": 8.3,
+        "Plan Rows": 1,
+        "Plan Width": 6,
+        "Actual Startup Time": 0.019,
+        "Actual Total Time": 0.02,
+        "Actual Rows": 1,
+        "Actual Loops": 1,
+        "Index Cond": "(id = '26b5b82b-0658-4c33-acb7-df199eedd057'::uuid)",
+        "Rows Removed by Index Recheck": 0,
+        "Shared Hit Blocks": 3,
+        "Shared Read Blocks": 0,
+        "Shared Dirtied Blocks": 0,
+        "Shared Written Blocks": 0,
+        "Local Hit Blocks": 0,
+        "Local Read Blocks": 0,
+        "Local Dirtied Blocks": 0,
+        "Local Written Blocks": 0,
+        "Temp Read Blocks": 0,
+        "Temp Written Blocks": 0
+      }
+    ]
+  },
+  "Planning": {
+    "Shared Hit Blocks": 121,
+    "Shared Read Blocks": 0,
+    "Shared Dirtied Blocks": 0,
+    "Shared Written Blocks": 0,
+    "Local Hit Blocks": 0,
+    "Local Read Blocks": 0,
+    "Local Dirtied Blocks": 0,
+    "Local Written Blocks": 0,
+    "Temp Read Blocks": 0,
+    "Temp Written Blocks": 0
+  },
+  "Planning Time": 0.836,
+  "Triggers": [
+    {
+      "Trigger Name": "RI_ConstraintTrigger_a_16827",
+      "Constraint Name": "detalle_pedidos_pedido_id_fkey",
+      "Relation": "pedidos_abasto",
+      "Time": 0.86,
+      "Calls": 1
+    },
+    {
+      "Trigger Name": "RI_ConstraintTrigger_a_16847",
+      "Constraint Name": "historial_pedido_pedido_id_fkey",
+      "Relation": "pedidos_abasto",
+      "Time": 0.427,
+      "Calls": 1
+    },
+    {
+      "Trigger Name": "RI_ConstraintTrigger_a_16872",
+      "Constraint Name": "movimientos_inventario_pedido_id_fkey",
+      "Relation": "pedidos_abasto",
+      "Time": 0.94,
+      "Calls": 1
+    },
+    {
+      "Trigger Name": "RI_ConstraintTrigger_a_18219",
+      "Constraint Name": "evaluaciones_proveedor_pedido_id_fkey",
+      "Relation": "pedidos_abasto",
+      "Time": 0.627,
+      "Calls": 1
+    }
+  ],
+  "Execution Time": 3.158
+}

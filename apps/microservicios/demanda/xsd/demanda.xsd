@@ -97,7 +97,9 @@
     <xs:all>
       <xs:element name="nombre" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
+      <xs:element name="critica" type="xs:boolean" minOccurs="0"/>
       <xs:element name="latencia_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="detalle" type="xs:string" minOccurs="0"/>
       <xs:element name="error" type="xs:string" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
@@ -167,6 +169,7 @@
       <xs:element name="promedio_diario" type="xs:decimal" minOccurs="1"/>
       <xs:element name="pendiente_diaria" type="xs:decimal" minOccurs="1"/>
       <xs:element name="error_medio" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="evaluacion" type="Evaluacion" minOccurs="0"/>
       <xs:element name="total_estimado" type="xs:decimal" minOccurs="1"/>
       <xs:element name="estimacion" minOccurs="1">
         <xs:complexType>
@@ -175,6 +178,21 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="Evaluacion">
+    <xs:annotation>
+      <xs:documentation>Holdout temporal: el modelo se ajusta sin los últimos `dias_prueba` y se compara con lo que pasó.</xs:documentation>
+    </xs:annotation>
+    <xs:all>
+      <xs:element name="dias_entrenamiento" type="xs:integer" minOccurs="1"/>
+      <xs:element name="dias_prueba" type="xs:integer" minOccurs="1"/>
+      <xs:element name="mae" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="wape_pct" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="mae_ingenuo" type="xs:decimal" minOccurs="1"/>
+      <xs:element name="wape_ingenuo_pct" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="mejora_vs_ingenuo_pct" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="error_entrenamiento" type="xs:decimal" minOccurs="1"/>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="HistoricaSalida">
@@ -289,6 +307,15 @@
       <xs:element name="version" type="xs:string" minOccurs="1"/>
       <xs:element name="estado" type="xs:string" minOccurs="1"/>
       <xs:element name="fecha" type="xs:dateTime" minOccurs="1"/>
+      <xs:element name="activo_segundos" type="xs:integer" minOccurs="0"/>
+      <xs:element name="tiempo_ms" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="dependencias_caidas" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dependencia" maxOccurs="unbounded" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="dependencias" minOccurs="1">
         <xs:complexType>
           <xs:sequence>

@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1180" viewBox="0 0 1600 1180" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<defs><marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+<rect width="1600" height="1180" fill="#fff"/>
+<text x="800.0" y="42" text-anchor="middle" font-size="28" font-weight="700" fill="#0f172a">AbastoRed: 24 microservicios con propiedad de datos</text>
+<text x="800.0" y="68" text-anchor="middle" font-size="15" fill="#475569">Cada servicio es dueño de sus tablas y colecciones, entra a PostgreSQL con su propio usuario y expone JSON y XML validado con XSD</text>
+<rect x="100" y="95" width="320" height="66" rx="10" fill="#fff" stroke="#64748b" stroke-width="2"/>
+<text x="260.0" y="123" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Navegador</text>
+<text x="260.0" y="145" text-anchor="middle" font-size="13" fill="#475569">web (lectura + escritura por APIs)</text>
+<rect x="460" y="95" width="320" height="66" rx="10" fill="#fff" stroke="#64748b" stroke-width="2"/>
+<text x="620.0" y="123" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">App Android</text>
+<text x="620.0" y="145" text-anchor="middle" font-size="13" fill="#475569">JSON · sin conexión + lotes</text>
+<rect x="820" y="95" width="320" height="66" rx="10" fill="#fff" stroke="#64748b" stroke-width="2"/>
+<text x="980.0" y="123" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">App de escritorio</text>
+<text x="980.0" y="145" text-anchor="middle" font-size="13" fill="#475569">XML validado con XSD</text>
+<rect x="1180" y="95" width="320" height="66" rx="10" fill="#fff" stroke="#64748b" stroke-width="2"/>
+<text x="1340.0" y="123" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Postman / Swagger</text>
+<text x="1340.0" y="145" text-anchor="middle" font-size="13" fill="#475569">contratos y pruebas</text>
+<rect x="520" y="200" width="560" height="66" rx="10" fill="#f1f5f9" stroke="#0f172a" stroke-width="2"/>
+<text x="800.0" y="228" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Gateway nginx (HTTPS)</text>
+<text x="800.0" y="250" text-anchor="middle" font-size="13" fill="#475569">TLS · límite por IP · /ms/&lt;servicio&gt;/api/v1/...</text>
+<path d="M260,161 L700,200" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#f)"/>
+<path d="M620,161 L767,200" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#f)"/>
+<path d="M980,161 L834,200" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#f)"/>
+<path d="M1340,161 L901,200" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#f)"/>
+<path d="M800,266 L800,300" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#f)"/>
+<rect x="30" y="305" width="290" height="456" rx="12" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="175.0" y="333" text-anchor="middle" font-size="17" font-weight="700" fill="#1d4ed8">Identidad y control</text>
+<rect x="42" y="350" width="266" height="88" rx="10" fill="#fff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="175.0" y="378" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-seguridad · 8101</text>
+<text x="175.0" y="400" text-anchor="middle" font-size="13" fill="#475569">Autenticación, usuarios, roles,</text>
+<text x="175.0" y="418" text-anchor="middle" font-size="13" fill="#475569">sesiones y bloqueo por intentos</text>
+<rect x="42" y="450" width="266" height="88" rx="10" fill="#fff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="175.0" y="478" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-auditoria · 8120</text>
+<text x="175.0" y="500" text-anchor="middle" font-size="13" fill="#475569">Bitácora centralizada y trazabilidad</text>
+<text x="175.0" y="518" text-anchor="middle" font-size="13" fill="#475569">por identificador de correlación</text>
+<rect x="42" y="550" width="266" height="88" rx="10" fill="#fff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="175.0" y="578" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-configuracion · 8122</text>
+<text x="175.0" y="600" text-anchor="middle" font-size="13" fill="#475569">Reglas comerciales y parámetros</text>
+<text x="175.0" y="618" text-anchor="middle" font-size="13" fill="#475569">centralizados</text>
+<rect x="42" y="650" width="266" height="88" rx="10" fill="#fff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="175.0" y="678" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-monitoreo · 8123</text>
+<text x="175.0" y="700" text-anchor="middle" font-size="13" fill="#475569">Salud, latencia, métricas y alertas de</text>
+<text x="175.0" y="718" text-anchor="middle" font-size="13" fill="#475569">los servicios</text>
+<rect x="330" y="305" width="300" height="656" rx="12" fill="#ecfdf5" stroke="#15803d" stroke-width="2"/>
+<text x="480.0" y="333" text-anchor="middle" font-size="17" font-weight="700" fill="#15803d">Comercio</text>
+<rect x="342" y="350" width="276" height="88" rx="10" fill="#fff" stroke="#15803d" stroke-width="2"/>
+<text x="480.0" y="378" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-comercios · 8102</text>
+<text x="480.0" y="400" text-anchor="middle" font-size="13" fill="#475569">Comercios formales e informales,</text>
+<text x="480.0" y="418" text-anchor="middle" font-size="13" fill="#475569">verificación y responsables</text>
+<rect x="342" y="450" width="276" height="88" rx="10" fill="#fff" stroke="#15803d" stroke-width="2"/>
+<text x="480.0" y="478" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-catalogo · 8103</text>
+<text x="480.0" y="500" text-anchor="middle" font-size="13" fill="#475569">Catálogo maestro: productos,</text>
+<text x="480.0" y="518" text-anchor="middle" font-size="13" fill="#475569">categorías, marcas, unidades y…</text>
+<rect x="342" y="550" width="276" height="88" rx="10" fill="#fff" stroke="#15803d" stroke-width="2"/>
+<text x="480.0" y="578" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-inventario · 8104</text>
+<text x="480.0" y="600" text-anchor="middle" font-size="13" fill="#475569">Existencias, movimientos, reservas,</text>
+<text x="480.0" y="618" text-anchor="middle" font-size="13" fill="#475569">transferencias e importación CSV</text>
+<rect x="342" y="650" width="276" height="88" rx="10" fill="#fff" stroke="#15803d" stroke-width="2"/>
+<text x="480.0" y="678" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-precios · 8105</text>
+<text x="480.0" y="700" text-anchor="middle" font-size="13" fill="#475569">Precio al consumidor, historial,</text>
+<text x="480.0" y="718" text-anchor="middle" font-size="13" fill="#475569">promociones, atípicos y estadísticas</text>
+<rect x="342" y="750" width="276" height="88" rx="10" fill="#fff" stroke="#15803d" stroke-width="2"/>
+<text x="480.0" y="778" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-ventas · 8118</text>
+<text x="480.0" y="800" text-anchor="middle" font-size="13" fill="#475569">Ventas y devoluciones con</text>
+<text x="480.0" y="818" text-anchor="middle" font-size="13" fill="#475569">actualización de inventario y…</text>
+<rect x="342" y="850" width="276" height="88" rx="10" fill="#fff" stroke="#15803d" stroke-width="2"/>
+<text x="480.0" y="878" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-disponibilidad · 8111</text>
+<text x="480.0" y="900" text-anchor="middle" font-size="13" fill="#475569">Disponibilidad por comercio, zona y</text>
+<text x="480.0" y="918" text-anchor="middle" font-size="13" fill="#475569">proveedor</text>
+<rect x="640" y="305" width="290" height="456" rx="12" fill="#fefce8" stroke="#a16207" stroke-width="2"/>
+<text x="785.0" y="333" text-anchor="middle" font-size="17" font-weight="700" fill="#a16207">Abasto</text>
+<rect x="652" y="350" width="266" height="88" rx="10" fill="#fff" stroke="#a16207" stroke-width="2"/>
+<text x="785.0" y="378" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-proveedores · 8109</text>
+<text x="785.0" y="400" text-anchor="middle" font-size="13" fill="#475569">Proveedores, verificación, zonas de</text>
+<text x="785.0" y="418" text-anchor="middle" font-size="13" fill="#475569">servicio y catálogo mayorista</text>
+<rect x="652" y="450" width="266" height="88" rx="10" fill="#fff" stroke="#a16207" stroke-width="2"/>
+<text x="785.0" y="478" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-abastecimiento · 8110</text>
+<text x="785.0" y="500" text-anchor="middle" font-size="13" fill="#475569">Cotizaciones, comparación de ofertas,</text>
+<text x="785.0" y="518" text-anchor="middle" font-size="13" fill="#475569">órdenes de compra y consolidación</text>
+<rect x="652" y="550" width="266" height="88" rx="10" fill="#fff" stroke="#a16207" stroke-width="2"/>
+<text x="785.0" y="578" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-pedidos · 8106</text>
+<text x="785.0" y="600" text-anchor="middle" font-size="13" fill="#475569">Pedidos de abasto y su ciclo completo</text>
+<rect x="652" y="650" width="266" height="88" rx="10" fill="#fff" stroke="#a16207" stroke-width="2"/>
+<text x="785.0" y="678" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-entregas · 8119</text>
+<text x="785.0" y="700" text-anchor="middle" font-size="13" fill="#475569">Entregas de pedidos: responsable,</text>
+<text x="785.0" y="718" text-anchor="middle" font-size="13" fill="#475569">estados logísticos, QR e incidencias</text>
+<rect x="940" y="305" width="300" height="656" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1090.0" y="333" text-anchor="middle" font-size="17" font-weight="700" fill="#7c3aed">Análisis</text>
+<rect x="952" y="350" width="276" height="88" rx="10" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1090.0" y="378" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-analisis · 8107</text>
+<text x="1090.0" y="400" text-anchor="middle" font-size="13" fill="#475569">Cobertura, brechas, índice de acceso y</text>
+<text x="1090.0" y="418" text-anchor="middle" font-size="13" fill="#475569">datos para gráficas</text>
+<rect x="952" y="450" width="276" height="88" rx="10" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1090.0" y="478" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-demanda · 8117</text>
+<text x="1090.0" y="500" text-anchor="middle" font-size="13" fill="#475569">Demanda histórica, búsquedas no</text>
+<text x="1090.0" y="518" text-anchor="middle" font-size="13" fill="#475569">satisfechas, tendencias y estimaciones</text>
+<rect x="952" y="550" width="276" height="88" rx="10" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1090.0" y="578" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-recomendaciones · 8116</text>
+<text x="1090.0" y="600" text-anchor="middle" font-size="13" fill="#475569">Recomendación de surtido explicada y</text>
+<text x="1090.0" y="618" text-anchor="middle" font-size="13" fill="#475569">medición de resultados</text>
+<rect x="952" y="650" width="276" height="88" rx="10" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1090.0" y="678" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-geolocalizacion · 8112</text>
+<text x="1090.0" y="700" text-anchor="middle" font-size="13" fill="#475569">Geocodificación, distancias, radios y</text>
+<text x="1090.0" y="718" text-anchor="middle" font-size="13" fill="#475569">cobertura con PostGIS</text>
+<rect x="952" y="750" width="276" height="88" rx="10" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1090.0" y="778" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-busqueda · 8124</text>
+<text x="1090.0" y="800" text-anchor="middle" font-size="13" fill="#475569">Búsqueda unificada de productos,</text>
+<text x="1090.0" y="818" text-anchor="middle" font-size="13" fill="#475569">comercios, proveedores y ofertas</text>
+<rect x="952" y="850" width="276" height="88" rx="10" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1090.0" y="878" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-reportes · 8115</text>
+<text x="1090.0" y="900" text-anchor="middle" font-size="13" fill="#475569">Reportes operativos y gerenciales en</text>
+<text x="1090.0" y="918" text-anchor="middle" font-size="13" fill="#475569">PDF, CSV y Excel</text>
+<rect x="1250" y="305" width="300" height="456" rx="12" fill="#fff1f2" stroke="#be123c" stroke-width="2"/>
+<text x="1400.0" y="333" text-anchor="middle" font-size="17" font-weight="700" fill="#be123c">Integración y archivos</text>
+<rect x="1262" y="350" width="276" height="88" rx="10" fill="#fff" stroke="#be123c" stroke-width="2"/>
+<text x="1400.0" y="378" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-sincronizacion · 8113</text>
+<text x="1400.0" y="400" text-anchor="middle" font-size="13" fill="#475569">Lotes offline de Android y escritorio:</text>
+<text x="1400.0" y="418" text-anchor="middle" font-size="13" fill="#475569">duplicados, conflictos y confirmación</text>
+<rect x="1262" y="450" width="276" height="88" rx="10" fill="#fff" stroke="#be123c" stroke-width="2"/>
+<text x="1400.0" y="478" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-integraciones · 8121</text>
+<text x="1400.0" y="500" text-anchor="middle" font-size="13" fill="#475569">Importación y exportación CSV/JSON/XML</text>
+<text x="1400.0" y="518" text-anchor="middle" font-size="13" fill="#475569">con validación y mapeo por lote</text>
+<rect x="1262" y="550" width="276" height="88" rx="10" fill="#fff" stroke="#be123c" stroke-width="2"/>
+<text x="1400.0" y="578" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-documentos · 8114</text>
+<text x="1400.0" y="600" text-anchor="middle" font-size="13" fill="#475569">Imágenes, CSV, comprobantes y</text>
+<text x="1400.0" y="618" text-anchor="middle" font-size="13" fill="#475569">evidencias en Cloud Storage con URL…</text>
+<rect x="1262" y="650" width="276" height="88" rx="10" fill="#fff" stroke="#be123c" stroke-width="2"/>
+<text x="1400.0" y="678" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">ms-notificaciones · 8108</text>
+<text x="1400.0" y="700" text-anchor="middle" font-size="13" fill="#475569">Avisos internos, preferencias,</text>
+<text x="1400.0" y="718" text-anchor="middle" font-size="13" fill="#475569">plantillas e historial</text>
+<rect x="70" y="1040" width="335" height="76" rx="10" fill="#fef9c3" stroke="#a16207" stroke-width="2"/>
+<text x="237.5" y="1068" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">PostgreSQL 16 + PostGIS</text>
+<text x="237.5" y="1090" text-anchor="middle" font-size="13" fill="#475569">negocio · un rol por servicio</text>
+<rect x="445" y="1040" width="335" height="76" rx="10" fill="#fef9c3" stroke="#a16207" stroke-width="2"/>
+<text x="612.5" y="1068" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">MongoDB 7</text>
+<text x="612.5" y="1090" text-anchor="middle" font-size="13" fill="#475569">auditoría, avisos, metadatos, salud</text>
+<rect x="820" y="1040" width="335" height="76" rx="10" fill="#fef9c3" stroke="#a16207" stroke-width="2"/>
+<text x="987.5" y="1068" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Redis 7</text>
+<text x="987.5" y="1090" text-anchor="middle" font-size="13" fill="#475569">sesiones JWT, caché, límites</text>
+<rect x="1195" y="1040" width="335" height="76" rx="10" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="1362.5" y="1068" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Cloud Storage</text>
+<text x="1362.5" y="1090" text-anchor="middle" font-size="13" fill="#475569">archivos privados · URL firmadas</text>
+<text x="800.0" y="1020" text-anchor="middle" font-size="14" fill="#475569">Red «datos» interna: solo los servicios llegan a las bases; el web entra a PostgreSQL con un usuario de solo lectura</text>
+<text x="800.0" y="1150" text-anchor="middle" font-size="13" fill="#64748b">Generado de abasto_dominio.registro_servicios · docs/diagramas/fuentes/microservicios_24.py</text>
+</svg>

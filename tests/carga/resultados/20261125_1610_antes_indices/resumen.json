@@ -1,0 +1,124 @@
+{
+  "fecha": "2026-11-25T16:10:32",
+  "commit": "d221929",
+  "etiqueta": "antes_indices",
+  "tablas": "movimientos_inventario=267719, detalle_ventas=240201, precios_comercio=202189, ventas=120011, inventario_comercio=66642, detalle_pedidos=45135, pedidos_abasto=15026",
+  "consultas": [
+    {
+      "consulta": "ventas_productos_mas_vendidos",
+      "origen": "ms-ventas GET /ventas/productos (app.py, mas_vendidos)",
+      "ms_ejecucion": 30.11,
+      "ms_disparadores_fk": 0,
+      "filas": 10,
+      "recorridos": [
+        "Index Scan on productos_maestros (productos_maestros_pkey)",
+        "Seq Scan on detalle_ventas",
+        "Bitmap Heap Scan on ventas",
+        "Bitmap Index Scan (idx_ventas_comercio_fecha)"
+      ]
+    },
+    {
+      "consulta": "reporte_ventas_por_dia",
+      "origen": "ms-reportes generadores.ventas",
+      "ms_ejecucion": 25.95,
+      "ms_disparadores_fk": 0,
+      "filas": 25,
+      "recorridos": [
+        "Seq Scan on detalle_ventas",
+        "Bitmap Heap Scan on ventas",
+        "Bitmap Index Scan (idx_ventas_comercio_fecha)"
+      ]
+    },
+    {
+      "consulta": "inventario_de_un_comercio",
+      "origen": "ms-inventario GET /comercios/{id}/inventario",
+      "ms_ejecucion": 0.28,
+      "ms_disparadores_fk": 0,
+      "filas": 14,
+      "recorridos": [
+        "Bitmap Heap Scan on inventario_comercio",
+        "Bitmap Index Scan (inventario_comercio_comercio_id_producto_id_key)",
+        "Seq Scan on productos_maestros"
+      ]
+    },
+    {
+      "consulta": "pedidos_de_un_proveedor",
+      "origen": "ms-pedidos GET /pedidos (vista del proveedor)",
+      "ms_ejecucion": 0.2,
+      "ms_disparadores_fk": 0,
+      "filas": 19,
+      "recorridos": [
+        "Bitmap Heap Scan on pedidos_abasto",
+        "Bitmap Index Scan (idx_pedidos_proveedor_estado)"
+      ]
+    },
+    {
+      "consulta": "analisis_oferta_por_zona_producto",
+      "origen": "analisis._oferta_por_zona_producto (GET /analisis/zonas)",
+      "ms_ejecucion": 33.2,
+      "ms_disparadores_fk": 0,
+      "filas": 168,
+      "recorridos": [
+        "Seq Scan on inventario_comercio",
+        "Seq Scan on comercios"
+      ]
+    },
+    {
+      "consulta": "analisis_ventas_por_zona_producto",
+      "origen": "analisis._ventas_por_zona_producto (GET /analisis/zonas)",
+      "ms_ejecucion": 49.24,
+      "ms_disparadores_fk": 0,
+      "filas": 168,
+      "recorridos": [
+        "Bitmap Heap Scan on movimientos_inventario",
+        "Bitmap Index Scan (idx_movimientos_tipo_fecha)",
+        "Seq Scan on inventario_comercio",
+        "Seq Scan on comercios"
+      ]
+    },
+    {
+      "consulta": "analisis_precio_promedio_zona",
+      "origen": "analisis._precio_promedio_por_zona_producto",
+      "ms_ejecucion": 37.07,
+      "ms_disparadores_fk": 0,
+      "filas": 168,
+      "recorridos": [
+        "Seq Scan on precios_comercio",
+        "Seq Scan on comercios"
+      ]
+    },
+    {
+      "consulta": "disponibilidad_publica_producto",
+      "origen": "ms-disponibilidad GET /disponibilidad?producto_id=",
+      "ms_ejecucion": 5.11,
+      "ms_disparadores_fk": 0,
+      "filas": 50,
+      "recorridos": [
+        "Seq Scan on comercios",
+        "Bitmap Heap Scan on inventario_comercio",
+        "Bitmap Index Scan (idx_inventario_producto)"
+      ]
+    },
+    {
+      "consulta": "borrar_un_pedido (revision FK)",
+      "origen": "borrado de un pedido: revisa movimientos_inventario.pedido_id",
+      "ms_ejecucion": 24.64,
+      "ms_disparadores_fk": 24.24,
+      "filas": 0,
+      "recorridos": [
+        "Index Scan on pedidos_abasto (pedidos_abasto_pkey)"
+      ]
+    },
+    {
+      "consulta": "borrar_una_venta (revision FK)",
+      "origen": "borrado de una venta: revisa detalle_ventas.venta_id y devoluciones",
+      "ms_ejecucion": 28.39,
+      "ms_disparadores_fk": 13.87,
+      "filas": 0,
+      "recorridos": [
+        "Seq Scan on detalle_ventas",
+        "Index Scan on ventas (ventas_pkey)"
+      ]
+    }
+  ]
+}

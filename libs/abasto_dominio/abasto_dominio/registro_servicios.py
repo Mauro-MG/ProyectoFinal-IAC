@@ -25,7 +25,7 @@ SERVICIOS = {
     'disponibilidad':   (8111, 'Disponibilidad por comercio, zona y proveedor'),
     'geolocalizacion':  (8112, 'Geocodificación, distancias, radios y cobertura con PostGIS'),
     'sincronizacion':   (8113, 'Lotes offline de Android y escritorio: duplicados, conflictos y confirmación'),
-    'documentos':       (8114, 'Imágenes, CSV, comprobantes y evidencias en GridFS con control de acceso'),
+    'documentos':       (8114, 'Imágenes, CSV, comprobantes y evidencias en Cloud Storage con URL firmadas y control de acceso'),
     'reportes':         (8115, 'Reportes operativos y gerenciales en PDF, CSV y Excel'),
     'recomendaciones':  (8116, 'Recomendación de surtido explicada y medición de resultados'),
     'demanda':          (8117, 'Demanda histórica, búsquedas no satisfechas, tendencias y estimaciones'),

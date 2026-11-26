@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.journeyapps.barcodescanner.ScanOptions
 import mx.abastored.movil.datos.Pedido
 import mx.abastored.movil.datos.Repositorio
 import mx.abastored.movil.ui.AppViewModel
@@ -50,11 +51,15 @@ fun PantallaPedidos(estado: EstadoApp, vm: AppViewModel) {
             }
         }
     }
-    estado.pedidoAbierto?.let { DetallePedido(it, vm) }
+    estado.pedidoAbierto?.let { DetallePedido(it, vm, estado.usuario?.let { u -> "${u.nombre} ${u.apellido.orEmpty()}".trim() } ?: "Comercio") }
 }
 
 @Composable
-private fun DetallePedido(p: Pedido, vm: AppViewModel) {
+private fun DetallePedido(p: Pedido, vm: AppViewModel, recibe: String) {
+    // QR del repartidor (ms-entregas): ABASTORED:ENTREGA:<id>:<código>
+    val escanearQr = rememberLector("Escanea el código QR que muestra el repartidor", listOf(ScanOptions.QR_CODE)) {
+        vm.confirmarEntregaConQr(p, it, recibe)
+    }
     AlertDialog(
         onDismissRequest = { vm.abrirPedido(null) },
         title = { Text("${p.folio} · ${p.estadoLegible}") },
@@ -76,6 +81,7 @@ private fun DetallePedido(p: Pedido, vm: AppViewModel) {
         },
         confirmButton = {
             Row {
+                if (p.estado == "ENVIADO_A_COMERCIO") TextButton(escanearQr) { Text("Recibir con QR") }
                 p.acciones.filter { it in ETIQUETAS }.forEach { a ->
                     TextButton({ vm.accionPedido(p, a) }) { Text(ETIQUETAS.getValue(a)) }
                 }
