@@ -38,7 +38,7 @@ microservicios, contratos, pruebas y plan) está en **`docs/AbastoRed_Equipo01_D
 │   ├── integracion/      contra el sistema levantado (local o en GCP)
 │   ├── carga/            Locust, planes de ejecución, caché y recuperación (ver docs/rendimiento.md)
 │   └── evidencias/       generar.py: 5 casos por endpoint, reporte HTML y colección Postman
-├── docs/                 documento técnico, diagramas, evidencias/, postman/, rendimiento.md, entrega_final/
+├── docs/                 documento técnico, diagramas, evidencias/, postman/, rendimiento.md
 └── docker-compose.yml
 ```
 
@@ -91,7 +91,6 @@ y vuelve a cargar los scripts de `db/`).
 | App de escritorio (instalador .msi) | `apps/escritorio/dist/` (no se versiona) | [apps/escritorio/README.md](apps/escritorio/README.md) |
 | Página en Ubiquitous | `apps/ubiquitous/` | `apps/ubiquitous/publicar.ps1` desde la red UDEM o VPN |
 | Volumen, carga y rendimiento | [docs/rendimiento.md](docs/rendimiento.md) | `scripts/datos_masivos.py`, `tests/carga/` |
-| Material de la entrega final | [docs/entrega_final/](docs/entrega_final/) | matriz de requisitos, guion de la demo, checklist |
 
 ## Pruebas y evidencias
 
