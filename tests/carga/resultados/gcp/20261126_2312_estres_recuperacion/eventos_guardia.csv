@@ -1,0 +1,8 @@
+hora,t,evento
+23:13:26,1795756406.1,etapa carga 75 usuarios durante 180 s
+23:13:26,1795756406.1,"inicio · prefijo gcp1126b · etapas [(75, 180, False), (100, 240, False), (125, 180, True)] · recuperación [(5, 300, False)] · tasa 2.0/s"
+23:16:26,1795756586.8,etapa carga 100 usuarios durante 240 s
+23:20:27,1795756827.4,etapa carga 125 usuarios durante 180 s
+23:23:27,1795757007.5,fin de la fase de carga: fin de las etapas
+23:23:27,1795757007.5,etapa recuperacion 5 usuarios durante 300 s
+23:28:28,1795757308.7,fin de la corrida

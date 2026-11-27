@@ -1,0 +1,7 @@
+Corrida DESCARTADA (se conserva como evidencia).
+
+Motivo: error de preparación de datos, no del servidor. 2 de los 6 puntos de ubicación de preparar_datos.py
+(San Nicolás y Guadalupe a ~3 km del centro) quedaron fuera de las zonas sembradas; esos comercios no recibieron
+zona y GET /recomendaciones/{id} respondió 409 sin_zona (5 de 139 peticiones). Se corrigieron los puntos, se
+agregó una verificación de zona en la preparación y se repitió todo con el prefijo gcp1126b.
+Sirvió también para comprobar la cadena completa (Locust por HTTPS, muestreo de la VM, guardia y resumen).

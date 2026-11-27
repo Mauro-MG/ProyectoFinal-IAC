@@ -187,5 +187,7 @@ La latencia que queda mientras ms-inventario está caído (p95 ~5 s) es del prop
   trasladan a la VM de GCP (4 vCPU y 16 GB, contra 16 CPU en local).
 - El gateway quedó fuera de la carga por su límite por IP. Para medirlo haría falta generar carga desde
   varias IP.
+- La carga contra el despliegue en Google Cloud, por HTTPS y a través del gateway, se midió después y está en
+  [rendimiento_gcp.md](rendimiento_gcp.md).
 - No se midió el consumo de memoria del lado de la base de datos con más volumen (por ejemplo, 10× los
   datos), ni la escalabilidad horizontal (más workers o réplicas por servicio).

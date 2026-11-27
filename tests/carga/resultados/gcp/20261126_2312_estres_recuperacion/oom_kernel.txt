@@ -1,0 +1,1 @@
+sin eventos OOM del kernel desde el inicio de la corrida

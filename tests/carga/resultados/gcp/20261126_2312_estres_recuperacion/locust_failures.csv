@@ -1,0 +1,24 @@
+Method,Name,Error,Occurrences
+GET,pedidos GET /pedidos,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",213
+GET,notificaciones GET /notificaciones/contador,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",648
+GET,ventas GET /ventas/resumen,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",201
+GET,reportes GET /reportes [xml],"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",45
+GET,auditoria GET /eventos,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",139
+GET,auditoria GET /resumen,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",53
+GET,busqueda GET /buscar,"CatchResponseError('429 {\n  ""error"": {\n    ""codigo"": ""limite_excedido"",\n    ""mensaje"": ""Superaste 120 peticiones por minuto en este servicio. In')",64
+GET,recomendaciones GET /recomendaciones/{id},"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",209
+POST,ventas POST /ventas,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",199
+GET,analisis GET /analisis/agrupamientos [xml],"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",51
+GET,precios GET /precios/comparacion [xml],"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",116
+GET,busqueda GET /buscar,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",379
+GET,analisis GET /analisis/brechas [xml],"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",108
+GET,inventario GET /comercios/{id}/inventario,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",848
+GET,comercios GET /comercios,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",6
+GET,precios GET /precios/comparacion,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",212
+GET,disponibilidad GET /disponibilidad,"CatchResponseError('429 {\n  ""error"": {\n    ""codigo"": ""limite_excedido"",\n    ""mensaje"": ""Superaste 60 peticiones por minuto en este servicio. Int')",621
+GET,analisis GET /analisis/zonas [xml],"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",183
+GET,demanda GET /demanda/estimacion [xml],"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",68
+GET,web GET /,CatchResponseError('429'),512
+GET,disponibilidad GET /disponibilidad,"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",386
+GET,web GET /disponibilidad,CatchResponseError('429'),340
+GET,auditoria GET /trazas/{correlation_id},"CatchResponseError('429 {""error"": {""codigo"": ""limite_excedido"", ""mensaje"": ""Demasiadas peticiones desde tu IP; intenta en un momento."", ""status""')",75

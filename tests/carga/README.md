@@ -2,6 +2,9 @@
 
 Solo para el entorno **local**. Los resultados y su análisis están en [docs/rendimiento.md](../../docs/rendimiento.md).
 
+Las pruebas contra el despliegue en Google Cloud (por HTTPS y a través de NGINX) están aparte, en
+[gcp/](gcp/README.md), y sus resultados en [docs/rendimiento_gcp.md](../../docs/rendimiento_gcp.md).
+
 | Archivo | Para qué |
 | :--- | :--- |
 | `../../scripts/datos_masivos.py` | Genera, cuenta o borra ~1.3 M filas coherentes, con semilla reproducible |

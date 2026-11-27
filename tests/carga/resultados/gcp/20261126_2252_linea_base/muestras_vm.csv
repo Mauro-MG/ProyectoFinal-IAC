@@ -1,0 +1,1420 @@
+VM,1795755165,9726,39,0.79,1,1,97,0,0
+CT,1795755165,ms-configuracion,0.20,143.1MiB / 15.36GiB,0.91
+CT,1795755165,ms-ventas,0.07,163.1MiB / 15.36GiB,1.04
+CT,1795755165,ms-auditoria,0.10,144.1MiB / 15.36GiB,0.92
+CT,1795755165,ms-busqueda,0.08,158.4MiB / 15.36GiB,1.01
+CT,1795755165,ms-recomendaciones,0.20,161.5MiB / 15.36GiB,1.03
+CT,1795755165,ms-proveedores,0.15,158.7MiB / 15.36GiB,1.01
+CT,1795755165,ms-documentos,0.25,172.6MiB / 15.36GiB,1.10
+CT,1795755165,ms-pedidos,0.10,163.9MiB / 15.36GiB,1.04
+CT,1795755165,ms-comercios,0.85,161.9MiB / 15.36GiB,1.03
+CT,1795755165,ms-abastecimiento,0.24,155.7MiB / 15.36GiB,0.99
+CT,1795755165,ms-reportes,0.08,227.5MiB / 15.36GiB,1.45
+CT,1795755165,ms-monitoreo,0.07,161.1MiB / 15.36GiB,1.02
+CT,1795755165,ms-inventario,1.53,164.6MiB / 15.36GiB,1.05
+CT,1795755165,ms-precios,0.12,162.7MiB / 15.36GiB,1.03
+CT,1795755165,monitor-verificador,0.03,93.41MiB / 15.36GiB,0.59
+CT,1795755165,ms-analisis,0.08,150.5MiB / 15.36GiB,0.96
+CT,1795755165,ms-sincronizacion,0.15,154.2MiB / 15.36GiB,0.98
+CT,1795755165,ms-disponibilidad,0.22,143.3MiB / 15.36GiB,0.91
+CT,1795755165,ms-integraciones,0.09,158.8MiB / 15.36GiB,1.01
+CT,1795755165,ms-geolocalizacion,0.09,148.1MiB / 15.36GiB,0.94
+CT,1795755165,ms-entregas,0.08,172.6MiB / 15.36GiB,1.10
+CT,1795755165,ms-catalogo,0.20,143.6MiB / 15.36GiB,0.91
+CT,1795755165,ms-notificaciones,0.07,155.2MiB / 15.36GiB,0.99
+CT,1795755165,ms-seguridad,0.07,155.8MiB / 15.36GiB,0.99
+CT,1795755165,ms-demanda,0.09,144.3MiB / 15.36GiB,0.92
+CT,1795755165,abastored-postgres,0.85,177MiB / 15.36GiB,1.13
+CT,1795755165,abastored-redis,7.03,19.28MiB / 15.36GiB,0.12
+CT,1795755165,abastored-mongo,1.74,359.7MiB / 15.36GiB,2.29
+CT,1795755165,abastored-gateway,0.31,12.97MiB / 15.36GiB,0.08
+CT,1795755165,abastored-web,0.21,231.8MiB / 15.36GiB,1.47
+RS,1795755165,ms-configuracion,0,false,running,healthy
+RS,1795755165,ms-ventas,0,false,running,healthy
+RS,1795755165,ms-auditoria,0,false,running,healthy
+RS,1795755165,ms-busqueda,0,false,running,healthy
+RS,1795755165,ms-recomendaciones,0,false,running,healthy
+RS,1795755165,ms-proveedores,0,false,running,healthy
+RS,1795755165,ms-documentos,0,false,running,healthy
+RS,1795755165,ms-pedidos,0,false,running,healthy
+RS,1795755165,ms-comercios,0,false,running,healthy
+RS,1795755165,ms-abastecimiento,0,false,running,healthy
+RS,1795755165,ms-reportes,0,false,running,healthy
+RS,1795755165,ms-monitoreo,0,false,running,healthy
+RS,1795755165,ms-inventario,0,false,running,healthy
+RS,1795755165,ms-precios,0,false,running,healthy
+RS,1795755165,monitor-verificador,0,false,running,
+RS,1795755165,ms-analisis,0,false,running,healthy
+RS,1795755165,ms-sincronizacion,0,false,running,healthy
+RS,1795755165,ms-disponibilidad,0,false,running,healthy
+RS,1795755165,ms-integraciones,0,false,running,healthy
+RS,1795755165,ms-geolocalizacion,0,false,running,healthy
+RS,1795755165,ms-entregas,0,false,running,healthy
+RS,1795755165,ms-catalogo,0,false,running,healthy
+RS,1795755165,ms-notificaciones,0,false,running,healthy
+RS,1795755165,ms-seguridad,0,false,running,healthy
+RS,1795755165,ms-demanda,0,false,running,healthy
+RS,1795755165,abastored-postgres,0,false,running,healthy
+RS,1795755165,abastored-redis,0,false,running,healthy
+RS,1795755165,abastored-mongo,0,false,running,healthy
+RS,1795755165,abastored-gateway,0,false,running,healthy
+RS,1795755165,abastored-web,0,false,running,healthy
+VM,1795755172,9739,39,0.72,23,8,69,0,0
+CT,1795755172,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755172,ms-ventas,0.08,163.1MiB / 15.36GiB,1.04
+CT,1795755172,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755172,ms-busqueda,0.09,158.4MiB / 15.36GiB,1.01
+CT,1795755172,ms-recomendaciones,0.07,161.5MiB / 15.36GiB,1.03
+CT,1795755172,ms-proveedores,0.09,158.7MiB / 15.36GiB,1.01
+CT,1795755172,ms-documentos,0.06,172.6MiB / 15.36GiB,1.10
+CT,1795755172,ms-pedidos,0.08,163.9MiB / 15.36GiB,1.04
+CT,1795755172,ms-comercios,0.08,161.9MiB / 15.36GiB,1.03
+CT,1795755172,ms-abastecimiento,0.08,155.7MiB / 15.36GiB,0.99
+CT,1795755172,ms-reportes,0.09,227.5MiB / 15.36GiB,1.45
+CT,1795755172,ms-monitoreo,0.08,161.1MiB / 15.36GiB,1.02
+CT,1795755172,ms-inventario,0.08,164.6MiB / 15.36GiB,1.05
+CT,1795755172,ms-precios,1.14,162.7MiB / 15.36GiB,1.03
+CT,1795755172,monitor-verificador,0.04,93.41MiB / 15.36GiB,0.59
+CT,1795755172,ms-analisis,0.09,150.5MiB / 15.36GiB,0.96
+CT,1795755172,ms-sincronizacion,0.08,154.2MiB / 15.36GiB,0.98
+CT,1795755172,ms-disponibilidad,0.08,143.3MiB / 15.36GiB,0.91
+CT,1795755172,ms-integraciones,0.17,158.8MiB / 15.36GiB,1.01
+CT,1795755172,ms-geolocalizacion,0.07,148.1MiB / 15.36GiB,0.94
+CT,1795755172,ms-entregas,0.09,172.6MiB / 15.36GiB,1.10
+CT,1795755172,ms-catalogo,0.07,143.6MiB / 15.36GiB,0.91
+CT,1795755172,ms-notificaciones,0.08,155.2MiB / 15.36GiB,0.99
+CT,1795755172,ms-seguridad,0.08,155.8MiB / 15.36GiB,0.99
+CT,1795755172,ms-demanda,0.23,144.3MiB / 15.36GiB,0.92
+CT,1795755172,abastored-postgres,0.60,177MiB / 15.36GiB,1.13
+CT,1795755172,abastored-redis,0.24,19.2MiB / 15.36GiB,0.12
+CT,1795755172,abastored-mongo,0.72,359.7MiB / 15.36GiB,2.29
+CT,1795755172,abastored-gateway,0.06,12.96MiB / 15.36GiB,0.08
+CT,1795755172,abastored-web,0.11,231.8MiB / 15.36GiB,1.47
+VM,1795755178,9723,39,0.66,19,12,68,0,0
+CT,1795755178,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755178,ms-ventas,0.09,163.1MiB / 15.36GiB,1.04
+CT,1795755178,ms-auditoria,0.15,144.1MiB / 15.36GiB,0.92
+CT,1795755178,ms-busqueda,0.07,158.4MiB / 15.36GiB,1.01
+CT,1795755178,ms-recomendaciones,0.07,161.5MiB / 15.36GiB,1.03
+CT,1795755178,ms-proveedores,0.08,158.7MiB / 15.36GiB,1.01
+CT,1795755178,ms-documentos,0.08,172.6MiB / 15.36GiB,1.10
+CT,1795755178,ms-pedidos,0.27,163.9MiB / 15.36GiB,1.04
+CT,1795755178,ms-comercios,0.10,161.9MiB / 15.36GiB,1.03
+CT,1795755178,ms-abastecimiento,0.08,155.7MiB / 15.36GiB,0.99
+CT,1795755178,ms-reportes,0.08,227.6MiB / 15.36GiB,1.45
+CT,1795755178,ms-monitoreo,0.08,161.1MiB / 15.36GiB,1.02
+CT,1795755178,ms-inventario,0.10,164.6MiB / 15.36GiB,1.05
+CT,1795755178,ms-precios,0.08,162.7MiB / 15.36GiB,1.03
+CT,1795755178,monitor-verificador,0.05,93.41MiB / 15.36GiB,0.59
+CT,1795755178,ms-analisis,0.09,150.5MiB / 15.36GiB,0.96
+CT,1795755178,ms-sincronizacion,0.09,154.2MiB / 15.36GiB,0.98
+CT,1795755178,ms-disponibilidad,0.10,143.3MiB / 15.36GiB,0.91
+CT,1795755178,ms-integraciones,0.09,158.8MiB / 15.36GiB,1.01
+CT,1795755178,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755178,ms-entregas,0.25,172.6MiB / 15.36GiB,1.10
+CT,1795755178,ms-catalogo,0.09,143.6MiB / 15.36GiB,0.91
+CT,1795755178,ms-notificaciones,0.58,155.2MiB / 15.36GiB,0.99
+CT,1795755178,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755178,ms-demanda,8.76,144.3MiB / 15.36GiB,0.92
+CT,1795755178,abastored-postgres,0.01,177MiB / 15.36GiB,1.13
+CT,1795755178,abastored-redis,0.25,19.2MiB / 15.36GiB,0.12
+CT,1795755178,abastored-mongo,1.18,359.7MiB / 15.36GiB,2.29
+CT,1795755178,abastored-gateway,0.06,12.94MiB / 15.36GiB,0.08
+CT,1795755178,abastored-web,0.11,231.8MiB / 15.36GiB,1.47
+VM,1795755185,9732,39,0.61,1,1,98,0,0
+CT,1795755185,ms-configuracion,0.09,143.1MiB / 15.36GiB,0.91
+CT,1795755185,ms-ventas,0.15,163.1MiB / 15.36GiB,1.04
+CT,1795755185,ms-auditoria,0.08,144.1MiB / 15.36GiB,0.92
+CT,1795755185,ms-busqueda,0.08,158.4MiB / 15.36GiB,1.01
+CT,1795755185,ms-recomendaciones,0.08,161.5MiB / 15.36GiB,1.03
+CT,1795755185,ms-proveedores,0.13,158.7MiB / 15.36GiB,1.01
+CT,1795755185,ms-documentos,0.08,172.6MiB / 15.36GiB,1.10
+CT,1795755185,ms-pedidos,0.07,163.9MiB / 15.36GiB,1.04
+CT,1795755185,ms-comercios,0.09,161.9MiB / 15.36GiB,1.03
+CT,1795755185,ms-abastecimiento,0.18,155.7MiB / 15.36GiB,0.99
+CT,1795755185,ms-reportes,0.08,227.6MiB / 15.36GiB,1.45
+CT,1795755185,ms-monitoreo,0.08,161.1MiB / 15.36GiB,1.02
+CT,1795755185,ms-inventario,1.25,164.6MiB / 15.36GiB,1.05
+CT,1795755185,ms-precios,0.10,162.7MiB / 15.36GiB,1.03
+CT,1795755185,monitor-verificador,0.12,93.41MiB / 15.36GiB,0.59
+CT,1795755185,ms-analisis,0.26,150.5MiB / 15.36GiB,0.96
+CT,1795755185,ms-sincronizacion,0.21,154.2MiB / 15.36GiB,0.98
+CT,1795755185,ms-disponibilidad,0.23,143.3MiB / 15.36GiB,0.91
+CT,1795755185,ms-integraciones,0.07,158.8MiB / 15.36GiB,1.01
+CT,1795755185,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755185,ms-entregas,0.10,172.6MiB / 15.36GiB,1.10
+CT,1795755185,ms-catalogo,0.15,143.6MiB / 15.36GiB,0.91
+CT,1795755185,ms-notificaciones,0.09,155.2MiB / 15.36GiB,0.99
+CT,1795755185,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755185,ms-demanda,0.08,144.3MiB / 15.36GiB,0.92
+CT,1795755185,abastored-postgres,0.40,177MiB / 15.36GiB,1.13
+CT,1795755185,abastored-redis,0.23,19.22MiB / 15.36GiB,0.12
+CT,1795755185,abastored-mongo,1.77,359.7MiB / 15.36GiB,2.29
+CT,1795755185,abastored-gateway,0.05,12.96MiB / 15.36GiB,0.08
+CT,1795755185,abastored-web,0.11,231.8MiB / 15.36GiB,1.47
+VM,1795755191,9739,39,0.60,6,6,88,0,0
+CT,1795755191,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755191,ms-ventas,0.08,163.1MiB / 15.36GiB,1.04
+CT,1795755191,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755191,ms-busqueda,0.09,158.4MiB / 15.36GiB,1.01
+CT,1795755191,ms-recomendaciones,0.09,161.5MiB / 15.36GiB,1.03
+CT,1795755191,ms-proveedores,0.09,158.7MiB / 15.36GiB,1.01
+CT,1795755191,ms-documentos,0.10,172.6MiB / 15.36GiB,1.10
+CT,1795755191,ms-pedidos,0.09,163.9MiB / 15.36GiB,1.04
+CT,1795755191,ms-comercios,0.09,161.9MiB / 15.36GiB,1.03
+CT,1795755191,ms-abastecimiento,0.09,155.7MiB / 15.36GiB,0.99
+CT,1795755191,ms-reportes,0.09,227.7MiB / 15.36GiB,1.45
+CT,1795755191,ms-monitoreo,0.10,161.1MiB / 15.36GiB,1.02
+CT,1795755191,ms-inventario,0.07,164.6MiB / 15.36GiB,1.05
+CT,1795755191,ms-precios,0.11,162.7MiB / 15.36GiB,1.03
+CT,1795755191,monitor-verificador,0.04,93.43MiB / 15.36GiB,0.59
+CT,1795755191,ms-analisis,0.08,150.5MiB / 15.36GiB,0.96
+CT,1795755191,ms-sincronizacion,0.10,154.2MiB / 15.36GiB,0.98
+CT,1795755191,ms-disponibilidad,0.09,143.3MiB / 15.36GiB,0.91
+CT,1795755191,ms-integraciones,0.09,158.8MiB / 15.36GiB,1.01
+CT,1795755191,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755191,ms-entregas,0.10,172.6MiB / 15.36GiB,1.10
+CT,1795755191,ms-catalogo,0.08,143.6MiB / 15.36GiB,0.91
+CT,1795755191,ms-notificaciones,0.08,155.2MiB / 15.36GiB,0.99
+CT,1795755191,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755191,ms-demanda,0.08,144.3MiB / 15.36GiB,0.92
+CT,1795755191,abastored-postgres,0.01,177MiB / 15.36GiB,1.13
+CT,1795755191,abastored-redis,0.23,19.27MiB / 15.36GiB,0.12
+CT,1795755191,abastored-mongo,74.32,522.1MiB / 15.36GiB,3.32
+CT,1795755191,abastored-gateway,0.00,12.94MiB / 15.36GiB,0.08
+CT,1795755191,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+VM,1795755198,9684,39,0.55,8,5,87,0,0
+CT,1795755198,ms-configuracion,7.99,143.1MiB / 15.36GiB,0.91
+CT,1795755198,ms-ventas,0.08,163.1MiB / 15.36GiB,1.04
+CT,1795755198,ms-auditoria,0.12,144.1MiB / 15.36GiB,0.92
+CT,1795755198,ms-busqueda,0.09,158.4MiB / 15.36GiB,1.01
+CT,1795755198,ms-recomendaciones,0.09,162.8MiB / 15.36GiB,1.03
+CT,1795755198,ms-proveedores,0.09,158.7MiB / 15.36GiB,1.01
+CT,1795755198,ms-documentos,0.10,172.6MiB / 15.36GiB,1.10
+CT,1795755198,ms-pedidos,0.55,163.9MiB / 15.36GiB,1.04
+CT,1795755198,ms-comercios,0.09,161.9MiB / 15.36GiB,1.03
+CT,1795755198,ms-abastecimiento,0.07,155.7MiB / 15.36GiB,0.99
+CT,1795755198,ms-reportes,0.08,227.7MiB / 15.36GiB,1.45
+CT,1795755198,ms-monitoreo,0.16,161.1MiB / 15.36GiB,1.02
+CT,1795755198,ms-inventario,8.12,164.6MiB / 15.36GiB,1.05
+CT,1795755198,ms-precios,7.90,162.8MiB / 15.36GiB,1.03
+CT,1795755198,monitor-verificador,0.05,93.43MiB / 15.36GiB,0.59
+CT,1795755198,ms-analisis,0.08,150.5MiB / 15.36GiB,0.96
+CT,1795755198,ms-sincronizacion,0.11,154.2MiB / 15.36GiB,0.98
+CT,1795755198,ms-disponibilidad,7.93,143.3MiB / 15.36GiB,0.91
+CT,1795755198,ms-integraciones,0.09,158.8MiB / 15.36GiB,1.01
+CT,1795755198,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755198,ms-entregas,0.13,172.6MiB / 15.36GiB,1.10
+CT,1795755198,ms-catalogo,0.08,143.6MiB / 15.36GiB,0.91
+CT,1795755198,ms-notificaciones,8.08,155.2MiB / 15.36GiB,0.99
+CT,1795755198,ms-seguridad,0.10,155.8MiB / 15.36GiB,0.99
+CT,1795755198,ms-demanda,3.33,151.4MiB / 15.36GiB,0.96
+CT,1795755198,abastored-postgres,0.81,177.7MiB / 15.36GiB,1.13
+CT,1795755198,abastored-redis,0.22,19.23MiB / 15.36GiB,0.12
+CT,1795755198,abastored-mongo,0.86,359.9MiB / 15.36GiB,2.29
+CT,1795755198,abastored-gateway,0.00,12.94MiB / 15.36GiB,0.08
+CT,1795755198,abastored-web,0.15,231.8MiB / 15.36GiB,1.47
+VM,1795755204,9702,39,0.50,12,5,84,0,0
+CT,1795755204,ms-configuracion,0.09,143.1MiB / 15.36GiB,0.91
+CT,1795755204,ms-ventas,0.09,163.1MiB / 15.36GiB,1.04
+CT,1795755204,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755204,ms-busqueda,0.09,158.4MiB / 15.36GiB,1.01
+CT,1795755204,ms-recomendaciones,0.09,162.8MiB / 15.36GiB,1.03
+CT,1795755204,ms-proveedores,0.11,158.7MiB / 15.36GiB,1.01
+CT,1795755204,ms-documentos,0.09,172.6MiB / 15.36GiB,1.10
+CT,1795755204,ms-pedidos,0.08,163.9MiB / 15.36GiB,1.04
+CT,1795755204,ms-comercios,0.09,161.9MiB / 15.36GiB,1.03
+CT,1795755204,ms-abastecimiento,0.09,155.7MiB / 15.36GiB,0.99
+CT,1795755204,ms-reportes,0.08,227.7MiB / 15.36GiB,1.45
+CT,1795755204,ms-monitoreo,0.09,161.1MiB / 15.36GiB,1.02
+CT,1795755204,ms-inventario,0.08,164.7MiB / 15.36GiB,1.05
+CT,1795755204,ms-precios,0.09,162.7MiB / 15.36GiB,1.03
+CT,1795755204,monitor-verificador,0.11,93.43MiB / 15.36GiB,0.59
+CT,1795755204,ms-analisis,0.18,150.5MiB / 15.36GiB,0.96
+CT,1795755204,ms-sincronizacion,0.12,154.2MiB / 15.36GiB,0.98
+CT,1795755204,ms-disponibilidad,0.09,143.3MiB / 15.36GiB,0.91
+CT,1795755204,ms-integraciones,0.11,158.8MiB / 15.36GiB,1.01
+CT,1795755204,ms-geolocalizacion,0.20,148.1MiB / 15.36GiB,0.94
+CT,1795755204,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755204,ms-catalogo,0.13,143.6MiB / 15.36GiB,0.91
+CT,1795755204,ms-notificaciones,0.08,155.2MiB / 15.36GiB,0.99
+CT,1795755204,ms-seguridad,0.08,155.8MiB / 15.36GiB,0.99
+CT,1795755204,ms-demanda,0.11,144.3MiB / 15.36GiB,0.92
+CT,1795755204,abastored-postgres,0.01,177.7MiB / 15.36GiB,1.13
+CT,1795755204,abastored-redis,0.19,19.23MiB / 15.36GiB,0.12
+CT,1795755204,abastored-mongo,1.00,359.9MiB / 15.36GiB,2.29
+CT,1795755204,abastored-gateway,0.00,12.94MiB / 15.36GiB,0.08
+CT,1795755204,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+RS,1795755204,ms-configuracion,0,false,running,healthy
+RS,1795755204,ms-ventas,0,false,running,healthy
+RS,1795755204,ms-auditoria,0,false,running,healthy
+RS,1795755204,ms-busqueda,0,false,running,healthy
+RS,1795755204,ms-recomendaciones,0,false,running,healthy
+RS,1795755204,ms-proveedores,0,false,running,healthy
+RS,1795755204,ms-documentos,0,false,running,healthy
+RS,1795755204,ms-pedidos,0,false,running,healthy
+RS,1795755204,ms-comercios,0,false,running,healthy
+RS,1795755204,ms-abastecimiento,0,false,running,healthy
+RS,1795755204,ms-reportes,0,false,running,healthy
+RS,1795755204,ms-monitoreo,0,false,running,healthy
+RS,1795755204,ms-inventario,0,false,running,healthy
+RS,1795755204,ms-precios,0,false,running,healthy
+RS,1795755204,monitor-verificador,0,false,running,
+RS,1795755204,ms-analisis,0,false,running,healthy
+RS,1795755204,ms-sincronizacion,0,false,running,healthy
+RS,1795755204,ms-disponibilidad,0,false,running,healthy
+RS,1795755204,ms-integraciones,0,false,running,healthy
+RS,1795755204,ms-geolocalizacion,0,false,running,healthy
+RS,1795755204,ms-entregas,0,false,running,healthy
+RS,1795755204,ms-catalogo,0,false,running,healthy
+RS,1795755204,ms-notificaciones,0,false,running,healthy
+RS,1795755204,ms-seguridad,0,false,running,healthy
+RS,1795755204,ms-demanda,0,false,running,healthy
+RS,1795755204,abastored-postgres,0,false,running,healthy
+RS,1795755204,abastored-redis,0,false,running,healthy
+RS,1795755204,abastored-mongo,0,false,running,healthy
+RS,1795755204,abastored-gateway,0,false,running,healthy
+RS,1795755204,abastored-web,0,false,running,healthy
+VM,1795755211,9724,39,0.80,2,1,97,0,0
+CT,1795755211,ms-configuracion,0.09,143.1MiB / 15.36GiB,0.91
+CT,1795755211,ms-ventas,0.10,163.1MiB / 15.36GiB,1.04
+CT,1795755211,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755211,ms-busqueda,0.11,158.4MiB / 15.36GiB,1.01
+CT,1795755211,ms-recomendaciones,0.08,162.8MiB / 15.36GiB,1.03
+CT,1795755211,ms-proveedores,0.12,158.7MiB / 15.36GiB,1.01
+CT,1795755211,ms-documentos,0.07,172.6MiB / 15.36GiB,1.10
+CT,1795755211,ms-pedidos,0.11,163.9MiB / 15.36GiB,1.04
+CT,1795755211,ms-comercios,0.13,161.9MiB / 15.36GiB,1.03
+CT,1795755211,ms-abastecimiento,0.12,155.7MiB / 15.36GiB,0.99
+CT,1795755211,ms-reportes,0.07,227.7MiB / 15.36GiB,1.45
+CT,1795755211,ms-monitoreo,0.11,161.1MiB / 15.36GiB,1.02
+CT,1795755211,ms-inventario,0.07,164.7MiB / 15.36GiB,1.05
+CT,1795755211,ms-precios,0.08,162.7MiB / 15.36GiB,1.03
+CT,1795755211,monitor-verificador,0.04,93.43MiB / 15.36GiB,0.59
+CT,1795755211,ms-analisis,0.12,150.5MiB / 15.36GiB,0.96
+CT,1795755211,ms-sincronizacion,0.13,154.2MiB / 15.36GiB,0.98
+CT,1795755211,ms-disponibilidad,0.10,143.3MiB / 15.36GiB,0.91
+CT,1795755211,ms-integraciones,0.09,159MiB / 15.36GiB,1.01
+CT,1795755211,ms-geolocalizacion,0.11,148.1MiB / 15.36GiB,0.94
+CT,1795755211,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755211,ms-catalogo,0.09,143.6MiB / 15.36GiB,0.91
+CT,1795755211,ms-notificaciones,0.08,155.2MiB / 15.36GiB,0.99
+CT,1795755211,ms-seguridad,0.08,155.8MiB / 15.36GiB,0.99
+CT,1795755211,ms-demanda,0.09,144.6MiB / 15.36GiB,0.92
+CT,1795755211,abastored-postgres,6.68,177.7MiB / 15.36GiB,1.13
+CT,1795755211,abastored-redis,0.18,19.23MiB / 15.36GiB,0.12
+CT,1795755211,abastored-mongo,0.50,360.1MiB / 15.36GiB,2.29
+CT,1795755211,abastored-gateway,0.00,12.95MiB / 15.36GiB,0.08
+CT,1795755211,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+VM,1795755217,9716,39,0.73,9,5,86,0,0
+CT,1795755217,ms-configuracion,8.33,145.1MiB / 15.36GiB,0.92
+CT,1795755217,ms-ventas,0.59,163.1MiB / 15.36GiB,1.04
+CT,1795755217,ms-auditoria,0.08,144.1MiB / 15.36GiB,0.92
+CT,1795755217,ms-busqueda,0.14,158.4MiB / 15.36GiB,1.01
+CT,1795755217,ms-recomendaciones,0.07,162.8MiB / 15.36GiB,1.03
+CT,1795755217,ms-proveedores,0.10,158.7MiB / 15.36GiB,1.01
+CT,1795755217,ms-documentos,7.15,172.6MiB / 15.36GiB,1.10
+CT,1795755217,ms-pedidos,0.09,163.9MiB / 15.36GiB,1.04
+CT,1795755217,ms-comercios,0.15,161.9MiB / 15.36GiB,1.03
+CT,1795755217,ms-abastecimiento,0.09,155.7MiB / 15.36GiB,0.99
+CT,1795755217,ms-reportes,5.73,227.7MiB / 15.36GiB,1.45
+CT,1795755217,ms-monitoreo,0.22,161.1MiB / 15.36GiB,1.02
+CT,1795755217,ms-inventario,8.54,164.7MiB / 15.36GiB,1.05
+CT,1795755217,ms-precios,3.05,169.8MiB / 15.36GiB,1.08
+CT,1795755217,monitor-verificador,0.04,93.43MiB / 15.36GiB,0.59
+CT,1795755217,ms-analisis,0.08,150.5MiB / 15.36GiB,0.96
+CT,1795755217,ms-sincronizacion,0.08,154.2MiB / 15.36GiB,0.98
+CT,1795755217,ms-disponibilidad,8.35,143.3MiB / 15.36GiB,0.91
+CT,1795755217,ms-integraciones,0.09,159MiB / 15.36GiB,1.01
+CT,1795755217,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755217,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755217,ms-catalogo,0.08,143.6MiB / 15.36GiB,0.91
+CT,1795755217,ms-notificaciones,7.83,155.2MiB / 15.36GiB,0.99
+CT,1795755217,ms-seguridad,7.09,155.8MiB / 15.36GiB,0.99
+CT,1795755217,ms-demanda,0.09,144.6MiB / 15.36GiB,0.92
+CT,1795755217,abastored-postgres,0.82,177.7MiB / 15.36GiB,1.13
+CT,1795755217,abastored-redis,0.22,19.23MiB / 15.36GiB,0.12
+CT,1795755217,abastored-mongo,1.54,360.1MiB / 15.36GiB,2.29
+CT,1795755217,abastored-gateway,0.00,12.95MiB / 15.36GiB,0.08
+CT,1795755217,abastored-web,0.28,231.8MiB / 15.36GiB,1.47
+VM,1795755223,9716,39,0.99,1,1,98,0,0
+CT,1795755223,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755223,ms-ventas,0.08,163.1MiB / 15.36GiB,1.04
+CT,1795755223,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755223,ms-busqueda,0.08,158.4MiB / 15.36GiB,1.01
+CT,1795755223,ms-recomendaciones,0.07,162.8MiB / 15.36GiB,1.04
+CT,1795755223,ms-proveedores,0.08,158.7MiB / 15.36GiB,1.01
+CT,1795755223,ms-documentos,0.09,172.6MiB / 15.36GiB,1.10
+CT,1795755223,ms-pedidos,0.09,164.2MiB / 15.36GiB,1.04
+CT,1795755223,ms-comercios,0.08,161.9MiB / 15.36GiB,1.03
+CT,1795755223,ms-abastecimiento,0.09,155.7MiB / 15.36GiB,0.99
+CT,1795755223,ms-reportes,0.14,227.7MiB / 15.36GiB,1.45
+CT,1795755223,ms-monitoreo,0.08,161.1MiB / 15.36GiB,1.02
+CT,1795755223,ms-inventario,0.09,164.7MiB / 15.36GiB,1.05
+CT,1795755223,ms-precios,0.09,162.7MiB / 15.36GiB,1.03
+CT,1795755223,monitor-verificador,0.04,93.44MiB / 15.36GiB,0.59
+CT,1795755223,ms-analisis,0.09,150.5MiB / 15.36GiB,0.96
+CT,1795755223,ms-sincronizacion,0.08,154.2MiB / 15.36GiB,0.98
+CT,1795755223,ms-disponibilidad,0.08,143.3MiB / 15.36GiB,0.91
+CT,1795755223,ms-integraciones,0.13,159.1MiB / 15.36GiB,1.01
+CT,1795755223,ms-geolocalizacion,0.19,148.1MiB / 15.36GiB,0.94
+CT,1795755223,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755223,ms-catalogo,0.08,143.6MiB / 15.36GiB,0.91
+CT,1795755223,ms-notificaciones,0.09,155.2MiB / 15.36GiB,0.99
+CT,1795755223,ms-seguridad,0.07,155.8MiB / 15.36GiB,0.99
+CT,1795755223,ms-demanda,0.10,144.6MiB / 15.36GiB,0.92
+CT,1795755223,abastored-postgres,0.00,177.7MiB / 15.36GiB,1.13
+CT,1795755223,abastored-redis,0.19,19.29MiB / 15.36GiB,0.12
+CT,1795755223,abastored-mongo,60.76,517.7MiB / 15.36GiB,3.29
+CT,1795755223,abastored-gateway,0.00,12.95MiB / 15.36GiB,0.08
+CT,1795755223,abastored-web,0.10,231.8MiB / 15.36GiB,1.47
+VM,1795755230,9736,39,0.91,4,3,93,0,0
+CT,1795755230,ms-configuracion,0.07,143.1MiB / 15.36GiB,0.91
+CT,1795755230,ms-ventas,0.08,163.1MiB / 15.36GiB,1.04
+CT,1795755230,ms-auditoria,0.16,144.1MiB / 15.36GiB,0.92
+CT,1795755230,ms-busqueda,0.09,158.4MiB / 15.36GiB,1.01
+CT,1795755230,ms-recomendaciones,0.09,162.8MiB / 15.36GiB,1.04
+CT,1795755230,ms-proveedores,0.08,158.7MiB / 15.36GiB,1.01
+CT,1795755230,ms-documentos,0.09,172.6MiB / 15.36GiB,1.10
+CT,1795755230,ms-pedidos,0.08,164.6MiB / 15.36GiB,1.05
+CT,1795755230,ms-comercios,1.62,162MiB / 15.36GiB,1.03
+CT,1795755230,ms-abastecimiento,0.09,155.7MiB / 15.36GiB,0.99
+CT,1795755230,ms-reportes,0.09,227.7MiB / 15.36GiB,1.45
+CT,1795755230,ms-monitoreo,0.08,161.1MiB / 15.36GiB,1.02
+CT,1795755230,ms-inventario,1.36,164.7MiB / 15.36GiB,1.05
+CT,1795755230,ms-precios,0.09,162.7MiB / 15.36GiB,1.03
+CT,1795755230,monitor-verificador,0.04,93.44MiB / 15.36GiB,0.59
+CT,1795755230,ms-analisis,0.08,150.5MiB / 15.36GiB,0.96
+CT,1795755230,ms-sincronizacion,0.09,154.2MiB / 15.36GiB,0.98
+CT,1795755230,ms-disponibilidad,0.09,143.3MiB / 15.36GiB,0.91
+CT,1795755230,ms-integraciones,0.08,159.1MiB / 15.36GiB,1.01
+CT,1795755230,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755230,ms-entregas,0.07,173.2MiB / 15.36GiB,1.10
+CT,1795755230,ms-catalogo,0.10,143.6MiB / 15.36GiB,0.91
+CT,1795755230,ms-notificaciones,0.09,155.2MiB / 15.36GiB,0.99
+CT,1795755230,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755230,ms-demanda,0.08,144.6MiB / 15.36GiB,0.92
+CT,1795755230,abastored-postgres,0.93,177.7MiB / 15.36GiB,1.13
+CT,1795755230,abastored-redis,0.30,19.29MiB / 15.36GiB,0.12
+CT,1795755230,abastored-mongo,0.71,360.2MiB / 15.36GiB,2.29
+CT,1795755230,abastored-gateway,0.27,13.02MiB / 15.36GiB,0.08
+CT,1795755230,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+VM,1795755236,9724,39,0.85,11,8,81,0,0
+CT,1795755236,ms-configuracion,0.20,143.1MiB / 15.36GiB,0.91
+CT,1795755236,ms-ventas,10.99,163.1MiB / 15.36GiB,1.04
+CT,1795755236,ms-auditoria,0.08,144.1MiB / 15.36GiB,0.92
+CT,1795755236,ms-busqueda,0.21,158.4MiB / 15.36GiB,1.01
+CT,1795755236,ms-recomendaciones,7.97,164MiB / 15.36GiB,1.04
+CT,1795755236,ms-proveedores,0.10,158.7MiB / 15.36GiB,1.01
+CT,1795755236,ms-documentos,0.14,172.6MiB / 15.36GiB,1.10
+CT,1795755236,ms-pedidos,0.11,166.7MiB / 15.36GiB,1.06
+CT,1795755236,ms-comercios,0.25,162MiB / 15.36GiB,1.03
+CT,1795755236,ms-abastecimiento,7.66,155.7MiB / 15.36GiB,0.99
+CT,1795755236,ms-reportes,8.17,227.7MiB / 15.36GiB,1.45
+CT,1795755236,ms-monitoreo,8.78,161.1MiB / 15.36GiB,1.02
+CT,1795755236,ms-inventario,2.20,164.7MiB / 15.36GiB,1.05
+CT,1795755236,ms-precios,0.17,162.8MiB / 15.36GiB,1.03
+CT,1795755236,monitor-verificador,0.04,93.44MiB / 15.36GiB,0.59
+CT,1795755236,ms-analisis,7.76,150.5MiB / 15.36GiB,0.96
+CT,1795755236,ms-sincronizacion,0.14,154.2MiB / 15.36GiB,0.98
+CT,1795755236,ms-disponibilidad,0.43,143.3MiB / 15.36GiB,0.91
+CT,1795755236,ms-integraciones,0.09,159.1MiB / 15.36GiB,1.01
+CT,1795755236,ms-geolocalizacion,5.60,148.1MiB / 15.36GiB,0.94
+CT,1795755236,ms-entregas,0.10,173.2MiB / 15.36GiB,1.10
+CT,1795755236,ms-catalogo,7.19,143.6MiB / 15.36GiB,0.91
+CT,1795755236,ms-notificaciones,0.56,155.2MiB / 15.36GiB,0.99
+CT,1795755236,ms-seguridad,5.46,160.6MiB / 15.36GiB,1.02
+CT,1795755236,ms-demanda,0.08,144.6MiB / 15.36GiB,0.92
+CT,1795755236,abastored-postgres,1.38,178.7MiB / 15.36GiB,1.14
+CT,1795755236,abastored-redis,7.89,19.28MiB / 15.36GiB,0.12
+CT,1795755236,abastored-mongo,2.06,360.2MiB / 15.36GiB,2.29
+CT,1795755236,abastored-gateway,0.11,13.03MiB / 15.36GiB,0.08
+CT,1795755236,abastored-web,0.38,231.8MiB / 15.36GiB,1.47
+VM,1795755243,9705,39,0.86,4,2,94,0,0
+CT,1795755243,ms-configuracion,0.49,143.1MiB / 15.36GiB,0.91
+CT,1795755243,ms-ventas,0.09,163.1MiB / 15.36GiB,1.04
+CT,1795755243,ms-auditoria,0.08,144.1MiB / 15.36GiB,0.92
+CT,1795755243,ms-busqueda,0.10,158.4MiB / 15.36GiB,1.01
+CT,1795755243,ms-recomendaciones,0.08,164MiB / 15.36GiB,1.04
+CT,1795755243,ms-proveedores,0.09,159MiB / 15.36GiB,1.01
+CT,1795755243,ms-documentos,0.08,172.6MiB / 15.36GiB,1.10
+CT,1795755243,ms-pedidos,0.07,167.3MiB / 15.36GiB,1.06
+CT,1795755243,ms-comercios,0.08,162MiB / 15.36GiB,1.03
+CT,1795755243,ms-abastecimiento,0.08,155.7MiB / 15.36GiB,0.99
+CT,1795755243,ms-reportes,0.18,227.7MiB / 15.36GiB,1.45
+CT,1795755243,ms-monitoreo,0.08,161.1MiB / 15.36GiB,1.02
+CT,1795755243,ms-inventario,0.08,164.7MiB / 15.36GiB,1.05
+CT,1795755243,ms-precios,0.07,162.8MiB / 15.36GiB,1.03
+CT,1795755243,monitor-verificador,0.05,93.44MiB / 15.36GiB,0.59
+CT,1795755243,ms-analisis,0.08,150.6MiB / 15.36GiB,0.96
+CT,1795755243,ms-sincronizacion,0.09,154.2MiB / 15.36GiB,0.98
+CT,1795755243,ms-disponibilidad,0.07,143.3MiB / 15.36GiB,0.91
+CT,1795755243,ms-integraciones,0.16,159.1MiB / 15.36GiB,1.01
+CT,1795755243,ms-geolocalizacion,0.09,148.1MiB / 15.36GiB,0.94
+CT,1795755243,ms-entregas,0.07,173.2MiB / 15.36GiB,1.10
+CT,1795755243,ms-catalogo,0.08,143.6MiB / 15.36GiB,0.91
+CT,1795755243,ms-notificaciones,1.15,155.2MiB / 15.36GiB,0.99
+CT,1795755243,ms-seguridad,0.08,155.8MiB / 15.36GiB,0.99
+CT,1795755243,ms-demanda,0.26,144.6MiB / 15.36GiB,0.92
+CT,1795755243,abastored-postgres,0.34,178.8MiB / 15.36GiB,1.14
+CT,1795755243,abastored-redis,0.33,19.27MiB / 15.36GiB,0.12
+CT,1795755243,abastored-mongo,1.00,360.2MiB / 15.36GiB,2.29
+CT,1795755243,abastored-gateway,0.22,13.04MiB / 15.36GiB,0.08
+CT,1795755243,abastored-web,1.07,231.8MiB / 15.36GiB,1.47
+RS,1795755243,ms-configuracion,0,false,running,healthy
+RS,1795755243,ms-ventas,0,false,running,healthy
+RS,1795755243,ms-auditoria,0,false,running,healthy
+RS,1795755243,ms-busqueda,0,false,running,healthy
+RS,1795755243,ms-recomendaciones,0,false,running,healthy
+RS,1795755243,ms-proveedores,0,false,running,healthy
+RS,1795755243,ms-documentos,0,false,running,healthy
+RS,1795755243,ms-pedidos,0,false,running,healthy
+RS,1795755243,ms-comercios,0,false,running,healthy
+RS,1795755243,ms-abastecimiento,0,false,running,healthy
+RS,1795755243,ms-reportes,0,false,running,healthy
+RS,1795755243,ms-monitoreo,0,false,running,healthy
+RS,1795755243,ms-inventario,0,false,running,healthy
+RS,1795755243,ms-precios,0,false,running,healthy
+RS,1795755243,monitor-verificador,0,false,running,
+RS,1795755243,ms-analisis,0,false,running,healthy
+RS,1795755243,ms-sincronizacion,0,false,running,healthy
+RS,1795755243,ms-disponibilidad,0,false,running,healthy
+RS,1795755243,ms-integraciones,0,false,running,healthy
+RS,1795755243,ms-geolocalizacion,0,false,running,healthy
+RS,1795755243,ms-entregas,0,false,running,healthy
+RS,1795755243,ms-catalogo,0,false,running,healthy
+RS,1795755243,ms-notificaciones,0,false,running,healthy
+RS,1795755243,ms-seguridad,0,false,running,healthy
+RS,1795755243,ms-demanda,0,false,running,healthy
+RS,1795755243,abastored-postgres,0,false,running,healthy
+RS,1795755243,abastored-redis,0,false,running,healthy
+RS,1795755243,abastored-mongo,0,false,running,healthy
+RS,1795755243,abastored-gateway,0,false,running,healthy
+RS,1795755243,abastored-web,0,false,running,healthy
+VM,1795755249,9720,39,0.87,10,11,78,0,0
+CT,1795755249,ms-configuracion,0.93,143.1MiB / 15.36GiB,0.91
+CT,1795755249,ms-ventas,0.82,163.1MiB / 15.36GiB,1.04
+CT,1795755249,ms-auditoria,0.94,144.1MiB / 15.36GiB,0.92
+CT,1795755249,ms-busqueda,0.86,158.4MiB / 15.36GiB,1.01
+CT,1795755249,ms-recomendaciones,0.99,164MiB / 15.36GiB,1.04
+CT,1795755249,ms-proveedores,0.91,159MiB / 15.36GiB,1.01
+CT,1795755249,ms-documentos,1.42,172.6MiB / 15.36GiB,1.10
+CT,1795755249,ms-pedidos,0.85,167.4MiB / 15.36GiB,1.06
+CT,1795755249,ms-comercios,0.90,162MiB / 15.36GiB,1.03
+CT,1795755249,ms-abastecimiento,0.93,155.7MiB / 15.36GiB,0.99
+CT,1795755249,ms-reportes,1.40,227.7MiB / 15.36GiB,1.45
+CT,1795755249,ms-monitoreo,0.82,161.1MiB / 15.36GiB,1.02
+CT,1795755249,ms-inventario,0.92,164.7MiB / 15.36GiB,1.05
+CT,1795755249,ms-precios,0.91,162.8MiB / 15.36GiB,1.03
+CT,1795755249,monitor-verificador,15.35,93.45MiB / 15.36GiB,0.59
+CT,1795755249,ms-analisis,0.91,150.6MiB / 15.36GiB,0.96
+CT,1795755249,ms-sincronizacion,0.91,154.2MiB / 15.36GiB,0.98
+CT,1795755249,ms-disponibilidad,1.59,143.3MiB / 15.36GiB,0.91
+CT,1795755249,ms-integraciones,0.87,159.1MiB / 15.36GiB,1.01
+CT,1795755249,ms-geolocalizacion,1.00,148.1MiB / 15.36GiB,0.94
+CT,1795755249,ms-entregas,0.84,173.2MiB / 15.36GiB,1.10
+CT,1795755249,ms-catalogo,0.92,143.6MiB / 15.36GiB,0.91
+CT,1795755249,ms-notificaciones,1.29,155.2MiB / 15.36GiB,0.99
+CT,1795755249,ms-seguridad,0.91,155.8MiB / 15.36GiB,0.99
+CT,1795755249,ms-demanda,0.92,144.6MiB / 15.36GiB,0.92
+CT,1795755249,abastored-postgres,2.58,178.8MiB / 15.36GiB,1.14
+CT,1795755249,abastored-redis,0.69,19.32MiB / 15.36GiB,0.12
+CT,1795755249,abastored-mongo,4.33,360.3MiB / 15.36GiB,2.29
+CT,1795755249,abastored-gateway,0.11,13.04MiB / 15.36GiB,0.08
+CT,1795755249,abastored-web,1.07,231.8MiB / 15.36GiB,1.47
+VM,1795755256,9710,39,0.74,4,3,93,0,0
+CT,1795755256,ms-configuracion,0.20,143.1MiB / 15.36GiB,0.91
+CT,1795755256,ms-ventas,0.20,163.1MiB / 15.36GiB,1.04
+CT,1795755256,ms-auditoria,4.10,144.1MiB / 15.36GiB,0.92
+CT,1795755256,ms-busqueda,0.09,158.4MiB / 15.36GiB,1.01
+CT,1795755256,ms-recomendaciones,0.21,164MiB / 15.36GiB,1.04
+CT,1795755256,ms-proveedores,7.02,159MiB / 15.36GiB,1.01
+CT,1795755256,ms-documentos,0.27,172.6MiB / 15.36GiB,1.10
+CT,1795755256,ms-pedidos,7.97,167.4MiB / 15.36GiB,1.06
+CT,1795755256,ms-comercios,0.10,162MiB / 15.36GiB,1.03
+CT,1795755256,ms-abastecimiento,0.25,155.7MiB / 15.36GiB,0.99
+CT,1795755256,ms-reportes,0.08,227.7MiB / 15.36GiB,1.45
+CT,1795755256,ms-monitoreo,0.08,161.1MiB / 15.36GiB,1.02
+CT,1795755256,ms-inventario,2.54,164.7MiB / 15.36GiB,1.05
+CT,1795755256,ms-precios,0.13,162.8MiB / 15.36GiB,1.03
+CT,1795755256,monitor-verificador,0.04,93.44MiB / 15.36GiB,0.59
+CT,1795755256,ms-analisis,6.53,157.7MiB / 15.36GiB,1.00
+CT,1795755256,ms-sincronizacion,0.16,154.2MiB / 15.36GiB,0.98
+CT,1795755256,ms-disponibilidad,0.15,143.3MiB / 15.36GiB,0.91
+CT,1795755256,ms-integraciones,0.09,159.1MiB / 15.36GiB,1.01
+CT,1795755256,ms-geolocalizacion,8.26,148.1MiB / 15.36GiB,0.94
+CT,1795755256,ms-entregas,0.07,173.2MiB / 15.36GiB,1.10
+CT,1795755256,ms-catalogo,8.80,143.6MiB / 15.36GiB,0.91
+CT,1795755256,ms-notificaciones,0.48,155.2MiB / 15.36GiB,0.99
+CT,1795755256,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755256,ms-demanda,0.10,144.6MiB / 15.36GiB,0.92
+CT,1795755256,abastored-postgres,1.41,178.8MiB / 15.36GiB,1.14
+CT,1795755256,abastored-redis,0.29,19.24MiB / 15.36GiB,0.12
+CT,1795755256,abastored-mongo,23.48,480MiB / 15.36GiB,3.05
+CT,1795755256,abastored-gateway,0.24,13.04MiB / 15.36GiB,0.08
+CT,1795755256,abastored-web,1.15,231.8MiB / 15.36GiB,1.47
+VM,1795755262,9695,39,0.68,4,2,94,0,0
+CT,1795755262,ms-configuracion,0.09,143.1MiB / 15.36GiB,0.91
+CT,1795755262,ms-ventas,0.09,163.1MiB / 15.36GiB,1.04
+CT,1795755262,ms-auditoria,0.08,144.1MiB / 15.36GiB,0.92
+CT,1795755262,ms-busqueda,0.09,158.4MiB / 15.36GiB,1.01
+CT,1795755262,ms-recomendaciones,0.09,164MiB / 15.36GiB,1.04
+CT,1795755262,ms-proveedores,0.09,159MiB / 15.36GiB,1.01
+CT,1795755262,ms-documentos,0.08,172.6MiB / 15.36GiB,1.10
+CT,1795755262,ms-pedidos,0.08,167.8MiB / 15.36GiB,1.07
+CT,1795755262,ms-comercios,0.08,162MiB / 15.36GiB,1.03
+CT,1795755262,ms-abastecimiento,0.08,155.7MiB / 15.36GiB,0.99
+CT,1795755262,ms-reportes,0.08,227.7MiB / 15.36GiB,1.45
+CT,1795755262,ms-monitoreo,0.07,161.1MiB / 15.36GiB,1.02
+CT,1795755262,ms-inventario,1.39,164.7MiB / 15.36GiB,1.05
+CT,1795755262,ms-precios,0.08,162.8MiB / 15.36GiB,1.03
+CT,1795755262,monitor-verificador,0.04,93.44MiB / 15.36GiB,0.59
+CT,1795755262,ms-analisis,0.09,150.6MiB / 15.36GiB,0.96
+CT,1795755262,ms-sincronizacion,0.09,154.2MiB / 15.36GiB,0.98
+CT,1795755262,ms-disponibilidad,0.69,143.3MiB / 15.36GiB,0.91
+CT,1795755262,ms-integraciones,0.12,159.1MiB / 15.36GiB,1.01
+CT,1795755262,ms-geolocalizacion,0.09,148.1MiB / 15.36GiB,0.94
+CT,1795755262,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755262,ms-catalogo,0.10,143.6MiB / 15.36GiB,0.91
+CT,1795755262,ms-notificaciones,0.09,155.2MiB / 15.36GiB,0.99
+CT,1795755262,ms-seguridad,0.10,155.8MiB / 15.36GiB,0.99
+CT,1795755262,ms-demanda,0.13,144.6MiB / 15.36GiB,0.92
+CT,1795755262,abastored-postgres,0.80,178.8MiB / 15.36GiB,1.14
+CT,1795755262,abastored-redis,0.27,19.26MiB / 15.36GiB,0.12
+CT,1795755262,abastored-mongo,0.79,360.4MiB / 15.36GiB,2.29
+CT,1795755262,abastored-gateway,0.09,13.04MiB / 15.36GiB,0.08
+CT,1795755262,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+VM,1795755268,9706,39,0.62,3,2,95,0,0
+CT,1795755268,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755268,ms-ventas,0.07,163.1MiB / 15.36GiB,1.04
+CT,1795755268,ms-auditoria,0.16,144.1MiB / 15.36GiB,0.92
+CT,1795755268,ms-busqueda,0.13,158.4MiB / 15.36GiB,1.01
+CT,1795755268,ms-recomendaciones,0.09,164MiB / 15.36GiB,1.04
+CT,1795755268,ms-proveedores,0.10,159MiB / 15.36GiB,1.01
+CT,1795755268,ms-documentos,0.08,172.6MiB / 15.36GiB,1.10
+CT,1795755268,ms-pedidos,0.22,167.8MiB / 15.36GiB,1.07
+CT,1795755268,ms-comercios,0.08,162MiB / 15.36GiB,1.03
+CT,1795755268,ms-abastecimiento,0.09,155.7MiB / 15.36GiB,0.99
+CT,1795755268,ms-reportes,0.12,227.7MiB / 15.36GiB,1.45
+CT,1795755268,ms-monitoreo,0.07,161.1MiB / 15.36GiB,1.02
+CT,1795755268,ms-inventario,0.09,164.7MiB / 15.36GiB,1.05
+CT,1795755268,ms-precios,0.08,162.8MiB / 15.36GiB,1.03
+CT,1795755268,monitor-verificador,0.04,93.44MiB / 15.36GiB,0.59
+CT,1795755268,ms-analisis,0.08,150.6MiB / 15.36GiB,0.96
+CT,1795755268,ms-sincronizacion,0.09,154.2MiB / 15.36GiB,0.98
+CT,1795755268,ms-disponibilidad,0.09,143.3MiB / 15.36GiB,0.91
+CT,1795755268,ms-integraciones,0.10,159.1MiB / 15.36GiB,1.01
+CT,1795755268,ms-geolocalizacion,0.07,148.1MiB / 15.36GiB,0.94
+CT,1795755268,ms-entregas,0.24,173.2MiB / 15.36GiB,1.10
+CT,1795755268,ms-catalogo,0.10,143.6MiB / 15.36GiB,0.91
+CT,1795755268,ms-notificaciones,0.45,155.2MiB / 15.36GiB,0.99
+CT,1795755268,ms-seguridad,0.08,155.8MiB / 15.36GiB,0.99
+CT,1795755268,ms-demanda,0.07,144.6MiB / 15.36GiB,0.92
+CT,1795755268,abastored-postgres,0.61,178.8MiB / 15.36GiB,1.14
+CT,1795755268,abastored-redis,0.24,19.22MiB / 15.36GiB,0.12
+CT,1795755268,abastored-mongo,0.97,360.5MiB / 15.36GiB,2.29
+CT,1795755268,abastored-gateway,0.10,13.05MiB / 15.36GiB,0.08
+CT,1795755268,abastored-web,1.10,231.8MiB / 15.36GiB,1.47
+VM,1795755275,9703,39,1.13,7,4,89,0,0
+CT,1795755275,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755275,ms-ventas,2.50,163.1MiB / 15.36GiB,1.04
+CT,1795755275,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755275,ms-busqueda,7.31,158.4MiB / 15.36GiB,1.01
+CT,1795755275,ms-recomendaciones,0.09,164MiB / 15.36GiB,1.04
+CT,1795755275,ms-proveedores,0.13,159MiB / 15.36GiB,1.01
+CT,1795755275,ms-documentos,0.09,172.6MiB / 15.36GiB,1.10
+CT,1795755275,ms-pedidos,8.08,168.2MiB / 15.36GiB,1.07
+CT,1795755275,ms-comercios,7.05,162MiB / 15.36GiB,1.03
+CT,1795755275,ms-abastecimiento,0.13,156.6MiB / 15.36GiB,1.00
+CT,1795755275,ms-reportes,0.09,227.7MiB / 15.36GiB,1.45
+CT,1795755275,ms-monitoreo,0.08,161.2MiB / 15.36GiB,1.02
+CT,1795755275,ms-inventario,2.99,164.7MiB / 15.36GiB,1.05
+CT,1795755275,ms-precios,0.08,162.8MiB / 15.36GiB,1.03
+CT,1795755275,monitor-verificador,0.11,93.44MiB / 15.36GiB,0.59
+CT,1795755275,ms-analisis,0.25,150.6MiB / 15.36GiB,0.96
+CT,1795755275,ms-sincronizacion,7.08,154.2MiB / 15.36GiB,0.98
+CT,1795755275,ms-disponibilidad,0.18,143.3MiB / 15.36GiB,0.91
+CT,1795755275,ms-integraciones,0.09,159.1MiB / 15.36GiB,1.01
+CT,1795755275,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755275,ms-entregas,7.42,173.2MiB / 15.36GiB,1.10
+CT,1795755275,ms-catalogo,0.15,143.6MiB / 15.36GiB,0.91
+CT,1795755275,ms-notificaciones,0.08,155.2MiB / 15.36GiB,0.99
+CT,1795755275,ms-seguridad,0.08,155.8MiB / 15.36GiB,0.99
+CT,1795755275,ms-demanda,0.72,144.6MiB / 15.36GiB,0.92
+CT,1795755275,abastored-postgres,1.91,178.9MiB / 15.36GiB,1.14
+CT,1795755275,abastored-redis,0.33,19.28MiB / 15.36GiB,0.12
+CT,1795755275,abastored-mongo,2.42,360.5MiB / 15.36GiB,2.29
+CT,1795755275,abastored-gateway,0.14,13.05MiB / 15.36GiB,0.08
+CT,1795755275,abastored-web,0.11,231.8MiB / 15.36GiB,1.47
+VM,1795755281,9574,39,0.96,24,9,67,0,0
+CT,1795755281,ms-configuracion,0.09,143.1MiB / 15.36GiB,0.91
+CT,1795755281,ms-ventas,0.10,163.1MiB / 15.36GiB,1.04
+CT,1795755281,ms-auditoria,0.07,144.1MiB / 15.36GiB,0.92
+CT,1795755281,ms-busqueda,0.07,158.4MiB / 15.36GiB,1.01
+CT,1795755281,ms-recomendaciones,0.08,164MiB / 15.36GiB,1.04
+CT,1795755281,ms-proveedores,0.09,159MiB / 15.36GiB,1.01
+CT,1795755281,ms-documentos,0.08,172.6MiB / 15.36GiB,1.10
+CT,1795755281,ms-pedidos,0.08,168.2MiB / 15.36GiB,1.07
+CT,1795755281,ms-comercios,0.08,162MiB / 15.36GiB,1.03
+CT,1795755281,ms-abastecimiento,0.09,156.6MiB / 15.36GiB,1.00
+CT,1795755281,ms-reportes,0.08,227.7MiB / 15.36GiB,1.45
+CT,1795755281,ms-monitoreo,0.08,161.1MiB / 15.36GiB,1.02
+CT,1795755281,ms-inventario,2.43,164.7MiB / 15.36GiB,1.05
+CT,1795755281,ms-precios,0.08,162.8MiB / 15.36GiB,1.03
+CT,1795755281,monitor-verificador,0.04,93.45MiB / 15.36GiB,0.59
+CT,1795755281,ms-analisis,0.54,150.6MiB / 15.36GiB,0.96
+CT,1795755281,ms-sincronizacion,0.08,154.2MiB / 15.36GiB,0.98
+CT,1795755281,ms-disponibilidad,0.08,143.3MiB / 15.36GiB,0.91
+CT,1795755281,ms-integraciones,0.09,159.1MiB / 15.36GiB,1.01
+CT,1795755281,ms-geolocalizacion,0.10,148.1MiB / 15.36GiB,0.94
+CT,1795755281,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755281,ms-catalogo,0.08,143.6MiB / 15.36GiB,0.91
+CT,1795755281,ms-notificaciones,0.42,155.2MiB / 15.36GiB,0.99
+CT,1795755281,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755281,ms-demanda,0.07,144.6MiB / 15.36GiB,0.92
+CT,1795755281,abastored-postgres,7.99,178.9MiB / 15.36GiB,1.14
+CT,1795755281,abastored-redis,0.34,19.35MiB / 15.36GiB,0.12
+CT,1795755281,abastored-mongo,0.75,361MiB / 15.36GiB,2.30
+CT,1795755281,abastored-gateway,0.26,13.06MiB / 15.36GiB,0.08
+CT,1795755281,abastored-web,1.21,231.8MiB / 15.36GiB,1.47
+RS,1795755281,ms-configuracion,0,false,running,healthy
+RS,1795755281,ms-ventas,0,false,running,healthy
+RS,1795755281,ms-auditoria,0,false,running,healthy
+RS,1795755281,ms-busqueda,0,false,running,healthy
+RS,1795755281,ms-recomendaciones,0,false,running,healthy
+RS,1795755281,ms-proveedores,0,false,running,healthy
+RS,1795755281,ms-documentos,0,false,running,healthy
+RS,1795755281,ms-pedidos,0,false,running,healthy
+RS,1795755281,ms-comercios,0,false,running,healthy
+RS,1795755281,ms-abastecimiento,0,false,running,healthy
+RS,1795755281,ms-reportes,0,false,running,healthy
+RS,1795755281,ms-monitoreo,0,false,running,healthy
+RS,1795755281,ms-inventario,0,false,running,healthy
+RS,1795755281,ms-precios,0,false,running,healthy
+RS,1795755281,monitor-verificador,0,false,running,
+RS,1795755281,ms-analisis,0,false,running,healthy
+RS,1795755281,ms-sincronizacion,0,false,running,healthy
+RS,1795755281,ms-disponibilidad,0,false,running,healthy
+RS,1795755281,ms-integraciones,0,false,running,healthy
+RS,1795755281,ms-geolocalizacion,0,false,running,healthy
+RS,1795755281,ms-entregas,0,false,running,healthy
+RS,1795755281,ms-catalogo,0,false,running,healthy
+RS,1795755281,ms-notificaciones,0,false,running,healthy
+RS,1795755281,ms-seguridad,0,false,running,healthy
+RS,1795755281,ms-demanda,0,false,running,healthy
+RS,1795755281,abastored-postgres,0,false,running,healthy
+RS,1795755281,abastored-redis,0,false,running,healthy
+RS,1795755281,abastored-mongo,0,false,running,healthy
+RS,1795755281,abastored-gateway,0,false,running,healthy
+RS,1795755281,abastored-web,0,false,running,healthy
+VM,1795755288,9717,39,0.88,2,1,97,0,0
+CT,1795755288,ms-configuracion,0.46,143.1MiB / 15.36GiB,0.91
+CT,1795755288,ms-ventas,0.49,163.1MiB / 15.36GiB,1.04
+CT,1795755288,ms-auditoria,0.60,144.1MiB / 15.36GiB,0.92
+CT,1795755288,ms-busqueda,0.44,158.4MiB / 15.36GiB,1.01
+CT,1795755288,ms-recomendaciones,0.47,164MiB / 15.36GiB,1.04
+CT,1795755288,ms-proveedores,0.12,159MiB / 15.36GiB,1.01
+CT,1795755288,ms-documentos,0.76,172.6MiB / 15.36GiB,1.10
+CT,1795755288,ms-pedidos,1.41,168.2MiB / 15.36GiB,1.07
+CT,1795755288,ms-comercios,0.48,162MiB / 15.36GiB,1.03
+CT,1795755288,ms-abastecimiento,0.48,156.6MiB / 15.36GiB,1.00
+CT,1795755288,ms-reportes,0.69,227.7MiB / 15.36GiB,1.45
+CT,1795755288,ms-monitoreo,7.48,161.2MiB / 15.36GiB,1.02
+CT,1795755288,ms-inventario,0.55,164.7MiB / 15.36GiB,1.05
+CT,1795755288,ms-precios,0.51,162.8MiB / 15.36GiB,1.03
+CT,1795755288,monitor-verificador,0.04,93.45MiB / 15.36GiB,0.59
+CT,1795755288,ms-analisis,0.50,150.6MiB / 15.36GiB,0.96
+CT,1795755288,ms-sincronizacion,0.50,154.2MiB / 15.36GiB,0.98
+CT,1795755288,ms-disponibilidad,0.48,143.3MiB / 15.36GiB,0.91
+CT,1795755288,ms-integraciones,0.52,159.1MiB / 15.36GiB,1.01
+CT,1795755288,ms-geolocalizacion,0.46,148.1MiB / 15.36GiB,0.94
+CT,1795755288,ms-entregas,0.54,173.2MiB / 15.36GiB,1.10
+CT,1795755288,ms-catalogo,0.52,143.6MiB / 15.36GiB,0.91
+CT,1795755288,ms-notificaciones,0.93,155.2MiB / 15.36GiB,0.99
+CT,1795755288,ms-seguridad,0.52,155.8MiB / 15.36GiB,0.99
+CT,1795755288,ms-demanda,0.53,144.6MiB / 15.36GiB,0.92
+CT,1795755288,abastored-postgres,1.00,179.1MiB / 15.36GiB,1.14
+CT,1795755288,abastored-redis,7.37,19.36MiB / 15.36GiB,0.12
+CT,1795755288,abastored-mongo,1.69,361.1MiB / 15.36GiB,2.30
+CT,1795755288,abastored-gateway,9.49,13.07MiB / 15.36GiB,0.08
+CT,1795755288,abastored-web,0.31,231.8MiB / 15.36GiB,1.47
+VM,1795755294,9726,39,0.89,2,4,94,0,0
+CT,1795755294,ms-configuracion,0.11,143.1MiB / 15.36GiB,0.91
+CT,1795755294,ms-ventas,0.08,163.1MiB / 15.36GiB,1.04
+CT,1795755294,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755294,ms-busqueda,6.79,159.2MiB / 15.36GiB,1.01
+CT,1795755294,ms-recomendaciones,0.09,164MiB / 15.36GiB,1.04
+CT,1795755294,ms-proveedores,0.08,159MiB / 15.36GiB,1.01
+CT,1795755294,ms-documentos,0.07,172.6MiB / 15.36GiB,1.10
+CT,1795755294,ms-pedidos,0.08,168.2MiB / 15.36GiB,1.07
+CT,1795755294,ms-comercios,7.63,162MiB / 15.36GiB,1.03
+CT,1795755294,ms-abastecimiento,0.10,156.6MiB / 15.36GiB,1.00
+CT,1795755294,ms-reportes,0.09,227.7MiB / 15.36GiB,1.45
+CT,1795755294,ms-monitoreo,0.13,161.2MiB / 15.36GiB,1.02
+CT,1795755294,ms-inventario,1.65,164.7MiB / 15.36GiB,1.05
+CT,1795755294,ms-precios,0.12,162.8MiB / 15.36GiB,1.03
+CT,1795755294,monitor-verificador,0.13,93.45MiB / 15.36GiB,0.59
+CT,1795755294,ms-analisis,0.13,150.6MiB / 15.36GiB,0.96
+CT,1795755294,ms-sincronizacion,0.16,154.2MiB / 15.36GiB,0.98
+CT,1795755294,ms-disponibilidad,0.10,143.3MiB / 15.36GiB,0.91
+CT,1795755294,ms-integraciones,7.18,159.1MiB / 15.36GiB,1.01
+CT,1795755294,ms-geolocalizacion,0.24,148.1MiB / 15.36GiB,0.94
+CT,1795755294,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755294,ms-catalogo,0.09,143.6MiB / 15.36GiB,0.91
+CT,1795755294,ms-notificaciones,0.44,155.2MiB / 15.36GiB,0.99
+CT,1795755294,ms-seguridad,0.11,155.8MiB / 15.36GiB,0.99
+CT,1795755294,ms-demanda,0.08,144.6MiB / 15.36GiB,0.92
+CT,1795755294,abastored-postgres,0.47,179.1MiB / 15.36GiB,1.14
+CT,1795755294,abastored-redis,0.28,19.36MiB / 15.36GiB,0.12
+CT,1795755294,abastored-mongo,1.31,361.1MiB / 15.36GiB,2.30
+CT,1795755294,abastored-gateway,0.16,13.31MiB / 15.36GiB,0.08
+CT,1795755294,abastored-web,0.11,231.8MiB / 15.36GiB,1.47
+VM,1795755300,9705,39,0.98,12,7,81,0,0
+CT,1795755300,ms-configuracion,0.09,143.1MiB / 15.36GiB,0.91
+CT,1795755300,ms-ventas,0.09,163.1MiB / 15.36GiB,1.04
+CT,1795755300,ms-auditoria,0.08,144.1MiB / 15.36GiB,0.92
+CT,1795755300,ms-busqueda,0.08,158.4MiB / 15.36GiB,1.01
+CT,1795755300,ms-recomendaciones,0.08,164MiB / 15.36GiB,1.04
+CT,1795755300,ms-proveedores,0.08,159MiB / 15.36GiB,1.01
+CT,1795755300,ms-documentos,0.09,172.6MiB / 15.36GiB,1.10
+CT,1795755300,ms-pedidos,0.08,168.2MiB / 15.36GiB,1.07
+CT,1795755300,ms-comercios,0.09,162MiB / 15.36GiB,1.03
+CT,1795755300,ms-abastecimiento,0.09,156.6MiB / 15.36GiB,1.00
+CT,1795755300,ms-reportes,0.11,227.7MiB / 15.36GiB,1.45
+CT,1795755300,ms-monitoreo,0.08,161.2MiB / 15.36GiB,1.02
+CT,1795755300,ms-inventario,1.31,164.7MiB / 15.36GiB,1.05
+CT,1795755300,ms-precios,0.08,162.8MiB / 15.36GiB,1.03
+CT,1795755300,monitor-verificador,0.04,93.45MiB / 15.36GiB,0.59
+CT,1795755300,ms-analisis,0.10,150.7MiB / 15.36GiB,0.96
+CT,1795755300,ms-sincronizacion,0.11,154.2MiB / 15.36GiB,0.98
+CT,1795755300,ms-disponibilidad,0.76,143.3MiB / 15.36GiB,0.91
+CT,1795755300,ms-integraciones,0.08,159.1MiB / 15.36GiB,1.01
+CT,1795755300,ms-geolocalizacion,0.09,148.1MiB / 15.36GiB,0.94
+CT,1795755300,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755300,ms-catalogo,0.10,143.6MiB / 15.36GiB,0.91
+CT,1795755300,ms-notificaciones,0.44,155.2MiB / 15.36GiB,0.99
+CT,1795755300,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755300,ms-demanda,0.09,144.6MiB / 15.36GiB,0.92
+CT,1795755300,abastored-postgres,0.89,178.9MiB / 15.36GiB,1.14
+CT,1795755300,abastored-redis,0.31,19.37MiB / 15.36GiB,0.12
+CT,1795755300,abastored-mongo,43.41,361.2MiB / 15.36GiB,2.30
+CT,1795755300,abastored-gateway,0.17,13.06MiB / 15.36GiB,0.08
+CT,1795755300,abastored-web,0.11,231.8MiB / 15.36GiB,1.47
+VM,1795755307,9695,39,0.90,3,2,95,0,0
+CT,1795755307,ms-configuracion,0.10,143.1MiB / 15.36GiB,0.91
+CT,1795755307,ms-ventas,0.82,163.1MiB / 15.36GiB,1.04
+CT,1795755307,ms-auditoria,0.11,144.1MiB / 15.36GiB,0.92
+CT,1795755307,ms-busqueda,0.25,158.4MiB / 15.36GiB,1.01
+CT,1795755307,ms-recomendaciones,0.10,164MiB / 15.36GiB,1.04
+CT,1795755307,ms-proveedores,0.13,159MiB / 15.36GiB,1.01
+CT,1795755307,ms-documentos,0.14,172.6MiB / 15.36GiB,1.10
+CT,1795755307,ms-pedidos,0.10,168.2MiB / 15.36GiB,1.07
+CT,1795755307,ms-comercios,0.24,162MiB / 15.36GiB,1.03
+CT,1795755307,ms-abastecimiento,0.09,156.6MiB / 15.36GiB,1.00
+CT,1795755307,ms-reportes,0.09,227.7MiB / 15.36GiB,1.45
+CT,1795755307,ms-monitoreo,0.20,161.1MiB / 15.36GiB,1.02
+CT,1795755307,ms-inventario,1.44,164.7MiB / 15.36GiB,1.05
+CT,1795755307,ms-precios,0.17,162.8MiB / 15.36GiB,1.03
+CT,1795755307,monitor-verificador,0.05,93.45MiB / 15.36GiB,0.59
+CT,1795755307,ms-analisis,0.09,150.7MiB / 15.36GiB,0.96
+CT,1795755307,ms-sincronizacion,0.13,154.2MiB / 15.36GiB,0.98
+CT,1795755307,ms-disponibilidad,0.08,143.3MiB / 15.36GiB,0.91
+CT,1795755307,ms-integraciones,0.08,159.1MiB / 15.36GiB,1.01
+CT,1795755307,ms-geolocalizacion,0.11,148.1MiB / 15.36GiB,0.94
+CT,1795755307,ms-entregas,0.09,173.2MiB / 15.36GiB,1.10
+CT,1795755307,ms-catalogo,0.07,143.6MiB / 15.36GiB,0.91
+CT,1795755307,ms-notificaciones,0.24,155.2MiB / 15.36GiB,0.99
+CT,1795755307,ms-seguridad,0.25,155.8MiB / 15.36GiB,0.99
+CT,1795755307,ms-demanda,0.09,144.6MiB / 15.36GiB,0.92
+CT,1795755307,abastored-postgres,0.59,178.9MiB / 15.36GiB,1.14
+CT,1795755307,abastored-redis,0.28,19.33MiB / 15.36GiB,0.12
+CT,1795755307,abastored-mongo,1.94,361.3MiB / 15.36GiB,2.30
+CT,1795755307,abastored-gateway,0.10,13.06MiB / 15.36GiB,0.08
+CT,1795755307,abastored-web,0.13,231.8MiB / 15.36GiB,1.47
+VM,1795755313,9705,39,0.91,22,7,70,0,0
+CT,1795755313,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755313,ms-ventas,0.09,163.2MiB / 15.36GiB,1.04
+CT,1795755313,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755313,ms-busqueda,0.10,158.4MiB / 15.36GiB,1.01
+CT,1795755313,ms-recomendaciones,0.08,164MiB / 15.36GiB,1.04
+CT,1795755313,ms-proveedores,0.09,159MiB / 15.36GiB,1.01
+CT,1795755313,ms-documentos,0.09,172.6MiB / 15.36GiB,1.10
+CT,1795755313,ms-pedidos,0.08,168.2MiB / 15.36GiB,1.07
+CT,1795755313,ms-comercios,0.08,162MiB / 15.36GiB,1.03
+CT,1795755313,ms-abastecimiento,0.09,156.6MiB / 15.36GiB,1.00
+CT,1795755313,ms-reportes,0.24,227.7MiB / 15.36GiB,1.45
+CT,1795755313,ms-monitoreo,0.08,161.1MiB / 15.36GiB,1.02
+CT,1795755313,ms-inventario,0.09,164.7MiB / 15.36GiB,1.05
+CT,1795755313,ms-precios,0.08,162.8MiB / 15.36GiB,1.03
+CT,1795755313,monitor-verificador,0.04,93.46MiB / 15.36GiB,0.59
+CT,1795755313,ms-analisis,0.09,150.7MiB / 15.36GiB,0.96
+CT,1795755313,ms-sincronizacion,0.10,154.2MiB / 15.36GiB,0.98
+CT,1795755313,ms-disponibilidad,0.08,143.3MiB / 15.36GiB,0.91
+CT,1795755313,ms-integraciones,0.12,159.1MiB / 15.36GiB,1.01
+CT,1795755313,ms-geolocalizacion,0.14,148.1MiB / 15.36GiB,0.94
+CT,1795755313,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755313,ms-catalogo,0.09,143.6MiB / 15.36GiB,0.91
+CT,1795755313,ms-notificaciones,0.44,155.2MiB / 15.36GiB,0.99
+CT,1795755313,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755313,ms-demanda,0.18,144.6MiB / 15.36GiB,0.92
+CT,1795755313,abastored-postgres,0.00,178.9MiB / 15.36GiB,1.14
+CT,1795755313,abastored-redis,0.24,19.39MiB / 15.36GiB,0.12
+CT,1795755313,abastored-mongo,1.02,366.5MiB / 15.36GiB,2.33
+CT,1795755313,abastored-gateway,0.05,13.06MiB / 15.36GiB,0.08
+CT,1795755313,abastored-web,1.20,231.8MiB / 15.36GiB,1.47
+VM,1795755319,9692,39,0.83,19,9,73,0,0
+CT,1795755319,ms-configuracion,0.09,143.1MiB / 15.36GiB,0.91
+CT,1795755319,ms-ventas,0.08,163.2MiB / 15.36GiB,1.04
+CT,1795755319,ms-auditoria,0.17,144.1MiB / 15.36GiB,0.92
+CT,1795755319,ms-busqueda,0.08,158.4MiB / 15.36GiB,1.01
+CT,1795755319,ms-recomendaciones,0.08,164MiB / 15.36GiB,1.04
+CT,1795755319,ms-proveedores,0.11,159MiB / 15.36GiB,1.01
+CT,1795755319,ms-documentos,0.08,172.6MiB / 15.36GiB,1.10
+CT,1795755319,ms-pedidos,0.09,168.2MiB / 15.36GiB,1.07
+CT,1795755319,ms-comercios,0.08,162MiB / 15.36GiB,1.03
+CT,1795755319,ms-abastecimiento,0.10,156.6MiB / 15.36GiB,1.00
+CT,1795755319,ms-reportes,0.09,227.7MiB / 15.36GiB,1.45
+CT,1795755319,ms-monitoreo,0.08,161.2MiB / 15.36GiB,1.02
+CT,1795755319,ms-inventario,1.43,164.7MiB / 15.36GiB,1.05
+CT,1795755319,ms-precios,0.08,162.8MiB / 15.36GiB,1.03
+CT,1795755319,monitor-verificador,0.04,93.46MiB / 15.36GiB,0.59
+CT,1795755319,ms-analisis,0.09,150.7MiB / 15.36GiB,0.96
+CT,1795755319,ms-sincronizacion,0.08,154.2MiB / 15.36GiB,0.98
+CT,1795755319,ms-disponibilidad,0.64,143.3MiB / 15.36GiB,0.91
+CT,1795755319,ms-integraciones,0.09,159.1MiB / 15.36GiB,1.01
+CT,1795755319,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755319,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755319,ms-catalogo,0.09,143.6MiB / 15.36GiB,0.91
+CT,1795755319,ms-notificaciones,0.09,155.2MiB / 15.36GiB,0.99
+CT,1795755319,ms-seguridad,0.08,155.8MiB / 15.36GiB,0.99
+CT,1795755319,ms-demanda,0.08,144.6MiB / 15.36GiB,0.92
+CT,1795755319,abastored-postgres,1.26,178.9MiB / 15.36GiB,1.14
+CT,1795755319,abastored-redis,0.33,19.34MiB / 15.36GiB,0.12
+CT,1795755319,abastored-mongo,0.84,366.5MiB / 15.36GiB,2.33
+CT,1795755319,abastored-gateway,0.12,13.06MiB / 15.36GiB,0.08
+CT,1795755319,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+RS,1795755319,ms-configuracion,0,false,running,healthy
+RS,1795755319,ms-ventas,0,false,running,healthy
+RS,1795755319,ms-auditoria,0,false,running,healthy
+RS,1795755319,ms-busqueda,0,false,running,healthy
+RS,1795755319,ms-recomendaciones,0,false,running,healthy
+RS,1795755319,ms-proveedores,0,false,running,healthy
+RS,1795755319,ms-documentos,0,false,running,healthy
+RS,1795755319,ms-pedidos,0,false,running,healthy
+RS,1795755319,ms-comercios,0,false,running,healthy
+RS,1795755319,ms-abastecimiento,0,false,running,healthy
+RS,1795755319,ms-reportes,0,false,running,healthy
+RS,1795755319,ms-monitoreo,0,false,running,healthy
+RS,1795755319,ms-inventario,0,false,running,healthy
+RS,1795755319,ms-precios,0,false,running,healthy
+RS,1795755319,monitor-verificador,0,false,running,
+RS,1795755319,ms-analisis,0,false,running,healthy
+RS,1795755319,ms-sincronizacion,0,false,running,healthy
+RS,1795755319,ms-disponibilidad,0,false,running,healthy
+RS,1795755319,ms-integraciones,0,false,running,healthy
+RS,1795755319,ms-geolocalizacion,0,false,running,healthy
+RS,1795755319,ms-entregas,0,false,running,healthy
+RS,1795755319,ms-catalogo,0,false,running,healthy
+RS,1795755319,ms-notificaciones,0,false,running,healthy
+RS,1795755319,ms-seguridad,0,false,running,healthy
+RS,1795755319,ms-demanda,0,false,running,healthy
+RS,1795755319,abastored-postgres,0,false,running,healthy
+RS,1795755319,abastored-redis,0,false,running,healthy
+RS,1795755319,abastored-mongo,0,false,running,healthy
+RS,1795755319,abastored-gateway,0,false,running,healthy
+RS,1795755319,abastored-web,0,false,running,healthy
+VM,1795755326,9701,39,0.79,2,2,96,0,0
+CT,1795755326,ms-configuracion,0.22,143.1MiB / 15.36GiB,0.91
+CT,1795755326,ms-ventas,0.16,163.2MiB / 15.36GiB,1.04
+CT,1795755326,ms-auditoria,0.07,144.1MiB / 15.36GiB,0.92
+CT,1795755326,ms-busqueda,0.17,158.4MiB / 15.36GiB,1.01
+CT,1795755326,ms-recomendaciones,0.24,164MiB / 15.36GiB,1.04
+CT,1795755326,ms-proveedores,0.16,159MiB / 15.36GiB,1.01
+CT,1795755326,ms-documentos,0.23,172.6MiB / 15.36GiB,1.10
+CT,1795755326,ms-pedidos,0.08,168.2MiB / 15.36GiB,1.07
+CT,1795755326,ms-comercios,0.16,162MiB / 15.36GiB,1.03
+CT,1795755326,ms-abastecimiento,0.13,156.6MiB / 15.36GiB,1.00
+CT,1795755326,ms-reportes,0.07,227.7MiB / 15.36GiB,1.45
+CT,1795755326,ms-monitoreo,0.08,161.2MiB / 15.36GiB,1.02
+CT,1795755326,ms-inventario,0.09,164.7MiB / 15.36GiB,1.05
+CT,1795755326,ms-precios,0.15,162.8MiB / 15.36GiB,1.03
+CT,1795755326,monitor-verificador,0.04,93.46MiB / 15.36GiB,0.59
+CT,1795755326,ms-analisis,0.09,150.7MiB / 15.36GiB,0.96
+CT,1795755326,ms-sincronizacion,0.11,154.2MiB / 15.36GiB,0.98
+CT,1795755326,ms-disponibilidad,0.13,143.3MiB / 15.36GiB,0.91
+CT,1795755326,ms-integraciones,0.08,159.1MiB / 15.36GiB,1.01
+CT,1795755326,ms-geolocalizacion,0.09,148.1MiB / 15.36GiB,0.94
+CT,1795755326,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755326,ms-catalogo,0.17,143.6MiB / 15.36GiB,0.91
+CT,1795755326,ms-notificaciones,0.51,155.2MiB / 15.36GiB,0.99
+CT,1795755326,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755326,ms-demanda,0.09,144.6MiB / 15.36GiB,0.92
+CT,1795755326,abastored-postgres,0.62,178.9MiB / 15.36GiB,1.14
+CT,1795755326,abastored-redis,0.20,19.29MiB / 15.36GiB,0.12
+CT,1795755326,abastored-mongo,1.79,368.8MiB / 15.36GiB,2.34
+CT,1795755326,abastored-gateway,0.11,13.06MiB / 15.36GiB,0.08
+CT,1795755326,abastored-web,0.10,231.8MiB / 15.36GiB,1.47
+VM,1795755332,9699,39,0.72,2,1,97,0,0
+CT,1795755332,ms-configuracion,0.09,143.1MiB / 15.36GiB,0.91
+CT,1795755332,ms-ventas,0.46,163.2MiB / 15.36GiB,1.04
+CT,1795755332,ms-auditoria,0.50,144.1MiB / 15.36GiB,0.92
+CT,1795755332,ms-busqueda,0.51,158.4MiB / 15.36GiB,1.01
+CT,1795755332,ms-recomendaciones,0.48,164MiB / 15.36GiB,1.04
+CT,1795755332,ms-proveedores,0.49,159MiB / 15.36GiB,1.01
+CT,1795755332,ms-documentos,0.67,172.6MiB / 15.36GiB,1.10
+CT,1795755332,ms-pedidos,0.44,168.2MiB / 15.36GiB,1.07
+CT,1795755332,ms-comercios,0.57,162MiB / 15.36GiB,1.03
+CT,1795755332,ms-abastecimiento,0.53,156.6MiB / 15.36GiB,1.00
+CT,1795755332,ms-reportes,0.88,227.7MiB / 15.36GiB,1.45
+CT,1795755332,ms-monitoreo,7.32,161.2MiB / 15.36GiB,1.02
+CT,1795755332,ms-inventario,2.03,164.7MiB / 15.36GiB,1.05
+CT,1795755332,ms-precios,0.47,162.8MiB / 15.36GiB,1.03
+CT,1795755332,monitor-verificador,0.04,93.46MiB / 15.36GiB,0.59
+CT,1795755332,ms-analisis,1.11,150.7MiB / 15.36GiB,0.96
+CT,1795755332,ms-sincronizacion,0.49,154.2MiB / 15.36GiB,0.98
+CT,1795755332,ms-disponibilidad,1.08,143.3MiB / 15.36GiB,0.91
+CT,1795755332,ms-integraciones,0.58,159.1MiB / 15.36GiB,1.01
+CT,1795755332,ms-geolocalizacion,0.51,148.1MiB / 15.36GiB,0.94
+CT,1795755332,ms-entregas,0.47,173.2MiB / 15.36GiB,1.10
+CT,1795755332,ms-catalogo,0.52,143.6MiB / 15.36GiB,0.91
+CT,1795755332,ms-notificaciones,0.91,155.2MiB / 15.36GiB,0.99
+CT,1795755332,ms-seguridad,0.74,155.8MiB / 15.36GiB,0.99
+CT,1795755332,ms-demanda,0.53,144.6MiB / 15.36GiB,0.92
+CT,1795755332,abastored-postgres,1.60,178.9MiB / 15.36GiB,1.14
+CT,1795755332,abastored-redis,0.54,19.34MiB / 15.36GiB,0.12
+CT,1795755332,abastored-mongo,80.40,369.4MiB / 15.36GiB,2.35
+CT,1795755332,abastored-gateway,0.23,13.06MiB / 15.36GiB,0.08
+CT,1795755332,abastored-web,0.11,231.8MiB / 15.36GiB,1.47
+VM,1795755339,9698,39,0.74,16,9,76,0,0
+CT,1795755339,ms-configuracion,0.09,143.1MiB / 15.36GiB,0.91
+CT,1795755339,ms-ventas,0.08,163.2MiB / 15.36GiB,1.04
+CT,1795755339,ms-auditoria,0.15,144.1MiB / 15.36GiB,0.92
+CT,1795755339,ms-busqueda,0.13,158.4MiB / 15.36GiB,1.01
+CT,1795755339,ms-recomendaciones,0.10,164MiB / 15.36GiB,1.04
+CT,1795755339,ms-proveedores,0.08,159MiB / 15.36GiB,1.01
+CT,1795755339,ms-documentos,0.07,172.6MiB / 15.36GiB,1.10
+CT,1795755339,ms-pedidos,0.82,168.2MiB / 15.36GiB,1.07
+CT,1795755339,ms-comercios,0.09,162MiB / 15.36GiB,1.03
+CT,1795755339,ms-abastecimiento,0.09,156.6MiB / 15.36GiB,1.00
+CT,1795755339,ms-reportes,0.09,227.7MiB / 15.36GiB,1.45
+CT,1795755339,ms-monitoreo,0.09,161.2MiB / 15.36GiB,1.02
+CT,1795755339,ms-inventario,0.08,164.7MiB / 15.36GiB,1.05
+CT,1795755339,ms-precios,7.62,162.8MiB / 15.36GiB,1.03
+CT,1795755339,monitor-verificador,0.04,93.46MiB / 15.36GiB,0.59
+CT,1795755339,ms-analisis,0.58,150.7MiB / 15.36GiB,0.96
+CT,1795755339,ms-sincronizacion,0.09,154.2MiB / 15.36GiB,0.98
+CT,1795755339,ms-disponibilidad,0.10,143.3MiB / 15.36GiB,0.91
+CT,1795755339,ms-integraciones,0.10,159.1MiB / 15.36GiB,1.01
+CT,1795755339,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755339,ms-entregas,0.19,173.2MiB / 15.36GiB,1.10
+CT,1795755339,ms-catalogo,0.11,143.6MiB / 15.36GiB,0.91
+CT,1795755339,ms-notificaciones,0.09,155.2MiB / 15.36GiB,0.99
+CT,1795755339,ms-seguridad,0.10,155.8MiB / 15.36GiB,0.99
+CT,1795755339,ms-demanda,7.23,144.6MiB / 15.36GiB,0.92
+CT,1795755339,abastored-postgres,1.40,178.9MiB / 15.36GiB,1.14
+CT,1795755339,abastored-redis,0.34,19.3MiB / 15.36GiB,0.12
+CT,1795755339,abastored-mongo,1.16,369.4MiB / 15.36GiB,2.35
+CT,1795755339,abastored-gateway,0.15,13.06MiB / 15.36GiB,0.08
+CT,1795755339,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+VM,1795755345,9713,39,0.94,21,7,72,0,0
+CT,1795755345,ms-configuracion,0.15,143.1MiB / 15.36GiB,0.91
+CT,1795755345,ms-ventas,0.20,163.2MiB / 15.36GiB,1.04
+CT,1795755345,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755345,ms-busqueda,0.08,158.4MiB / 15.36GiB,1.01
+CT,1795755345,ms-recomendaciones,0.09,164.1MiB / 15.36GiB,1.04
+CT,1795755345,ms-proveedores,0.20,159MiB / 15.36GiB,1.01
+CT,1795755345,ms-documentos,0.15,172.6MiB / 15.36GiB,1.10
+CT,1795755345,ms-pedidos,0.07,168.2MiB / 15.36GiB,1.07
+CT,1795755345,ms-comercios,0.09,162MiB / 15.36GiB,1.03
+CT,1795755345,ms-abastecimiento,0.21,156.6MiB / 15.36GiB,1.00
+CT,1795755345,ms-reportes,0.09,227.7MiB / 15.36GiB,1.45
+CT,1795755345,ms-monitoreo,0.09,161.2MiB / 15.36GiB,1.02
+CT,1795755345,ms-inventario,0.08,164.7MiB / 15.36GiB,1.05
+CT,1795755345,ms-precios,0.09,162.8MiB / 15.36GiB,1.03
+CT,1795755345,monitor-verificador,0.04,93.46MiB / 15.36GiB,0.59
+CT,1795755345,ms-analisis,0.13,150.7MiB / 15.36GiB,0.96
+CT,1795755345,ms-sincronizacion,0.17,154.2MiB / 15.36GiB,0.98
+CT,1795755345,ms-disponibilidad,0.22,143.3MiB / 15.36GiB,0.91
+CT,1795755345,ms-integraciones,0.08,159.1MiB / 15.36GiB,1.01
+CT,1795755345,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755345,ms-entregas,0.07,173.2MiB / 15.36GiB,1.10
+CT,1795755345,ms-catalogo,0.14,143.6MiB / 15.36GiB,0.91
+CT,1795755345,ms-notificaciones,0.08,155.2MiB / 15.36GiB,0.99
+CT,1795755345,ms-seguridad,0.07,155.8MiB / 15.36GiB,0.99
+CT,1795755345,ms-demanda,0.09,144.6MiB / 15.36GiB,0.92
+CT,1795755345,abastored-postgres,0.01,179MiB / 15.36GiB,1.14
+CT,1795755345,abastored-redis,0.21,19.4MiB / 15.36GiB,0.12
+CT,1795755345,abastored-mongo,2.09,370.4MiB / 15.36GiB,2.36
+CT,1795755345,abastored-gateway,0.00,13.06MiB / 15.36GiB,0.08
+CT,1795755345,abastored-web,0.14,231.8MiB / 15.36GiB,1.47
+VM,1795755352,9708,39,1.02,1,1,97,0,0
+CT,1795755352,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755352,ms-ventas,0.09,163.2MiB / 15.36GiB,1.04
+CT,1795755352,ms-auditoria,0.07,144.1MiB / 15.36GiB,0.92
+CT,1795755352,ms-busqueda,1.13,158.4MiB / 15.36GiB,1.01
+CT,1795755352,ms-recomendaciones,0.08,164.1MiB / 15.36GiB,1.04
+CT,1795755352,ms-proveedores,0.10,159MiB / 15.36GiB,1.01
+CT,1795755352,ms-documentos,0.08,172.6MiB / 15.36GiB,1.10
+CT,1795755352,ms-pedidos,0.09,168.2MiB / 15.36GiB,1.07
+CT,1795755352,ms-comercios,0.08,162MiB / 15.36GiB,1.03
+CT,1795755352,ms-abastecimiento,0.08,156.6MiB / 15.36GiB,1.00
+CT,1795755352,ms-reportes,0.08,227.7MiB / 15.36GiB,1.45
+CT,1795755352,ms-monitoreo,0.08,161.2MiB / 15.36GiB,1.02
+CT,1795755352,ms-inventario,1.53,164.7MiB / 15.36GiB,1.05
+CT,1795755352,ms-precios,0.09,162.8MiB / 15.36GiB,1.03
+CT,1795755352,monitor-verificador,0.04,93.46MiB / 15.36GiB,0.59
+CT,1795755352,ms-analisis,0.08,150.7MiB / 15.36GiB,0.96
+CT,1795755352,ms-sincronizacion,0.09,154.2MiB / 15.36GiB,0.98
+CT,1795755352,ms-disponibilidad,0.08,143.3MiB / 15.36GiB,0.91
+CT,1795755352,ms-integraciones,0.08,159.1MiB / 15.36GiB,1.01
+CT,1795755352,ms-geolocalizacion,0.10,148.1MiB / 15.36GiB,0.94
+CT,1795755352,ms-entregas,0.09,173.2MiB / 15.36GiB,1.10
+CT,1795755352,ms-catalogo,0.08,143.6MiB / 15.36GiB,0.91
+CT,1795755352,ms-notificaciones,0.57,155.2MiB / 15.36GiB,0.99
+CT,1795755352,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755352,ms-demanda,0.48,144.6MiB / 15.36GiB,0.92
+CT,1795755352,abastored-postgres,8.42,179MiB / 15.36GiB,1.14
+CT,1795755352,abastored-redis,0.37,19.4MiB / 15.36GiB,0.12
+CT,1795755352,abastored-mongo,0.80,370.4MiB / 15.36GiB,2.36
+CT,1795755352,abastored-gateway,0.15,13.06MiB / 15.36GiB,0.08
+CT,1795755352,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+VM,1795755358,9708,39,0.94,12,8,80,0,0
+CT,1795755358,ms-configuracion,7.91,143.1MiB / 15.36GiB,0.91
+CT,1795755358,ms-ventas,0.07,163.2MiB / 15.36GiB,1.04
+CT,1795755358,ms-auditoria,0.17,144.1MiB / 15.36GiB,0.92
+CT,1795755358,ms-busqueda,0.57,158.4MiB / 15.36GiB,1.01
+CT,1795755358,ms-recomendaciones,0.08,164.1MiB / 15.36GiB,1.04
+CT,1795755358,ms-proveedores,0.09,159MiB / 15.36GiB,1.01
+CT,1795755358,ms-documentos,4.19,172.6MiB / 15.36GiB,1.10
+CT,1795755358,ms-pedidos,0.22,168.2MiB / 15.36GiB,1.07
+CT,1795755358,ms-comercios,0.08,162MiB / 15.36GiB,1.03
+CT,1795755358,ms-abastecimiento,0.08,156.6MiB / 15.36GiB,1.00
+CT,1795755358,ms-reportes,0.08,227.7MiB / 15.36GiB,1.45
+CT,1795755358,ms-monitoreo,0.08,161.2MiB / 15.36GiB,1.02
+CT,1795755358,ms-inventario,8.09,164.7MiB / 15.36GiB,1.05
+CT,1795755358,ms-precios,8.03,162.8MiB / 15.36GiB,1.04
+CT,1795755358,monitor-verificador,0.04,93.46MiB / 15.36GiB,0.59
+CT,1795755358,ms-analisis,0.13,150.7MiB / 15.36GiB,0.96
+CT,1795755358,ms-sincronizacion,0.08,154.2MiB / 15.36GiB,0.98
+CT,1795755358,ms-disponibilidad,8.04,143.3MiB / 15.36GiB,0.91
+CT,1795755358,ms-integraciones,0.09,159.1MiB / 15.36GiB,1.01
+CT,1795755358,ms-geolocalizacion,0.09,148.1MiB / 15.36GiB,0.94
+CT,1795755358,ms-entregas,0.14,173.2MiB / 15.36GiB,1.10
+CT,1795755358,ms-catalogo,0.10,143.6MiB / 15.36GiB,0.91
+CT,1795755358,ms-notificaciones,8.16,155.2MiB / 15.36GiB,0.99
+CT,1795755358,ms-seguridad,5.70,155.8MiB / 15.36GiB,0.99
+CT,1795755358,ms-demanda,0.09,144.6MiB / 15.36GiB,0.92
+CT,1795755358,abastored-postgres,0.01,179MiB / 15.36GiB,1.14
+CT,1795755358,abastored-redis,7.64,19.36MiB / 15.36GiB,0.12
+CT,1795755358,abastored-mongo,0.95,370.5MiB / 15.36GiB,2.36
+CT,1795755358,abastored-gateway,0.05,13.06MiB / 15.36GiB,0.08
+CT,1795755358,abastored-web,0.27,231.8MiB / 15.36GiB,1.47
+RS,1795755358,ms-configuracion,0,false,running,healthy
+RS,1795755358,ms-ventas,0,false,running,healthy
+RS,1795755358,ms-auditoria,0,false,running,healthy
+RS,1795755358,ms-busqueda,0,false,running,healthy
+RS,1795755358,ms-recomendaciones,0,false,running,healthy
+RS,1795755358,ms-proveedores,0,false,running,healthy
+RS,1795755358,ms-documentos,0,false,running,healthy
+RS,1795755358,ms-pedidos,0,false,running,healthy
+RS,1795755358,ms-comercios,0,false,running,healthy
+RS,1795755358,ms-abastecimiento,0,false,running,healthy
+RS,1795755358,ms-reportes,0,false,running,healthy
+RS,1795755358,ms-monitoreo,0,false,running,healthy
+RS,1795755358,ms-inventario,0,false,running,healthy
+RS,1795755358,ms-precios,0,false,running,healthy
+RS,1795755358,monitor-verificador,0,false,running,
+RS,1795755358,ms-analisis,0,false,running,healthy
+RS,1795755358,ms-sincronizacion,0,false,running,healthy
+RS,1795755358,ms-disponibilidad,0,false,running,healthy
+RS,1795755358,ms-integraciones,0,false,running,healthy
+RS,1795755358,ms-geolocalizacion,0,false,running,healthy
+RS,1795755358,ms-entregas,0,false,running,healthy
+RS,1795755358,ms-catalogo,0,false,running,healthy
+RS,1795755358,ms-notificaciones,0,false,running,healthy
+RS,1795755358,ms-seguridad,0,false,running,healthy
+RS,1795755358,ms-demanda,0,false,running,healthy
+RS,1795755358,abastored-postgres,0,false,running,healthy
+RS,1795755358,abastored-redis,0,false,running,healthy
+RS,1795755358,abastored-mongo,0,false,running,healthy
+RS,1795755358,abastored-gateway,0,false,running,healthy
+RS,1795755358,abastored-web,0,false,running,healthy
+VM,1795755365,9702,39,0.87,2,2,96,0,0
+CT,1795755365,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755365,ms-ventas,0.83,163.2MiB / 15.36GiB,1.04
+CT,1795755365,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755365,ms-busqueda,0.55,158.4MiB / 15.36GiB,1.01
+CT,1795755365,ms-recomendaciones,0.09,164.1MiB / 15.36GiB,1.04
+CT,1795755365,ms-proveedores,0.14,159MiB / 15.36GiB,1.01
+CT,1795755365,ms-documentos,0.07,172.6MiB / 15.36GiB,1.10
+CT,1795755365,ms-pedidos,0.10,168.2MiB / 15.36GiB,1.07
+CT,1795755365,ms-comercios,0.09,162MiB / 15.36GiB,1.03
+CT,1795755365,ms-abastecimiento,0.08,156.6MiB / 15.36GiB,1.00
+CT,1795755365,ms-reportes,0.08,227.7MiB / 15.36GiB,1.45
+CT,1795755365,ms-monitoreo,0.08,161.2MiB / 15.36GiB,1.02
+CT,1795755365,ms-inventario,0.09,164.7MiB / 15.36GiB,1.05
+CT,1795755365,ms-precios,0.08,162.8MiB / 15.36GiB,1.04
+CT,1795755365,monitor-verificador,0.11,93.46MiB / 15.36GiB,0.59
+CT,1795755365,ms-analisis,0.26,150.7MiB / 15.36GiB,0.96
+CT,1795755365,ms-sincronizacion,0.15,154.2MiB / 15.36GiB,0.98
+CT,1795755365,ms-disponibilidad,0.45,143.3MiB / 15.36GiB,0.91
+CT,1795755365,ms-integraciones,0.13,159.1MiB / 15.36GiB,1.01
+CT,1795755365,ms-geolocalizacion,0.13,148.1MiB / 15.36GiB,0.94
+CT,1795755365,ms-entregas,0.09,173.2MiB / 15.36GiB,1.10
+CT,1795755365,ms-catalogo,0.12,143.6MiB / 15.36GiB,0.91
+CT,1795755365,ms-notificaciones,0.08,155.2MiB / 15.36GiB,0.99
+CT,1795755365,ms-seguridad,0.10,155.8MiB / 15.36GiB,0.99
+CT,1795755365,ms-demanda,0.10,144.6MiB / 15.36GiB,0.92
+CT,1795755365,abastored-postgres,0.14,179MiB / 15.36GiB,1.14
+CT,1795755365,abastored-redis,0.31,19.36MiB / 15.36GiB,0.12
+CT,1795755365,abastored-mongo,87.77,369.1MiB / 15.36GiB,2.35
+CT,1795755365,abastored-gateway,0.11,13.06MiB / 15.36GiB,0.08
+CT,1795755365,abastored-web,0.13,231.8MiB / 15.36GiB,1.47
+VM,1795755371,9655,39,0.81,6,6,88,0,0
+CT,1795755371,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755371,ms-ventas,0.07,163.2MiB / 15.36GiB,1.04
+CT,1795755371,ms-auditoria,0.08,144.1MiB / 15.36GiB,0.92
+CT,1795755371,ms-busqueda,0.10,158.4MiB / 15.36GiB,1.01
+CT,1795755371,ms-recomendaciones,0.08,164.1MiB / 15.36GiB,1.04
+CT,1795755371,ms-proveedores,0.09,159MiB / 15.36GiB,1.01
+CT,1795755371,ms-documentos,0.07,172.6MiB / 15.36GiB,1.10
+CT,1795755371,ms-pedidos,0.08,168.2MiB / 15.36GiB,1.07
+CT,1795755371,ms-comercios,0.08,162MiB / 15.36GiB,1.03
+CT,1795755371,ms-abastecimiento,0.07,156.6MiB / 15.36GiB,1.00
+CT,1795755371,ms-reportes,0.08,227.7MiB / 15.36GiB,1.45
+CT,1795755371,ms-monitoreo,0.07,161.2MiB / 15.36GiB,1.02
+CT,1795755371,ms-inventario,0.08,164.7MiB / 15.36GiB,1.05
+CT,1795755371,ms-precios,0.08,162.8MiB / 15.36GiB,1.04
+CT,1795755371,monitor-verificador,0.04,93.47MiB / 15.36GiB,0.59
+CT,1795755371,ms-analisis,0.58,150.7MiB / 15.36GiB,0.96
+CT,1795755371,ms-sincronizacion,0.09,154.2MiB / 15.36GiB,0.98
+CT,1795755371,ms-disponibilidad,0.08,143.3MiB / 15.36GiB,0.91
+CT,1795755371,ms-integraciones,0.09,159.1MiB / 15.36GiB,1.01
+CT,1795755371,ms-geolocalizacion,0.08,148.1MiB / 15.36GiB,0.94
+CT,1795755371,ms-entregas,0.09,173.2MiB / 15.36GiB,1.10
+CT,1795755371,ms-catalogo,0.07,143.6MiB / 15.36GiB,0.91
+CT,1795755371,ms-notificaciones,0.43,155.2MiB / 15.36GiB,0.99
+CT,1795755371,ms-seguridad,0.08,155.8MiB / 15.36GiB,0.99
+CT,1795755371,ms-demanda,0.08,144.6MiB / 15.36GiB,0.92
+CT,1795755371,abastored-postgres,0.00,179.1MiB / 15.36GiB,1.14
+CT,1795755371,abastored-redis,0.26,19.43MiB / 15.36GiB,0.12
+CT,1795755371,abastored-mongo,0.61,369MiB / 15.36GiB,2.35
+CT,1795755371,abastored-gateway,0.11,13.06MiB / 15.36GiB,0.08
+CT,1795755371,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+VM,1795755377,9667,39,0.91,27,11,62,0,0
+CT,1795755377,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755377,ms-ventas,7.44,163.2MiB / 15.36GiB,1.04
+CT,1795755377,ms-auditoria,0.09,144.1MiB / 15.36GiB,0.92
+CT,1795755377,ms-busqueda,1.16,158.4MiB / 15.36GiB,1.01
+CT,1795755377,ms-recomendaciones,8.37,164.1MiB / 15.36GiB,1.04
+CT,1795755377,ms-proveedores,0.09,159MiB / 15.36GiB,1.01
+CT,1795755377,ms-documentos,7.33,172.6MiB / 15.36GiB,1.10
+CT,1795755377,ms-pedidos,0.08,168.2MiB / 15.36GiB,1.07
+CT,1795755377,ms-comercios,0.07,162MiB / 15.36GiB,1.03
+CT,1795755377,ms-abastecimiento,7.57,156.6MiB / 15.36GiB,1.00
+CT,1795755377,ms-reportes,6.84,227.7MiB / 15.36GiB,1.45
+CT,1795755377,ms-monitoreo,8.14,161.2MiB / 15.36GiB,1.02
+CT,1795755377,ms-inventario,1.50,164.7MiB / 15.36GiB,1.05
+CT,1795755377,ms-precios,0.13,162.8MiB / 15.36GiB,1.04
+CT,1795755377,monitor-verificador,0.04,93.47MiB / 15.36GiB,0.59
+CT,1795755377,ms-analisis,0.07,150.7MiB / 15.36GiB,0.96
+CT,1795755377,ms-sincronizacion,0.08,154.4MiB / 15.36GiB,0.98
+CT,1795755377,ms-disponibilidad,0.09,143.3MiB / 15.36GiB,0.91
+CT,1795755377,ms-integraciones,0.09,159.1MiB / 15.36GiB,1.01
+CT,1795755377,ms-geolocalizacion,0.09,148.5MiB / 15.36GiB,0.94
+CT,1795755377,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755377,ms-catalogo,0.07,143.6MiB / 15.36GiB,0.91
+CT,1795755377,ms-notificaciones,0.54,155.2MiB / 15.36GiB,0.99
+CT,1795755377,ms-seguridad,8.08,155.8MiB / 15.36GiB,0.99
+CT,1795755377,ms-demanda,0.48,144.6MiB / 15.36GiB,0.92
+CT,1795755377,abastored-postgres,2.51,179.1MiB / 15.36GiB,1.14
+CT,1795755377,abastored-redis,0.96,27.55MiB / 15.36GiB,0.18
+CT,1795755377,abastored-mongo,1.27,369MiB / 15.36GiB,2.35
+CT,1795755377,abastored-gateway,0.18,13.06MiB / 15.36GiB,0.08
+CT,1795755377,abastored-web,0.34,231.8MiB / 15.36GiB,1.47
+VM,1795755384,9669,39,0.92,4,2,94,0,0
+CT,1795755384,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755384,ms-ventas,0.08,163.2MiB / 15.36GiB,1.04
+CT,1795755384,ms-auditoria,0.08,144.3MiB / 15.36GiB,0.92
+CT,1795755384,ms-busqueda,0.59,158.4MiB / 15.36GiB,1.01
+CT,1795755384,ms-recomendaciones,0.07,164.1MiB / 15.36GiB,1.04
+CT,1795755384,ms-proveedores,0.09,159MiB / 15.36GiB,1.01
+CT,1795755384,ms-documentos,0.09,172.6MiB / 15.36GiB,1.10
+CT,1795755384,ms-pedidos,0.08,168.2MiB / 15.36GiB,1.07
+CT,1795755384,ms-comercios,0.09,162MiB / 15.36GiB,1.03
+CT,1795755384,ms-abastecimiento,0.09,156.6MiB / 15.36GiB,1.00
+CT,1795755384,ms-reportes,0.13,227.7MiB / 15.36GiB,1.45
+CT,1795755384,ms-monitoreo,0.08,161.2MiB / 15.36GiB,1.02
+CT,1795755384,ms-inventario,1.43,164.7MiB / 15.36GiB,1.05
+CT,1795755384,ms-precios,1.10,162.8MiB / 15.36GiB,1.04
+CT,1795755384,monitor-verificador,0.05,93.47MiB / 15.36GiB,0.59
+CT,1795755384,ms-analisis,0.09,150.7MiB / 15.36GiB,0.96
+CT,1795755384,ms-sincronizacion,0.08,154.4MiB / 15.36GiB,0.98
+CT,1795755384,ms-disponibilidad,0.07,143.3MiB / 15.36GiB,0.91
+CT,1795755384,ms-integraciones,0.18,159.1MiB / 15.36GiB,1.01
+CT,1795755384,ms-geolocalizacion,0.24,148.5MiB / 15.36GiB,0.94
+CT,1795755384,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755384,ms-catalogo,0.08,143.6MiB / 15.36GiB,0.91
+CT,1795755384,ms-notificaciones,0.48,155.2MiB / 15.36GiB,0.99
+CT,1795755384,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755384,ms-demanda,0.09,144.6MiB / 15.36GiB,0.92
+CT,1795755384,abastored-postgres,0.93,179.1MiB / 15.36GiB,1.14
+CT,1795755384,abastored-redis,0.32,19.43MiB / 15.36GiB,0.12
+CT,1795755384,abastored-mongo,1.22,369MiB / 15.36GiB,2.35
+CT,1795755384,abastored-gateway,0.22,13.06MiB / 15.36GiB,0.08
+CT,1795755384,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+VM,1795755390,9685,39,0.92,5,3,92,0,0
+CT,1795755390,ms-configuracion,0.08,143.1MiB / 15.36GiB,0.91
+CT,1795755390,ms-ventas,0.08,163.2MiB / 15.36GiB,1.04
+CT,1795755390,ms-auditoria,0.13,144.3MiB / 15.36GiB,0.92
+CT,1795755390,ms-busqueda,0.07,158.4MiB / 15.36GiB,1.01
+CT,1795755390,ms-recomendaciones,4.03,164.2MiB / 15.36GiB,1.04
+CT,1795755390,ms-proveedores,0.10,159MiB / 15.36GiB,1.01
+CT,1795755390,ms-documentos,0.07,172.6MiB / 15.36GiB,1.10
+CT,1795755390,ms-pedidos,0.07,168.2MiB / 15.36GiB,1.07
+CT,1795755390,ms-comercios,0.13,162MiB / 15.36GiB,1.03
+CT,1795755390,ms-abastecimiento,0.08,156.6MiB / 15.36GiB,1.00
+CT,1795755390,ms-reportes,0.08,227.7MiB / 15.36GiB,1.45
+CT,1795755390,ms-monitoreo,0.07,161.2MiB / 15.36GiB,1.02
+CT,1795755390,ms-inventario,0.07,164.7MiB / 15.36GiB,1.05
+CT,1795755390,ms-precios,0.98,162.8MiB / 15.36GiB,1.04
+CT,1795755390,monitor-verificador,0.04,93.47MiB / 15.36GiB,0.59
+CT,1795755390,ms-analisis,0.08,150.7MiB / 15.36GiB,0.96
+CT,1795755390,ms-sincronizacion,0.10,154.4MiB / 15.36GiB,0.98
+CT,1795755390,ms-disponibilidad,0.09,143.3MiB / 15.36GiB,0.91
+CT,1795755390,ms-integraciones,0.08,159.1MiB / 15.36GiB,1.01
+CT,1795755390,ms-geolocalizacion,0.08,148.5MiB / 15.36GiB,0.94
+CT,1795755390,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755390,ms-catalogo,0.09,143.6MiB / 15.36GiB,0.91
+CT,1795755390,ms-notificaciones,0.08,155.2MiB / 15.36GiB,0.99
+CT,1795755390,ms-seguridad,0.10,155.8MiB / 15.36GiB,0.99
+CT,1795755390,ms-demanda,0.43,144.6MiB / 15.36GiB,0.92
+CT,1795755390,abastored-postgres,3.04,179.1MiB / 15.36GiB,1.14
+CT,1795755390,abastored-redis,0.49,19.34MiB / 15.36GiB,0.12
+CT,1795755390,abastored-mongo,1.11,369MiB / 15.36GiB,2.35
+CT,1795755390,abastored-gateway,0.12,13.06MiB / 15.36GiB,0.08
+CT,1795755390,abastored-web,0.11,231.9MiB / 15.36GiB,1.47
+VM,1795755396,9678,39,1.00,4,3,93,0,0
+CT,1795755396,ms-configuracion,0.15,143.1MiB / 15.36GiB,0.91
+CT,1795755396,ms-ventas,0.83,163.2MiB / 15.36GiB,1.04
+CT,1795755396,ms-auditoria,7.47,144.5MiB / 15.36GiB,0.92
+CT,1795755396,ms-busqueda,0.25,158.4MiB / 15.36GiB,1.01
+CT,1795755396,ms-recomendaciones,5.06,164.2MiB / 15.36GiB,1.04
+CT,1795755396,ms-proveedores,7.68,159MiB / 15.36GiB,1.01
+CT,1795755396,ms-documentos,0.13,172.6MiB / 15.36GiB,1.10
+CT,1795755396,ms-pedidos,0.08,168.2MiB / 15.36GiB,1.07
+CT,1795755396,ms-comercios,0.24,162MiB / 15.36GiB,1.03
+CT,1795755396,ms-abastecimiento,8.20,156.6MiB / 15.36GiB,1.00
+CT,1795755396,ms-reportes,0.07,227.7MiB / 15.36GiB,1.45
+CT,1795755396,ms-monitoreo,0.18,161.2MiB / 15.36GiB,1.02
+CT,1795755396,ms-inventario,1.49,164.7MiB / 15.36GiB,1.05
+CT,1795755396,ms-precios,0.15,162.8MiB / 15.36GiB,1.04
+CT,1795755396,monitor-verificador,0.04,93.47MiB / 15.36GiB,0.59
+CT,1795755396,ms-analisis,8.60,150.7MiB / 15.36GiB,0.96
+CT,1795755396,ms-sincronizacion,0.08,154.4MiB / 15.36GiB,0.98
+CT,1795755396,ms-disponibilidad,0.72,143.3MiB / 15.36GiB,0.91
+CT,1795755396,ms-integraciones,0.07,159.1MiB / 15.36GiB,1.01
+CT,1795755396,ms-geolocalizacion,7.48,148.5MiB / 15.36GiB,0.94
+CT,1795755396,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755396,ms-catalogo,8.46,143.6MiB / 15.36GiB,0.91
+CT,1795755396,ms-notificaciones,0.25,155.2MiB / 15.36GiB,0.99
+CT,1795755396,ms-seguridad,0.17,155.8MiB / 15.36GiB,0.99
+CT,1795755396,ms-demanda,0.63,144.6MiB / 15.36GiB,0.92
+CT,1795755396,abastored-postgres,4.24,179.2MiB / 15.36GiB,1.14
+CT,1795755396,abastored-redis,0.63,19.41MiB / 15.36GiB,0.12
+CT,1795755396,abastored-mongo,51.80,517.4MiB / 15.36GiB,3.29
+CT,1795755396,abastored-gateway,0.19,13.06MiB / 15.36GiB,0.08
+CT,1795755396,abastored-web,0.38,231.8MiB / 15.36GiB,1.47
+RS,1795755396,ms-configuracion,0,false,running,healthy
+RS,1795755396,ms-ventas,0,false,running,healthy
+RS,1795755396,ms-auditoria,0,false,running,healthy
+RS,1795755396,ms-busqueda,0,false,running,healthy
+RS,1795755396,ms-recomendaciones,0,false,running,healthy
+RS,1795755396,ms-proveedores,0,false,running,healthy
+RS,1795755396,ms-documentos,0,false,running,healthy
+RS,1795755396,ms-pedidos,0,false,running,healthy
+RS,1795755396,ms-comercios,0,false,running,healthy
+RS,1795755396,ms-abastecimiento,0,false,running,healthy
+RS,1795755396,ms-reportes,0,false,running,healthy
+RS,1795755396,ms-monitoreo,0,false,running,healthy
+RS,1795755396,ms-inventario,0,false,running,healthy
+RS,1795755396,ms-precios,0,false,running,healthy
+RS,1795755396,monitor-verificador,0,false,running,
+RS,1795755396,ms-analisis,0,false,running,healthy
+RS,1795755396,ms-sincronizacion,0,false,running,healthy
+RS,1795755396,ms-disponibilidad,0,false,running,healthy
+RS,1795755396,ms-integraciones,0,false,running,healthy
+RS,1795755396,ms-geolocalizacion,0,false,running,healthy
+RS,1795755396,ms-entregas,0,false,running,healthy
+RS,1795755396,ms-catalogo,0,false,running,healthy
+RS,1795755396,ms-notificaciones,0,false,running,healthy
+RS,1795755396,ms-seguridad,0,false,running,healthy
+RS,1795755396,ms-demanda,0,false,running,healthy
+RS,1795755396,abastored-postgres,0,false,running,healthy
+RS,1795755396,abastored-redis,0,false,running,healthy
+RS,1795755396,abastored-mongo,0,false,running,healthy
+RS,1795755396,abastored-gateway,0,false,running,healthy
+RS,1795755396,abastored-web,0,false,running,healthy
+VM,1795755403,9662,39,1.56,1,1,98,0,0
+CT,1795755403,ms-configuracion,0.10,143.1MiB / 15.36GiB,0.91
+CT,1795755403,ms-ventas,2.16,163.2MiB / 15.36GiB,1.04
+CT,1795755403,ms-auditoria,0.08,144.5MiB / 15.36GiB,0.92
+CT,1795755403,ms-busqueda,0.09,158.4MiB / 15.36GiB,1.01
+CT,1795755403,ms-recomendaciones,0.09,164.2MiB / 15.36GiB,1.04
+CT,1795755403,ms-proveedores,0.09,159MiB / 15.36GiB,1.01
+CT,1795755403,ms-documentos,0.07,172.6MiB / 15.36GiB,1.10
+CT,1795755403,ms-pedidos,0.09,168.2MiB / 15.36GiB,1.07
+CT,1795755403,ms-comercios,0.09,162MiB / 15.36GiB,1.03
+CT,1795755403,ms-abastecimiento,0.07,156.6MiB / 15.36GiB,1.00
+CT,1795755403,ms-reportes,0.24,227.7MiB / 15.36GiB,1.45
+CT,1795755403,ms-monitoreo,0.10,161.2MiB / 15.36GiB,1.02
+CT,1795755403,ms-inventario,0.08,164.7MiB / 15.36GiB,1.05
+CT,1795755403,ms-precios,0.10,162.8MiB / 15.36GiB,1.04
+CT,1795755403,monitor-verificador,0.05,93.48MiB / 15.36GiB,0.59
+CT,1795755403,ms-analisis,2.12,150.7MiB / 15.36GiB,0.96
+CT,1795755403,ms-sincronizacion,0.08,154.4MiB / 15.36GiB,0.98
+CT,1795755403,ms-disponibilidad,0.08,143.3MiB / 15.36GiB,0.91
+CT,1795755403,ms-integraciones,0.17,159.1MiB / 15.36GiB,1.01
+CT,1795755403,ms-geolocalizacion,0.17,148.5MiB / 15.36GiB,0.94
+CT,1795755403,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755403,ms-catalogo,0.08,143.6MiB / 15.36GiB,0.91
+CT,1795755403,ms-notificaciones,0.08,155.2MiB / 15.36GiB,0.99
+CT,1795755403,ms-seguridad,0.07,155.8MiB / 15.36GiB,0.99
+CT,1795755403,ms-demanda,0.14,144.6MiB / 15.36GiB,0.92
+CT,1795755403,abastored-postgres,2.54,179.2MiB / 15.36GiB,1.14
+CT,1795755403,abastored-redis,0.37,19.46MiB / 15.36GiB,0.12
+CT,1795755403,abastored-mongo,1.51,369MiB / 15.36GiB,2.35
+CT,1795755403,abastored-gateway,0.21,13.07MiB / 15.36GiB,0.08
+CT,1795755403,abastored-web,0.12,231.8MiB / 15.36GiB,1.47
+VM,1795755410,9683,39,1.52,6,3,91,0,0
+CT,1795755410,ms-configuracion,0.09,143.1MiB / 15.36GiB,0.91
+CT,1795755410,ms-ventas,0.09,163.2MiB / 15.36GiB,1.04
+CT,1795755410,ms-auditoria,0.18,144.5MiB / 15.36GiB,0.92
+CT,1795755410,ms-busqueda,0.09,158.4MiB / 15.36GiB,1.01
+CT,1795755410,ms-recomendaciones,0.09,164.2MiB / 15.36GiB,1.04
+CT,1795755410,ms-proveedores,0.09,159MiB / 15.36GiB,1.01
+CT,1795755410,ms-documentos,0.09,172.6MiB / 15.36GiB,1.10
+CT,1795755410,ms-pedidos,0.08,168.2MiB / 15.36GiB,1.07
+CT,1795755410,ms-comercios,0.10,162MiB / 15.36GiB,1.03
+CT,1795755410,ms-abastecimiento,0.09,156.6MiB / 15.36GiB,1.00
+CT,1795755410,ms-reportes,0.09,227.7MiB / 15.36GiB,1.45
+CT,1795755410,ms-monitoreo,0.07,161.2MiB / 15.36GiB,1.02
+CT,1795755410,ms-inventario,0.09,164.7MiB / 15.36GiB,1.05
+CT,1795755410,ms-precios,0.08,162.8MiB / 15.36GiB,1.04
+CT,1795755410,monitor-verificador,0.04,93.48MiB / 15.36GiB,0.59
+CT,1795755410,ms-analisis,0.08,150.7MiB / 15.36GiB,0.96
+CT,1795755410,ms-sincronizacion,0.09,154.4MiB / 15.36GiB,0.98
+CT,1795755410,ms-disponibilidad,0.08,143.3MiB / 15.36GiB,0.91
+CT,1795755410,ms-integraciones,0.09,159.1MiB / 15.36GiB,1.01
+CT,1795755410,ms-geolocalizacion,0.09,148.5MiB / 15.36GiB,0.94
+CT,1795755410,ms-entregas,0.08,173.2MiB / 15.36GiB,1.10
+CT,1795755410,ms-catalogo,0.09,143.6MiB / 15.36GiB,0.91
+CT,1795755410,ms-notificaciones,0.07,155.2MiB / 15.36GiB,0.99
+CT,1795755410,ms-seguridad,0.09,155.8MiB / 15.36GiB,0.99
+CT,1795755410,ms-demanda,0.09,144.6MiB / 15.36GiB,0.92
+CT,1795755410,abastored-postgres,0.00,179.2MiB / 15.36GiB,1.14
+CT,1795755410,abastored-redis,0.21,19.35MiB / 15.36GiB,0.12
+CT,1795755410,abastored-mongo,0.61,369MiB / 15.36GiB,2.35
+CT,1795755410,abastored-gateway,0.00,12.93MiB / 15.36GiB,0.08
+CT,1795755410,abastored-web,0.13,231.8MiB / 15.36GiB,1.47
+FIN,1795755416
