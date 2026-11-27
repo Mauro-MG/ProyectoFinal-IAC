@@ -74,7 +74,7 @@
   <text x="120" y="992" class="s">• Volver a una versión anterior: desplegar.sh &lt;commit&gt;</text>
   <rect class="caja" x="800" y="860" width="710" height="150"/>
   <text x="820" y="892" class="t">Verificación</text>
-  <text x="820" y="920" class="s">• 182 pruebas de integración contra el despliegue (15 omitidas: requieren Docker local)</text>
+  <text x="820" y="920" class="s">• 185 pruebas de integración aprobadas contra el despliegue (19 omitidas, 0 fallidas)</text>
   <text x="820" y="944" class="s">• 29 contenedores sanos · /health/storage contra el bucket real</text>
   <text x="820" y="968" class="s">• Recorrido de la app Android y diagnóstico del instalador MSI contra GCP</text>
   <text x="820" y="992" class="s">• Por qué bases en contenedores: costo y un solo equipo de práctica (ver apps/infra/README.md)</text>
