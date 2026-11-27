@@ -1,0 +1,35 @@
+fecha_local: 2026-11-26 23:12:58 -0600 (Central Standard Time (Mexico))
+fecha_utc: 2026-11-27 05:12:58
+escenario: estres_recuperacion
+etapas (usuarios:segundos): 75:180,100:240,125?:180
+recuperacion: 5:300
+incorporacion: 2 usuarios/s
+prefijo de datos: gcp1126b
+commit_scripts: 3a8cd6d (1 archivos de tests/carga/gcp sin commit)
+sha256_scripts:
+  51e53b140638bf9900721e808f7150a3138f39944abbb60454a6d7e7beafdc3a *comun.py
+  3150ac656ed70b12ca05cab813d034679b9ddd470d84faf48bac90b1ce3c347a *locustfile_gcp.py
+  3b77996ada278b3fa7efb4eb52adc8ef19d3d38c1645326d2e9f415a4075a0dc *muestreo_vm.sh
+  b261e6ea232864bdaadc2dd33eea663e2b140916382b74d0c1fe45ab9f1739bf *verificar.py
+  0ae05e608cb51ea49a5dac305e8c3533108674810068462af410cdd8c458d563 *correr_gcp.sh
+host: https://34.135.84.31 (HTTPS por NGINX; TLS verificado con certificado_gateway_gcp.crt)
+certificado_publico: E3:82:2B:96:93:47:0E:94:51:6D:05:69:F8:8B:3B:37:F9:60:F0:92:3B:06:A9:3C:05:86:B1:76:0B:99:EC:31
+certificado_servido: E3:82:2B:96:93:47:0E:94:51:6D:05:69:F8:8B:3B:37:F9:60:F0:92:3B:06:A9:3C:05:86:B1:76:0B:99:EC:31
+proyecto/zona/vm: integracion-505802 / us-central1-c / integracion
+tipo_maquina: e2-standard-4
+generador: Windows-11-10.0.26200-SP0 · 16 CPU lógicas · 31.9 GB · Python 3.12.9 · Locust 2.32.2 · fuera de GCP, por internet público
+limites: MAX_USUARIOS=150 DURACION_MAX_S=2400 TIMEOUT_S=30
+paradas: errores>0.05 30s · p95_ok>3000ms 60s · sin respuestas 30s · mem_vm<1500MB · disco_vm<5GB · reinicio/OOM de contenedor · archivo PARAR
+--- VM
+commit_desplegado: 670ba4e
+so: CentOS Stream 10 (Coughlan) · kernel 6.12.0-233.el10.x86_64
+cpu: 4 vCPU · Intel(R) Xeon(R) CPU @ 2.20GHz
+memoria_mb: total 15727 · disponible 9612
+disco: 50G total · 39G libres
+docker: 29.10.1
+contenedores_en_ejecucion: 30
+otros_proyectos_docker: 
+otros_servicios_escuchando: 0.0.0.0:20202 [::1]:25 127.0.0.1:25 127.0.0.1:3000 127.0.0.1:5000 127.0.0.1:5001 127.0.0.1:5002 127.0.0.1:5003 127.0.0.1:5004 127.0.0.1:5005 127.0.0.1:5006 127.0.0.1:5432 127.0.0.1:6001 127.0.0.1:6379 127.0.0.1:8090 [::1]:5432 [::1]:6379 *:20201 
+limite_gateway: limit_req_zone $binary_remote_addr zone=por_ip:10m rate=30r/s; limit_req zone=por_ip burst=60 nodelay;
+limite_servicios: RATE_LIMIT_POR_MINUTO=120 (valor por omisión) por usuario y servicio
+datos (usuarios comercios inventario ventas pedidos tamaño_bd): 304 219 1107 263 29 24 MB

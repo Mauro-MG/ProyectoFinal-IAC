@@ -1,0 +1,2 @@
+Method,Name,Error,Occurrences
+GET,disponibilidad GET /disponibilidad,"CatchResponseError('429 {\n  ""error"": {\n    ""codigo"": ""limite_excedido"",\n    ""mensaje"": ""Superaste 60 peticiones por minuto en este servicio. Int')",76

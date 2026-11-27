@@ -1,0 +1,2 @@
+Method,Name,Error,Occurrences
+GET,recomendaciones GET /recomendaciones/{id},"CatchResponseError('409 {\n  ""error"": {\n    ""codigo"": ""sin_zona"",\n    ""mensaje"": ""El comercio no tiene zona asignada; captura su ubicación."",\n   ')",5

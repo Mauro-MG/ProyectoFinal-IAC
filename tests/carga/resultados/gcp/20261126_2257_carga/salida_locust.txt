@@ -1,0 +1,87 @@
+[2026-11-26 22:57:59,894] BetitoPC/INFO/locust.main: Starting Locust 2.32.2
+[2026-11-26 22:57:59,894] BetitoPC/WARNING/locust.main: --run-time, --users or --spawn-rate have no impact on LoadShapes unless the shape class explicitly reads them. See: docs.locust.io/en/stable/custom-load-shape.html#use-common-options
+[2026-11-26 22:57:59,894] BetitoPC/WARNING/locust.main: The following option(s) will be ignored: --run-time
+[2026-11-26 22:57:59,897] BetitoPC/INFO/locust.runners: Shape test starting.
+[2026-11-26 22:57:59,898] BetitoPC/INFO/locust.runners: Shape worker starting
+[guardia] etapa carga 10 usuarios durante 180 s
+[2026-11-26 22:57:59,898] BetitoPC/INFO/locust.runners: Shape test updating to 10 users at 2.00 spawn rate
+[guardia] inicio · prefijo gcp1126b · etapas [(10, 180, False), (25, 180, False), (50, 180, False)] · recuperación [] · tasa 2.0/s
+[2026-11-26 22:57:59,898] BetitoPC/INFO/locust.runners: Ramping to 10 users at a rate of 2.00 per second
+[2026-11-26 22:58:03,952] BetitoPC/INFO/locust.runners: All users spawned: {"AnalistaEscritorio": 2, "Auditor": 1, "ComercianteMovil": 5, "VisitantePublico": 2} (10 total users)
+[guardia] etapa carga 25 usuarios durante 180 s
+[2026-11-26 23:01:00,845] BetitoPC/INFO/locust.runners: Shape test updating to 25 users at 2.00 spawn rate
+[2026-11-26 23:01:00,846] BetitoPC/INFO/locust.runners: Ramping to 25 users at a rate of 2.00 per second
+[2026-11-26 23:01:07,903] BetitoPC/INFO/locust.runners: All users spawned: {"AnalistaEscritorio": 4, "Auditor": 2, "ComercianteMovil": 13, "VisitantePublico": 6} (25 total users)
+[guardia] etapa carga 50 usuarios durante 180 s
+[2026-11-26 23:04:01,205] BetitoPC/INFO/locust.runners: Shape test updating to 50 users at 2.00 spawn rate
+[2026-11-26 23:04:01,206] BetitoPC/INFO/locust.runners: Ramping to 50 users at a rate of 2.00 per second
+[2026-11-26 23:04:13,277] BetitoPC/INFO/locust.runners: All users spawned: {"AnalistaEscritorio": 8, "Auditor": 4, "ComercianteMovil": 25, "VisitantePublico": 13} (50 total users)
+[guardia] fin de la fase de carga: fin de las etapas
+[2026-11-26 23:07:01,361] BetitoPC/INFO/locust.runners: Shape test stopping
+[2026-11-26 23:07:01,575] BetitoPC/INFO/locust.main: --run-time limit reached, shutting down
+[2026-11-26 23:07:01,576] BetitoPC/INFO/locust.main: Run time limit set to 2400 seconds
+[2026-11-26 23:07:01,643] BetitoPC/INFO/locust.main: writing html report to file: C:\Integracion\ProyectoFinal-IAC\tests\carga\resultados\gcp\20261126_2257_carga/reporte.html
+[guardia] fin de la corrida
+[2026-11-26 23:07:01,660] BetitoPC/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      analisis GET /analisis/agrupamientos [xml]                                        55     0(0.00%) |     55      50      77     55 |    0.10        0.00
+GET      analisis GET /analisis/brechas [xml]                                             124     0(0.00%) |    183     164     283    180 |    0.23        0.00
+GET      analisis GET /analisis/zonas [xml]                                               165     0(0.00%) |     59      49     151     55 |    0.30        0.00
+GET      auditoria GET /eventos                                                           161     0(0.00%) |    158     146     244    160 |    0.30        0.00
+GET      auditoria GET /resumen                                                            97     0(0.00%) |     69      61     159     67 |    0.18        0.00
+GET      auditoria GET /trazas/{correlation_id}                                            79     0(0.00%) |     54      51      62     54 |    0.15        0.00
+GET      busqueda GET /buscar                                                             382     0(0.00%) |     74      49     194     78 |    0.71        0.00
+GET      comercios GET /comercios                                                          25     0(0.00%) |    156     146     183    160 |    0.05        0.00
+GET      demanda GET /demanda/estimacion [xml]                                             69     0(0.00%) |     58      53      65     58 |    0.13        0.00
+GET      disponibilidad GET /disponibilidad                                               430   76(17.67%) |     58      48     164     58 |    0.79        0.14
+GET      inventario GET /comercios/{id}/inventario                                       1009     0(0.00%) |     68      61     203     67 |    1.86        0.00
+GET      notificaciones GET /notificaciones/contador                                      739     0(0.00%) |     51      47     132     51 |    1.36        0.00
+GET      pedidos GET /pedidos                                                             270     0(0.00%) |     57      53      68     57 |    0.50        0.00
+GET      precios GET /precios/comparacion                                                 243     0(0.00%) |     67      60     167     65 |    0.45        0.00
+GET      precios GET /precios/comparacion [xml]                                           125     0(0.00%) |     70      61     171     67 |    0.23        0.00
+GET      recomendaciones GET /recomendaciones/{id}                                        243     0(0.00%) |    155     129     310    150 |    0.45        0.00
+GET      reportes GET /reportes [xml]                                                      67     0(0.00%) |     53      48      67     53 |    0.12        0.00
+GET      ventas GET /ventas/resumen                                                       261     0(0.00%) |     55      51     111     55 |    0.48        0.00
+POST     ventas POST /ventas                                                              234     0(0.00%) |    115     101     186    110 |    0.43        0.00
+GET      web GET /                                                                        579     0(0.00%) |     65      55     183     61 |    1.07        0.00
+GET      web GET /disponibilidad                                                          404     0(0.00%) |    111      99     191    110 |    0.75        0.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                      5761    76(1.32%) |     77      47     310     65 |   10.64        0.14
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      analisis GET /analisis/agrupamientos [xml]                                             55     56     56     57     59     60     66     78     78     78     78     55
+GET      analisis GET /analisis/brechas [xml]                                                  180    180    190    190    200    210    240    270    280    280    280    124
+GET      analisis GET /analisis/zonas [xml]                                                     55     56     59     66     72     79     93    150    150    150    150    165
+GET      auditoria GET /eventos                                                                160    160    160    160    170    170    210    240    240    240    240    161
+GET      auditoria GET /resumen                                                                 67     68     71     73     75     85     98    160    160    160    160     97
+GET      auditoria GET /trazas/{correlation_id}                                                 54     55     55     56     56     57     58     62     62     62     62     79
+GET      busqueda GET /buscar                                                                   78     80     82     84     89     92     96    110    190    190    190    382
+GET      comercios GET /comercios                                                              160    160    160    160    170    170    180    180    180    180    180     25
+GET      demanda GET /demanda/estimacion [xml]                                                  58     59     59     60     62     64     65     65     65     65     65     69
+GET      disponibilidad GET /disponibilidad                                                     58     59     60     61     63     66     73    110    160    160    160    430
+GET      inventario GET /comercios/{id}/inventario                                              67     69     70     71     74     77     83     87    100    200    200   1009
+GET      notificaciones GET /notificaciones/contador                                            51     52     52     52     53     54     57     60    130    130    130    739
+GET      pedidos GET /pedidos                                                                   57     58     59     59     61     63     65     67     68     68     68    270
+GET      precios GET /precios/comparacion                                                       65     66     68     69     73     78     94     98    170    170    170    243
+GET      precios GET /precios/comparacion [xml]                                                 67     68     69     71     76     79    150    170    170    170    170    125
+GET      recomendaciones GET /recomendaciones/{id}                                             150    160    160    160    180    190    220    240    310    310    310    243
+GET      reportes GET /reportes [xml]                                                           53     54     55     55     56     58     62     68     68     68     68     67
+GET      ventas GET /ventas/resumen                                                             55     56     56     57     58     61     64     66    110    110    110    261
+POST     ventas POST /ventas                                                                   110    120    120    120    130    130    140    150    190    190    190    234
+GET      web GET /                                                                              61     65     71     73     77     82     93    110    180    180    180    579
+GET      web GET /disponibilidad                                                               110    110    110    110    120    120    130    180    190    190    190    404
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                             65     71     80    110    140    160    180    190    240    310    310   5761
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+76                 GET disponibilidad GET /disponibilidad: 429 {
+  "error": {
+    "codigo": "limite_excedido",
+    "mensaje": "Superaste 60 peticiones por minuto en este servicio. Int
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+

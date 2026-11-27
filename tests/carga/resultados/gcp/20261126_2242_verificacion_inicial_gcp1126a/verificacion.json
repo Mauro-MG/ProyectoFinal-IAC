@@ -1,0 +1,160 @@
+{
+  "prefijo": "gcp1126a",
+  "host": "https://34.135.84.31",
+  "inicio": "2026-11-26T22:42:43-06:00",
+  "muestras": [
+    {
+      "hora": "2026-11-26T22:42:43-06:00",
+      "consultas": {
+        "web GET /": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 365.0
+        },
+        "web GET /disponibilidad": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 147.0
+        },
+        "busqueda GET /buscar": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 119.2
+        },
+        "analisis GET /analisis/zonas [xml]": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 149.5
+        },
+        "inventario GET /comercios/{id}/inventario": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 170.3
+        },
+        "auditoria GET /eventos": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 220.2
+        }
+      },
+      "servicios": {
+        "total": 24,
+        "ok": 24,
+        "degradados": 0,
+        "caidos": 0,
+        "no_ok": []
+      }
+    },
+    {
+      "hora": "2026-11-26T22:43:04-06:00",
+      "consultas": {
+        "web GET /": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 304.6
+        },
+        "web GET /disponibilidad": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 167.4
+        },
+        "busqueda GET /buscar": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 52.7
+        },
+        "analisis GET /analisis/zonas [xml]": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 54.8
+        },
+        "inventario GET /comercios/{id}/inventario": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 66.3
+        },
+        "auditoria GET /eventos": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 144.5
+        }
+      },
+      "servicios": {
+        "total": 24,
+        "ok": 24,
+        "degradados": 0,
+        "caidos": 0,
+        "no_ok": []
+      }
+    },
+    {
+      "hora": "2026-11-26T22:43:25-06:00",
+      "consultas": {
+        "web GET /": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 64.5
+        },
+        "web GET /disponibilidad": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 111.9
+        },
+        "busqueda GET /buscar": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 52.5
+        },
+        "analisis GET /analisis/zonas [xml]": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 53.4
+        },
+        "inventario GET /comercios/{id}/inventario": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 65.4
+        },
+        "auditoria GET /eventos": {
+          "status": 200,
+          "categoria": "ok",
+          "ms": 143.3
+        }
+      },
+      "servicios": {
+        "total": 24,
+        "ok": 24,
+        "degradados": 0,
+        "caidos": 0,
+        "no_ok": []
+      }
+    }
+  ],
+  "escritura_controlada": {
+    "inventario_id": 388,
+    "existencia_antes": 100000.0,
+    "existencia_despues": 99999.0,
+    "primera_status": 201,
+    "segunda_status": 200,
+    "segunda_duplicada": true,
+    "misma_venta": true,
+    "descuento": 1.0,
+    "correcta": true
+  },
+  "consistencia": {
+    "comercios": 90,
+    "renglones": 360,
+    "ventas_en_base": 1,
+    "renglones_con_descuento_inconsistente": [],
+    "id_cliente_repetidos": [],
+    "ventas_aceptadas_en_la_carga": 0,
+    "aceptadas_sin_exactamente_un_registro": [],
+    "correcta": true
+  },
+  "latencia_consultas_ms": {
+    "n": 18,
+    "mediana": 131.25,
+    "max": 365.0
+  },
+  "fin": "2026-11-26T22:44:41-06:00"
+}

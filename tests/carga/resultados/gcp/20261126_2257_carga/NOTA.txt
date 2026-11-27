@@ -1,0 +1,3 @@
+Nota: correr_gcp.sh terminó con código 139 por un «Segmentation fault» de gcloud (Windows) en el paso posterior
+a Locust que consulta los OOM del kernel. Locust y el muestreo ya habían terminado. oom_kernel.txt y resumen.md se
+regeneraron a mano con los mismos comandos; desde entonces correr_gcp.sh reintenta las llamadas SSH.
